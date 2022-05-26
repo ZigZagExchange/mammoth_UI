@@ -504,3 +504,536 @@ blockquote footer {
   line-height: var(--line-height);
   padding: 1.5rem 0;
 }
+
+/* login reg btn */
+.login_reg_btn {
+  width: 100%;
+  padding: 10px 20px;
+  border: none;
+  color: white;
+  font-weight: 500;
+  border-radius: 5px;
+  background-color: #08aff3;
+}
+
+.login_reg_btn span {
+  font-weight: 300;
+}
+
+/* bg_btn */
+.bg_btn {
+  display: flex;
+  align-items: center;
+  transition: all 0.1s linear;
+  height: 42px;
+  padding: 4px 30px;
+  font-weight: bold;
+  background: #09aaf5;
+  border: 0;
+  border-radius: 4px;
+  width: 100%;
+  justify-content: center;
+  position: relative;
+  color: white;
+  font-size: 14px;
+  line-height: 1.5;
+  outline: none;
+}
+
+.bg_btn > img {
+  margin-right: 10px;
+}
+
+.btn_loader {
+  position: absolute;
+}
+
+.bg_err {
+  background: #b66;
+}
+
+.zig_btn {
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.01);
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.35);
+}
+
+.zig_btn:hover {
+  box-shadow: 0 0 1px 2px rgba(255, 255, 255, 0.3) inset,
+    0 0 8px 1px rgba(120, 255, 255, 0.4);
+}
+
+.zig_btn:active {
+  transition: none;
+  background-color: #087fcf;
+  box-shadow: -2px -2px 4px 1px rgba(0, 0, 0, 0.2) inset,
+    0 1px 0 1px rgba(255, 255, 255, 0.2) inset;
+}
+
+.zig_btn_sm {
+  font-size: 12px;
+  padding: 0 10px;
+  width: auto;
+  height: 27px;
+}
+
+.zig_btn_disabled {
+  pointer-events: none;
+  cursor: default;
+}
+
+.zig_disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.zig_btn_loading {
+  opacity: 1;
+  pointer-events: none;
+  background: linear-gradient(to right, #447891, #4a7c85, #486a63);
+}
+
+.zig_btn_icon {
+  font-size: 18px;
+  margin-right: 6px;
+}
+
+.zig_modal {
+  /* position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0; */
+  /* backdrop-filter: blur(2px); */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* opacity: 0; */
+  transition: all 0.3s ease-in-out;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.zig_modal.enter-done {
+  opacity: 1;
+  pointer-events: visible;
+}
+
+.zig_modal.exit {
+  opacity: 0;
+}
+
+.zig_modal_content {
+  width: 500px;
+  max-width: 90%;
+  background-color: #232735;
+  transition: all 0.3s ease-in-out;
+  transform: translateY(-200px);
+  border-radius: 6px;
+  color: #cedafb;
+}
+
+.zig_modal.enter-done .zig_modal_content {
+  transform: translateY(0);
+}
+
+.zig_modal.exit .zig_modal_content {
+  transform: translateY(-200px);
+}
+
+.zig_modal_header,
+.zig_modal_body {
+  padding: 15px;
+}
+
+.zig_modal_body {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 0 0 6px 6px;
+  font-size: 0.8rem;
+  max-height: 400px;
+  overflow: auto;
+}
+
+.zig_modal_body::-webkit-scrollbar {
+  width: 5px;
+  position: relative;
+  z-index: 20;
+}
+
+.zig_modal_body::-webkit-scrollbar-track {
+  border-radius: 0px;
+  background: hsla(0, 0%, 100%, 0.15);
+  height: 23px;
+}
+
+.zig_modal_body::-webkit-scrollbar-thumb {
+  border-radius: 0px;
+  background: hsla(0, 0%, 100%, 0.4);
+}
+
+.zig_modal_body::-webkit-scrollbar-thumb:window-inactive {
+  background: #fff;
+}
+
+.zig_modal_title {
+  margin: 0;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 1);
+}
+
+.pairs_searchbox input {
+  padding: 0px 20px;
+  width: 100%;
+  height: 40px;
+  border: none;
+  outline: none;
+  border-bottom: 1px solid rgb(39, 44, 57);
+  color: #fff;
+  background-color: rgb(19, 23, 34);
+  box-sizing: border-box;
+}
+
+.pairs_searchbox input::placeholder {
+  color: #aeaebf;
+}
+
+.bridge_searchbox input {
+  padding: 13px;
+  width: 100%;
+  border: none;
+  outline: none;
+  color: #fff;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.4);
+  box-sizing: border-box;
+  margin-bottom: 10px;
+}
+
+.bridge_searchbox input::placeholder {
+  color: #aeaebf;
+}
+
+.swap_section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 48px);
+  height: 100%;
+  background-color: #1c2231;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  padding-bottom: 2rem;
+}
+
+.swap_incompatible {
+  width: 100%;
+  min-height: 200px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swap_box_swap_wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -62px;
+  margin-bottom: 0;
+  width: 100%;
+}
+
+.swap_box_swap_wrapper h5 {
+  margin-top: 15px;
+  font-size: 15px;
+  font-weight: normal;
+}
+
+.swap_section a {
+  color: #1c4fa8;
+  text-decoration: none;
+}
+
+.swap_coin_stats {
+  display: flex;
+  flex-direction: row;
+  margin: 20px 0;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.swap_box_bottom .swap_coin_title {
+  margin-bottom: 0;
+}
+
+.swap_box_bottom .swap_coin_stats {
+  margin-top: -15px;
+  align-items: flex-end;
+}
+
+.swap_coin_stat:last-child {
+  text-align: right;
+}
+
+.swap_coin_stat h5 {
+  font-weight: normal;
+  font-size: 12px;
+}
+
+.swap_section a:hover {
+  color: #09aaf5;
+}
+
+.swap_head_tabs {
+  display: inline-flex;
+  flex-direction: row;
+  margin: 20px 0;
+}
+
+.swap_head_tabs > a {
+  display: block;
+  transition: all 0.15s ease-in-out;
+  text-transform: uppercase;
+  padding: 9px 30px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.01);
+  font-weight: 500;
+  font-size: 13px;
+  margin-left: -1px;
+}
+
+.swap_link {
+  color: #fff;
+  cursor: pointer;
+}
+
+.swap_link:hover {
+  text-decoration: underline;
+}
+
+.swap_box_receipts {
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.swap_box_transactions {
+  margin: 0 0 25px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.swap_box_receipt_head {
+  padding: 26px 20px 12px;
+}
+
+.swap_box_transaction {
+  padding: 15px 20px;
+  cursor: pointer;
+}
+
+.swap_contain {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.swap_contain > *:not(:last-child) {
+  margin-right: 12px;
+}
+
+.swap_box_transaction:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.swap_box_transaction:active {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.swap_box_transaction_txId {
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.swap_box_transaction_txType_deposit,
+.swap_box_transaction_txType_withdraw {
+  background: #048;
+  display: inline-flex;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.swap_box_transaction_amount {
+  font-weight: bold;
+  color: #ddf;
+}
+
+.swap_box_transaction_txType_withdraw {
+  background: #848;
+}
+
+.swap_head_tabs > a:hover {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.5);
+  color: #000;
+}
+
+.swap_head_tabs > a:active,
+.swap_head_tabs > a.swap_head_tab_active {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 3px 0 rgba(255, 255, 255, 0.9);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+  color: #fff;
+}
+
+.swap_head_tabs > a:first-child {
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  margin-left: 0;
+}
+
+.swap_head_tabs > a:last-child {
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.swap_connected_as {
+  font-size: 12px;
+  margin-top: auto;
+  margin-bottom: 10px;
+  padding: 10px 15px;
+  display: flex;
+  justify-content: center;
+  flex: 0 0 auto;
+  color: rgba(255, 255, 255, 0.5);
+  align-items: center;
+}
+
+.swap_disconnect {
+  display: inline-block;
+  font-size: 18px;
+  line-height: 12px;
+  margin-left: 6px;
+}
+
+.swap_disconnect > a {
+  display: inline-block;
+  margin-left: 2px;
+  font-size: 12px;
+  color: #69f;
+}
+
+.swap_disconnect > a:hover {
+  color: #09aaf5;
+}
+
+.swap_bubble_connected,
+.swap_bubble_disconnected {
+  width: 6px;
+  height: 6px;
+  border-radius: 6px;
+  background: #c00;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.swap_bubble_connected {
+  background: #0c0;
+}
+
+.swap_container {
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.swap_box {
+  width: 509px;
+  max-width: 90%;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 24px;
+  color: #94a2c9;
+  margin-bottom: 15px;
+}
+
+.swap_box_bottom,
+.swap_box_top {
+  padding: 30px;
+}
+
+.swap_box_top {
+  padding-bottom: 40px;
+}
+
+.swap_box_bottom {
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.swap_transfer_fee {
+  text-align: center;
+  margin-top: 30px;
+  margin-bottom: 20px;
+  color: rgba(185, 205, 255, 0.3);
+}
+
+.swap_coin_name {
+  font-size: 20px;
+  color: #fff;
+}
+
+.swap_coin_title {
+  margin-bottom: 24px;
+}
+
+.swap_coin_title h5 {
+  font-size: 12px;
+  margin: 10px 0 8px;
+}
+
+.swap_coin_details {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+
+.swap_coin_details .swap_coin_image {
+  margin-right: 8px;
+}
+
+.swap_coin_image img {
+  max-width: 100%;
+  height: 100%;
+  border-radius: 32px;
+}
+
+.swap_coin_image {
+  width: 32px;
+  height: 32px;
+  text-align: center;
+  overflow: hidden;
+  border-radius: 32px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px;
+}
+
