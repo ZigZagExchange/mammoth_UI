@@ -52,10 +52,11 @@ const SwapInputBox = styled.div`
 
 interface Props {
   value?: any;
-  onChange: (e:any)=>void;
+  onChange: (e:any, from: boolean)=>void;
   currencies?: string;
   balances?: any;
   className?: string;
+  from: boolean;
 }
 
 const SwapSwapInput = ({
@@ -64,13 +65,14 @@ const SwapSwapInput = ({
   currencies,
   balances = {},
   className,
+  from
 }: Props) => {
   const setCurrency = useCallback(
-    (currency) => onChange({ currency, amount: "" }),
+    (currency) => onChange({ currency, amount: "" }, from),
     [onChange]
   );
   const setAmount = useCallback(
-    (e) => onChange({ amount: e.target.value.replace(/[^0-9.]/g, "") }),
+    (e) => onChange({ amount: e.target.value.replace(/[^0-9.]/g, "") }, from),
     [onChange]
   );
 
@@ -80,7 +82,7 @@ const SwapSwapInput = ({
 
   const setMax = () => {
     if (maxBalance > 0) {
-      onChange({ amount: maxBalance || "" });
+      onChange({ amount: maxBalance || "" }, from);
     }
   };
 

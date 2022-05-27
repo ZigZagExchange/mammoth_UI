@@ -8,6 +8,9 @@ import {
   getSwapAmount,
   tokens,
   getTokeAllowance,
+  getPoolBalances,
+  getLiquidityBalances,
+  mintToken,
 } from "../../services/pool.service";
 import LoadingIndicator from "../../components/Indicator";
 import { waitForTransaction } from "../../services/wallet.service";
@@ -24,8 +27,9 @@ import { SwapButton } from "../../components/SwapButton";
 import SwapSwapInput from "../../components/SwapComponent/SwapSwapInput";
 import { Box } from "@mui/material";
 import { Modal } from "../../components/Modal";
-import DipositAndWithdrawComponent from "../../components/DepositAndWithdrawComponent";
+import DipositAndWithdrawComponent from "../../components/DipositAndWithdrawComponent";
 import MintDialogComponent from "../../components/MintDialogComponent";
+import _ from "lodash";
 
 
 const Swap = () => {
@@ -40,11 +44,6 @@ const Swap = () => {
   const [txMessage, changeTxMsg] = useState("Swap Complete");
   const [isTokenApproved, changeTokenApproved] = useState(false);
   const [failMsg, changeFailMsg] = useState("");
-
-  const [swapDetails, _setSwapDetails] = useState(() => ({
-    amount: "",
-    currency: "ETH",
-  }));
 
   const tokenApproval = useCallback(async () => {
     const res: BigNumber = await getTokeAllowance(tokenInIndex);
@@ -197,40 +196,108 @@ const Swap = () => {
 
   const [modal, setModal] = useState(false);
   const [mintModal, setMintModal] = useState(false);
+  const [swapDetails, _setSwapDetails] = useState(() => ({
+    amount: "",
+    currency: "USDC",
+  }));
 
-  const doTransfer = () => {}
+  const [toDetail, setToDetails] = useState(() => ({
+    amount: "",
+    currency: "ZZUSD",
+  }));
+
+  const [poolbalances, changeBalances] = useState([
+    BigNumber.from(0),
+    BigNumber.from(0),
+    BigNumber.from(0),
+  ]);
+  const [liquidityBalance, changeLiquidityBalance] = useState("");
+
+  useEffect(() => {
+    (async () => {
+      const res = await getPoolBalances();
+      const fpBalances = res.map((e: BigNumber) =>
+        toFloatingPoint(e.toString())
+      );
+      changeBalances(fpBalances);
+    })();
+
+    (async () => {
+      const res: BigNumber = await getLiquidityBalances();
+      const res2 = toFloatingPoint(res.toString());
+      changeLiquidityBalance(res2);
+    })();
+  }, []);
 
   const switchTransferType = (e: any) => {}
 
-  const setSwapDetails = (values: any) => {
-    const details = {
-      ...swapDetails,
-      ...values,
-    };
+  const setSwapDetails = async(values: any, from: boolean) => {
 
-    _setSwapDetails(details);
+    console.log("asdfadsfas",from)
+
+    if(from) {
+      const details = {
+        ...swapDetails,
+        ...values,
+      };
+      if(details.currency === toDetail.currency) {
+        setToDetails(swapDetails);
+      }
+      _setSwapDetails(details);
+    }
+    else{
+      const detail2 = {
+        ...toDetail,
+        ...values,
+      };
+      if(detail2.currency === swapDetails.currency) {
+        _setSwapDetails(toDetail);
+      }
+      setToDetails(detail2);
+    }
+
+    await predictSwapResult(swapAmount, swapAmountDecimal);
   }
-
-  // const openDipositWithdrawWindow = () => {
-  //   const content = <>
-  //     <Box></Box>
-  //   </>
-  // }
-
-  // const openMintWindow = () => {}
 
   return (
    <>
+    {isLoading ? (
+        <LoadingIndicator msg={loadingMsg} isLoading={true} />
+      ) : null}
+      {txComplete ? (
+        <LoadingIndicator
+          closeable={true}
+          msg={txMessage}
+          onClose={handleIndicatorClose}
+        />
+      ) : null}
+      {failMsg.length ? (
+        <LoadingIndicator
+          closeable={true}
+          msg={failMsg}
+          onClose={handleFailIndicatorClose}
+        />
+      ) : null}
+
+
       <Box display="flex" justifyContent={'center'} flexDirection="column" alignItems={'center'} pt="100px">
-        <Box display="flex" width={'auto'} mb="20px" justifyContent={'center'}>
-          <Box borderRadius={'24px'} bgcolor="rgba(0, 0, 0, 0.2)" borderColor="lightgrey" width="60%" p="20px" display="flex" justifyContent={'space-between'}>
+        <Box display="flex" width={'auto'} mb="20px" justifyContent={'center'} alignItems="center">
+          <Box borderRadius={'24px'} bgcolor="rgba(0, 0, 0, 0.2)" borderColor="lightgrey" width="70%" p="20px" display="flex" justifyContent={'space-between'}>
             <Box display='flex' flexDirection="column">
-              <Box>Total Token amount</Box>
-              <Box>$0.00</Box>
+              <Box mb="30px">Total Token amount</Box>
+              <Box textAlign={'center'}>{liquidityBalance.toString()}</Box>
             </Box>
-            <Box>Detailed balance report</Box>
+            <Box display="flex" flexDirection="column" >
+              <Box>Detailed balance report</Box>
+              {
+                _.map(poolbalances, (each: any, index)=>{
+                  return <Box display={'flex'} justifyContent='space-between'>{tokens[index].name} :&nbsp; <b>{each.toString()}</b>{" "}</Box>
+                })
+              }
+            </Box>
+            
           </Box>
-          <Box ml="10px" width="30%" display="flex" flexDirection="column" alignItems="center">
+          <Box ml="10px" width="25%" display="flex" flexDirection="column" alignItems="center">
             <Button className="bg_btn" text="MINT" onClick={()=>{setMintModal(true)}} />
             <Button className="bg_btn" text="Dipost/Withdraw" onClick={()=>{setModal(true)}} />
           </Box>
@@ -243,6 +310,7 @@ const Swap = () => {
             <SwapSwapInput
               // balances={balances}
               // currencies={currencies}
+              from={true}
               value={swapDetails}
               onChange={setSwapDetails}
             />
@@ -266,49 +334,40 @@ const Swap = () => {
             <SwapSwapInput
               // balances={balances}
               // currencies={currencies}
-              value={swapDetails}
+              from={false}
+              value={toDetail}
               onChange={setSwapDetails}
             />
 
             <div className="swap_button" style={{marginTop: '30px'}}>
-              {/* {!user.address && (
+              {(!isTokenApproved) && (
                 <Button
-                  className="bg_btn"
-                  text="CONNECT WALLET"
-                  img={darkPlugHead}
-                  onClick={() => {}}
-                />
-              )}
-              {user.address && hasError && (
-                <Button
-                  className="bg_btn zig_btn_disabled bg_err"
-                  text={formErr}
-                  icon={<BiError />}
-                />
-              )} */}
-              {/* {user.address && !hasError && ( */}
-                <Button
-                  // loading={loading}
+                  loading={isLoading}
                   className={cx("bg_btn", {
                     // zig_disabled:
                       // !hasAllowance || swapDetails.amount.length === 0,
                   })}
-                  text="ConnectWallet"
+                  text="Approve"
                   // icon={<MdSwapCalls />}
-                  onClick={doTransfer}
+                  onClick={handleApprove}
                 />
-              {/* )} */}
+              )}
+              {(isTokenApproved) && (
+                <Button
+                  loading={isLoading}
+                  className={cx("bg_btn", {
+                    // zig_disabled:
+                      // !hasAllowance || swapDetails.amount.length === 0,
+                  })}
+                  text="Swap"
+                  // icon={<MdSwapCalls />}
+                  onClick={handleSubmit}
+                />
+              )}
             </div>
           </div>
         </div>
       </Box>
-      {/* <Modal
-        title="Select a token to Swap"
-        onClose={() => setModal({open: false, content: null})}
-        show={modal.open}
-      >
-        {modal.content}
-      </Modal> */}
       <DipositAndWithdrawComponent
         open={modal}
         onClose={()=>{setModal(false)}}

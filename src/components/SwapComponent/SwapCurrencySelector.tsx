@@ -9,6 +9,7 @@ import { Modal } from "../Modal";
 import { formatUSD } from "../../libs/utils";
 // import api from "lib/api";
 import SearchBox from "../SearchBox/SearchBox";
+import CoinInfo from "../../libs/CoinInfo.json";
 import _ from "lodash"
 
 const StyledSwapCurrencySelector = styled.div`
@@ -125,6 +126,7 @@ const SwapCurrencySelector = ({
   // const network = useSelector(networkSelector);
   // const user = useSelector(userSelector);
   // const coinEstimator = useCoinEstimator();
+  const [image, setImage] = useState("");
 
   const [availableTickers, setTickers] = useState(['USDC', 'ZZUSDC', 'LUNA']);
 
@@ -137,21 +139,10 @@ const SwapCurrencySelector = ({
     setShowingOptions(false);
   };
 
-  const getCurrencyLogo = (currency: string) => {
-    try {
-      return require(`../../assets/images/currency/${currency}.svg`).default;
-    } catch (e) {
-      try {
-        return require(`../../assets/images/currency/${currency}.png`).default;
-      } catch (e) {
-        try {
-          return require(`../../assets/images/currency/${currency}.webp`).default;
-        } catch (e) {
-          return require(`../../assets/images/currency/YFI.svg`).default;
-        }
-      }
-    }
-  }
+  useEffect(()=>{
+    const val = _.find(CoinInfo, {"coin": value});
+    setImage(val?.url || "");
+  },[value])
 
   useEffect(() => {
     if (showingOptions) {
@@ -169,39 +160,20 @@ const SwapCurrencySelector = ({
 
   // const currency = api.getCurrencyInfo(value);
   const currency = {};
-  const image = getCurrencyLogo(value);
-
-  function searchPair(value: any) {
-    // value = value.toUpperCase();
-
-    // if (value !== "") {
-    //   var foundPairs = [];
-
-    //   //search tickers
-    //   tickers.forEach((ticker) => {
-    //     if (ticker.includes(value)) {
-    //       foundPairs.push(ticker);
-    //     }
-    //   });
-
-    //   //set tickers
-    //   setTickers(foundPairs);
-    // } else {
-    //   //reset
-    //   setTickers(api.getCurrencies());
-    // }
-  }
+  // const image = getCurrencyLogo(value);
 
   const selectOption = (ticker: any) => (e: any) => {
     if (e) e.preventDefault();
-    onChange(ticker);
+    onChange(ticker.coin);
+    console.log(ticker.url)
+    setImage(ticker.url);
   };
 
   return (
     <SwapCurrencyWrapper>
       <StyledSwapCurrencySelector onClick={() => setShow(true)}>
         <div className="currencyIcon">
-          <img src={image && image.default} alt={"img"} />
+          <img src={image} alt={"img"} />
         </div>
         <div className="currencyName">
           {value}
@@ -213,10 +185,9 @@ const SwapCurrencySelector = ({
         onClose={() => setShow(false)}
         show={show}
       >
-        <SearchBox searchPair={searchPair} className="bridge_searchbox" />
         <SwapCurrencyOptions onClick={() => setShow(false)}>
-          {_.map(availableTickers, (ticker, key) =>
-            ticker === value ? null : (
+          {_.map(CoinInfo, (ticker, key) =>
+            ticker.coin === value ? null : (
               <li
                 key={key}
                 onClick={selectOption(ticker)}
@@ -225,16 +196,14 @@ const SwapCurrencySelector = ({
               >
                 <div className="currencyIcon">
                   <img
-                    src={
-                      getCurrencyLogo(ticker)
-                    }
+                    src={ticker.url}
                     alt={"symbol"}
                   />
                 </div>
-                <div className="currencyName">{ticker}</div>
-                {balances[ticker] && (
+                <div className="currencyName">{ticker.coin}</div>
+                {balances[ticker.coin] && (
                   <div className="currencyBalance">
-                    <strong>{balances[ticker].valueReadable}</strong>
+                    <strong>{balances[ticker.coin].valueReadable}</strong>
                     <small>
                       $
                       {/* {formatUSD(

@@ -10,7 +10,7 @@ interface ButtonProps {
     icon?: any;
     style?: any;
     children?: any;
-    onClick: ()=>void;
+    onClick: (e:any)=>void;
 }
 
 export const Button = (props: ButtonProps) => {

@@ -1,30 +1,14 @@
 [
     {
-        "coin": "Wrapped UST",
+        "coin": "PONZI LUNA",
         "balance": "0.000",
         "portfolio": "0.0",
         "rate": "15.00",
         "earned": "0.00",
-        "url": "https://assets.coingecko.com/coins/images/15462/small/ust.png?1620910058"
+        "url": "https://s2.coinmarketcap.com/static/img/coins/64x64/4172.png"
     },
     {
-        "coin": "Binance USD",
-        "balance": "0.000",
-        "portfolio": "0.0",
-        "rate": "15.00",
-        "earned": "0.00",
-        "url": "https://assets.coingecko.com/coins/images/9576/small/BUSD.png?1568947766"
-    },
-    {
-        "coin": "Tether",
-        "balance": "0.000",
-        "portfolio": "0.0",
-        "rate": "15.00",
-        "earned": "0.00",
-        "url": "https://assets.coingecko.com/coins/images/325/small/Tether-logo.png?1598003707"
-    },
-    {
-        "coin": "USD Coin",
+        "coin": "USDC",
         "balance": "0.000",
         "portfolio": "0.0",
         "rate": "15.00",
@@ -32,15 +16,7 @@
         "url": "https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png?1547042389"
     },
     {
-        "coin": "DAI",
-        "balance": "0.000",
-        "portfolio": "0.0",
-        "rate": "15.00",
-        "earned": "0.00",
-        "url": "https://assets.coingecko.com/coins/images/9956/small/4943.png?1636636734"
-    },
-    {
-        "coin": "FRAX",
+        "coin": "ZZUSD",
         "balance": "0.000",
         "portfolio": "0.0",
         "rate": "15.00",
