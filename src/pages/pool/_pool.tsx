@@ -49,9 +49,6 @@ const Pool = () => {
     path = window.location.pathname.split("/")[2];
   }
 
-  const depositHeaderClasses = [path == "deposit" ? styles.activetab : ""];
-  const withdrawHeaderClasses = [path == "withdraw" ? styles.activetab : ""];
-  const swapHeaderClasses = [path == "swap" ? styles.activetab : ""];
   return (
     <div>
       <div className={styles.row}>
@@ -110,27 +107,6 @@ const Pool = () => {
             </button>
           </div>
         </div>
-      </div>
-      <div className={styles.row}>
-        <table id="navigation options">
-          <tr>
-            <th className={depositHeaderClasses.join(" ")}>
-              <Link href={`/pool/deposit`} passHref={true}>
-                Deposit
-              </Link>
-            </th>
-            <th className={withdrawHeaderClasses.join(" ")}>
-              <Link href={`/pool/withdraw`} passHref={true}>
-                Withdraw
-              </Link>
-            </th>
-            <th className={swapHeaderClasses.join(" ")}>
-              <Link href={`/pool/swap`} passHref={true}>
-                Swap
-              </Link>
-            </th>
-          </tr>
-        </table>
       </div>
     </div>
   );

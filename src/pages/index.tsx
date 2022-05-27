@@ -57,7 +57,7 @@ const Home: NextPage = () => {
             </h3>
             <div>
               Wallet Connected
-              <Link href={`/pool/deposit`}>
+              <Link href={`/pool/swap`}>
                 <a>continue to the pool</a>
               </Link>
             </div>
