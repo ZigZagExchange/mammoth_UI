@@ -89,7 +89,7 @@ export const getTokeAllowance = async (tokenIndex: number) => {
   if (starknet.isConnected === false)
     throw Error("starknet wallet not connected");
 
-  const res = await starknet.signer.callContract({
+  const res = await starknet.signer?.callContract({
     contract_address: tokens[tokenIndex].address,
     entry_point_selector: allowanceERC20Selector,
     calldata: compileCalldata({
@@ -99,8 +99,8 @@ export const getTokeAllowance = async (tokenIndex: number) => {
   });
 
   return uint256.uint256ToBN({
-    low: res.result[0],
-    high: res.result[1],
+    low: res?.result[0],
+    high: res?.result[1],
   });
 };
 

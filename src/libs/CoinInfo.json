@@ -1,0 +1,51 @@
+[
+    {
+        "coin": "Wrapped UST",
+        "balance": "0.000",
+        "portfolio": "0.0",
+        "rate": "15.00",
+        "earned": "0.00",
+        "url": "https://assets.coingecko.com/coins/images/15462/small/ust.png?1620910058"
+    },
+    {
+        "coin": "Binance USD",
+        "balance": "0.000",
+        "portfolio": "0.0",
+        "rate": "15.00",
+        "earned": "0.00",
+        "url": "https://assets.coingecko.com/coins/images/9576/small/BUSD.png?1568947766"
+    },
+    {
+        "coin": "Tether",
+        "balance": "0.000",
+        "portfolio": "0.0",
+        "rate": "15.00",
+        "earned": "0.00",
+        "url": "https://assets.coingecko.com/coins/images/325/small/Tether-logo.png?1598003707"
+    },
+    {
+        "coin": "USD Coin",
+        "balance": "0.000",
+        "portfolio": "0.0",
+        "rate": "15.00",
+        "earned": "0.00",
+        "url": "https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png?1547042389"
+    },
+    {
+        "coin": "DAI",
+        "balance": "0.000",
+        "portfolio": "0.0",
+        "rate": "15.00",
+        "earned": "0.00",
+        "url": "https://assets.coingecko.com/coins/images/9956/small/4943.png?1636636734"
+    },
+    {
+        "coin": "FRAX",
+        "balance": "0.000",
+        "portfolio": "0.0",
+        "rate": "15.00",
+        "earned": "0.00",
+        "url": "https://assets.coingecko.com/coins/images/13422/small/frax_logo.png?1608476506"
+    }
+    
+]

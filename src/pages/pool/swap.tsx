@@ -16,6 +16,17 @@ import {
   padDecimal,
   toFloatingPoint,
 } from "../../core/floating-point";
+import { Button } from "../../components/Button/Button";
+import cx from "classnames";
+// import { BiError } from "react-icons/bi";
+// import { MdSwapCalls } from "react-icons/md";
+import { SwapButton } from "../../components/SwapButton";
+import SwapSwapInput from "../../components/SwapComponent/SwapSwapInput";
+import { Box } from "@mui/material";
+import { Modal } from "../../components/Modal";
+import DipositAndWithdrawComponent from "../../components/DepositAndWithdrawComponent";
+import MintDialogComponent from "../../components/MintDialogComponent";
+
 
 const Swap = () => {
   const [swapAmount, changeAmount] = useState("0");
@@ -29,6 +40,11 @@ const Swap = () => {
   const [txMessage, changeTxMsg] = useState("Swap Complete");
   const [isTokenApproved, changeTokenApproved] = useState(false);
   const [failMsg, changeFailMsg] = useState("");
+
+  const [swapDetails, _setSwapDetails] = useState(() => ({
+    amount: "",
+    currency: "ETH",
+  }));
 
   const tokenApproval = useCallback(async () => {
     const res: BigNumber = await getTokeAllowance(tokenInIndex);
@@ -179,78 +195,129 @@ const Swap = () => {
     return swapAmount;
   };
 
+  const [modal, setModal] = useState(false);
+  const [mintModal, setMintModal] = useState(false);
+
+  const doTransfer = () => {}
+
+  const switchTransferType = (e: any) => {}
+
+  const setSwapDetails = (values: any) => {
+    const details = {
+      ...swapDetails,
+      ...values,
+    };
+
+    _setSwapDetails(details);
+  }
+
+  // const openDipositWithdrawWindow = () => {
+  //   const content = <>
+  //     <Box></Box>
+  //   </>
+  // }
+
+  // const openMintWindow = () => {}
+
   return (
-    <div>
-      {isLoading ? (
-        <LoadingIndicator msg={loadingMsg} isLoading={true} />
-      ) : null}
-      {txComplete ? (
-        <LoadingIndicator
-          closeable={true}
-          msg={txMessage}
-          onClose={handleIndicatorClose}
-        />
-      ) : null}
-      {failMsg.length ? (
-        <LoadingIndicator
-          closeable={true}
-          msg={failMsg}
-          onClose={handleFailIndicatorClose}
-        />
-      ) : null}
-      <Pool />
-      <div className={styles.row}>
-        <div className={styles.transactionPart}>
-          <select
-            value={tokenInIndex.toString()}
-            onChange={handleTokenInSelect}
-          >
-            <option value="0">FantieCoin</option>
-            <option value="1">testUSDC</option>
-            <option value="2">testETH</option>
-          </select>
+   <>
+      <Box display="flex" justifyContent={'center'} flexDirection="column" alignItems={'center'} pt="100px">
+        <Box display="flex" width={'auto'} mb="20px" justifyContent={'center'}>
+          <Box borderRadius={'24px'} bgcolor="rgba(0, 0, 0, 0.2)" borderColor="lightgrey" width="60%" p="20px" display="flex" justifyContent={'space-between'}>
+            <Box display='flex' flexDirection="column">
+              <Box>Total Token amount</Box>
+              <Box>$0.00</Box>
+            </Box>
+            <Box>Detailed balance report</Box>
+          </Box>
+          <Box ml="10px" width="30%" display="flex" flexDirection="column" alignItems="center">
+            <Button className="bg_btn" text="MINT" onClick={()=>{setMintModal(true)}} />
+            <Button className="bg_btn" text="Dipost/Withdraw" onClick={()=>{setModal(true)}} />
+          </Box>
+        </Box> 
+        <div className="swap_box">
+          <div className="swap_box_top">
+            <div className="swap_coin_title">
+              <h5>FROM</h5>
+            </div>
+            <SwapSwapInput
+              // balances={balances}
+              // currencies={currencies}
+              value={swapDetails}
+              onChange={setSwapDetails}
+            />
+          </div>
 
-          <input
-            onChange={handleInputChange}
-            className={styles.textbox}
-            name="amount"
-            aria-label="Set increment amount"
-            value={getFPString()}
-            type="number"
-          />
-        </div>
-      </div>
+          <div className="swap_box_bottom">
+            <div className="swap_box_swap_wrapper">
+              <SwapButton onClick={switchTransferType} />
+              <h5>Switch</h5>
+            </div>
 
-      <div className={styles.row}>
-        <div className={styles.transactionPart}>
-          <span className={styles.textspan}>Receive</span>
-          <select
-            value={tokenOutIndex.toString()}
-            onChange={handleTokenOutSelect}
-          >
-            <option value="0">FantieCoin</option>
-            <option value="1">testUSDC</option>
-            <option value="2">testETH</option>
-          </select>
+            <div className="swap_coin_stats">
+              <div className="swap_coin_stat">
+                <div className="swap_coin_details">
+                  <div className="swap_coin_title">
+                    <h5>TO</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <SwapSwapInput
+              // balances={balances}
+              // currencies={currencies}
+              value={swapDetails}
+              onChange={setSwapDetails}
+            />
 
-          <div className={styles.Receivebox} aria-label="Set increment amount">
-            {LPAmount.toString()}
-            <span className={styles.textspangrey}>
-              {tokens[tokenOutIndex].symbol}
-            </span>
+            <div className="swap_button" style={{marginTop: '30px'}}>
+              {/* {!user.address && (
+                <Button
+                  className="bg_btn"
+                  text="CONNECT WALLET"
+                  img={darkPlugHead}
+                  onClick={() => {}}
+                />
+              )}
+              {user.address && hasError && (
+                <Button
+                  className="bg_btn zig_btn_disabled bg_err"
+                  text={formErr}
+                  icon={<BiError />}
+                />
+              )} */}
+              {/* {user.address && !hasError && ( */}
+                <Button
+                  // loading={loading}
+                  className={cx("bg_btn", {
+                    // zig_disabled:
+                      // !hasAllowance || swapDetails.amount.length === 0,
+                  })}
+                  text="ConnectWallet"
+                  // icon={<MdSwapCalls />}
+                  onClick={doTransfer}
+                />
+              {/* )} */}
+            </div>
           </div>
         </div>
-      </div>
-
-      <div className={styles.row}>
-        <button disabled={isTokenApproved} onClick={handleApprove}>
-          Approve
-        </button>
-        <button disabled={isLoading || !isTokenApproved} onClick={handleSubmit}>
-          Swap
-        </button>
-      </div>
-    </div>
+      </Box>
+      {/* <Modal
+        title="Select a token to Swap"
+        onClose={() => setModal({open: false, content: null})}
+        show={modal.open}
+      >
+        {modal.content}
+      </Modal> */}
+      <DipositAndWithdrawComponent
+        open={modal}
+        onClose={()=>{setModal(false)}}
+      />
+      <MintDialogComponent
+        open={mintModal}
+        onClose={()=>{setMintModal(false)}}
+      />
+    </> 
   );
 };
 
