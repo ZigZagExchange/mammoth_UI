@@ -13,6 +13,9 @@ const SwapInputBox = styled.div`
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 0px 22px -5px black inset;
+  color: white;
 
   input,
   input:focus {
@@ -31,7 +34,7 @@ const SwapInputBox = styled.div`
 
   .maxLink {
     position: absolute;
-    color: #69f;
+    color: #05cbea;
     top: -58px;
     right: 0;
     padding: 6px 12px;
