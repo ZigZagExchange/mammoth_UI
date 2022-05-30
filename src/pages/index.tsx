@@ -42,7 +42,7 @@ const Home: NextPage = () => {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Argent x StarkNet test dapp</title>
+        <title>StarkNet test dapp</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

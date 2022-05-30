@@ -1,4 +1,4 @@
-import { getStarknet } from "@argent/get-starknet";
+import { getStarknet } from "get-starknet";
 import { compileCalldata, number, stark, uint256 } from "starknet";
 import { BigNumber, BigNumberish, FixedNumber, utils } from "ethers";
 import { waitForTransaction } from "./wallet.service";
