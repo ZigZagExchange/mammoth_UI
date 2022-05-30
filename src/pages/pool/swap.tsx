@@ -281,8 +281,8 @@ const Swap = () => {
 
 
       <Box display="flex" justifyContent={'center'} flexDirection="column" alignItems={'center'} pt="100px">
-        <Box display="flex" width={'auto'} mb="20px" justifyContent={'center'} alignItems="center">
-          <Box borderRadius={'24px'} bgcolor="rgba(0, 0, 0, 0.2)" borderColor="lightgrey" width="70%" p="20px" display="flex" justifyContent={'space-between'}>
+        <Box display="flex" width={'auto'} mb="50px" justifyContent={'center'} alignItems="center">
+          <Box borderRadius={'24px'} boxShadow={'5px 5px 20px 2px #141414, 2px 2px 7px 0px #424242, -5px -5px 20px 2px #4a4a4a, -2px -2px 7px 0px #626262'} bgcolor="rgba(0, 0, 0, 0.2)" borderColor="lightgrey" width="70%" p="20px" display="flex" justifyContent={'space-between'}>
             <Box display='flex' flexDirection="column">
               <Box mb="30px">Total Token amount</Box>
               <Box textAlign={'center'}>{liquidityBalance.toString()}</Box>
@@ -291,15 +291,15 @@ const Swap = () => {
               <Box>Detailed balance report</Box>
               {
                 _.map(poolbalances, (each: any, index)=>{
-                  return <Box display={'flex'} justifyContent='space-between'>{tokens[index].name} :&nbsp; <b>{each.toString()}</b>{" "}</Box>
+                  return <Box display={'flex'} key={index} justifyContent='space-between'>{tokens[index].name} :&nbsp; <b>{each.toString()}</b>{" "}</Box>
                 })
               }
             </Box>
             
           </Box>
-          <Box ml="10px" width="25%" display="flex" flexDirection="column" alignItems="center">
-            <Button className="bg_btn" text="MINT" onClick={()=>{setMintModal(true)}} />
-            <Button className="bg_btn" text="Dipost/Withdraw" onClick={()=>{setModal(true)}} />
+          <Box ml="35px" width="25%" display="flex" flexDirection="column" alignItems="center">
+            <Button className="bg_btn" style={{borderRadius: '20px'}} text="MINT" onClick={()=>{setMintModal(true)}} />
+            <Button className="bg_btn" style={{borderRadius: '20px'}} text="Dipost/Withdraw" onClick={()=>{setModal(true)}} />
           </Box>
         </Box> 
         <div className="swap_box">
@@ -319,7 +319,6 @@ const Swap = () => {
           <div className="swap_box_bottom">
             <div className="swap_box_swap_wrapper">
               <SwapButton onClick={switchTransferType} />
-              <h5>Switch</h5>
             </div>
 
             <div className="swap_coin_stats">
@@ -347,6 +346,7 @@ const Swap = () => {
                     // zig_disabled:
                       // !hasAllowance || swapDetails.amount.length === 0,
                   })}
+                  style={{height: '50px', fontSize: '18px'}}
                   text="Approve"
                   // icon={<MdSwapCalls />}
                   onClick={handleApprove}

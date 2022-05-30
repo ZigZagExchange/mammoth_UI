@@ -27,7 +27,7 @@ const StyledSwapButton = styled.button`
 export const SwapButton = (props: any) => {
   return (
     <StyledSwapButton type="button" className="swap_button" {...props}>
-      <FaSync color="black" />
+      <FaSync color="white" />
     </StyledSwapButton>
   );
 };

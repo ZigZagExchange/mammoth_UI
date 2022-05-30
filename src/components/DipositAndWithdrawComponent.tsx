@@ -104,9 +104,9 @@ const StyledListbox = styled('ul')(
     font-size: 0.875rem;
     box-sizing: border-box;
     
-    padding: 5px;
-    margin: 10px 0;
-    min-width: 320px;
+    padding: 1px;
+    margin: 0px 0;
+    min-width: 370px;
     max-height: 400px;
     background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
     border: 1px solid ${theme.palette.mode === 'dark' ? grey[800] : grey[300]};
@@ -182,7 +182,7 @@ const CustomInput = styled((props: any) => <input {...props} />)`
     border: none;
     height: 1.8vw;
     font-size: 1vw;
-    background: #232735;
+    background: #292929;
     color: white;
     &:focus-visible{
         outline: none;
@@ -413,12 +413,16 @@ export default function DipositAndWithdrawComponent(props: DipositDialogProps) {
                 onClose={handleClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
+                style={{backdropFilter: 'blur(2px)'}}
                 PaperProps={{
                     style: {
-                      background: '#232735',
-                      borderRadius: '0 0 6px 6px',
+                      background: '#292929',
+                      borderRadius: '6px',
                       overflow: 'auto',
-                      fontSize: '0.8rem'
+                      fontSize: '0.8rem',
+                      minWidth: '500px',
+                      paddingLeft: '20px',
+                      paddingRight: '20px',
                     },
                   }}
             >
@@ -439,9 +443,9 @@ export default function DipositAndWithdrawComponent(props: DipositDialogProps) {
                     onClose={handleFailIndicatorClose}
                     />
                 ) : null}
-                <Box display="flex" justifyContent={'space-around'} mt="20px">
-                    <Box width="40%" onClick={()=>{setDeposit(true)}} textAlign="center" p="10px" bgcolor={isDeposit ? '#09aaf5': ''} color={'white'} borderRadius="8px" border={'1px #09aaf5 solid'}>Deposit</Box>
-                    <Box width="40%" onClick={()=>{setDeposit(false)}} textAlign="center" p="10px" bgcolor={!isDeposit ? '#09aaf5': ''} color={'white'} borderRadius="8px" border={'1px #09aaf5 solid'}>Withdraw</Box>
+                <Box display="flex" justifyContent={'space-around'} mt="50px">
+                    <Box width="40%" onClick={()=>{setDeposit(true)}} textAlign="center" p="10px" bgcolor={isDeposit ? '#09aaf5': ''} color={'white'} borderRadius="5px" border={'1px #09aaf5 solid'} style={{cursor: 'pointer'}}>Deposit</Box>
+                    <Box width="40%" onClick={()=>{setDeposit(false)}} textAlign="center" p="10px" bgcolor={!isDeposit ? '#09aaf5': ''} color={'white'} borderRadius="5px" border={'1px #09aaf5 solid'} style={{cursor: 'pointer'}}>Withdraw</Box>
                 </Box>
                 <Box fontSize="2vw" fontWeight="500" mt="2vw" px="2vw" pt="1vw" color="white">{isDeposit ? 'Deposit' : 'Withdraw'}</Box>
                 <Box display="flex" flexDirection="column" px="2vw" pt="2vw" pb="4vw">
@@ -476,7 +480,7 @@ export default function DipositAndWithdrawComponent(props: DipositDialogProps) {
                                 fullWidth 
                                 variant="outlined" 
                                 onClick={handleApprove} 
-                                sx={{ borderRadius: '8px', height: '80%', textTransform: 'none' }}
+                                sx={{ borderRadius: '5px', height: '80%', textTransform: 'none' }}
                                 // disabled={!checked || amount===0 || balance ===0}
                             >{'Approve'}</Button>}
                             {isDeposit && isTokenApproved && <Button 
@@ -485,7 +489,7 @@ export default function DipositAndWithdrawComponent(props: DipositDialogProps) {
                                 fullWidth 
                                 variant="outlined" 
                                 onClick={handleSubmit} 
-                                sx={{ borderRadius: '8px', height: '80%', textTransform: 'none' }}
+                                sx={{ borderRadius: '5px', height: '80%', textTransform: 'none' }}
                             >{'Deposit'}</Button>}
                             {!isDeposit && <Button 
                                 disabled={isLoading}
@@ -493,11 +497,11 @@ export default function DipositAndWithdrawComponent(props: DipositDialogProps) {
                                 fullWidth 
                                 variant="outlined" 
                                 onClick={Withdraw} 
-                                sx={{ borderRadius: '8px', height: '80%', textTransform: 'none' }}
+                                sx={{ borderRadius: '5px', height: '80%', textTransform: 'none' }}
                             >{'Withdraw'}</Button>}
                         </Box>
                         <Box color="orangered" width="100%" height="100%">
-                            <Button color="inherit" fullWidth variant="outlined" onClick={handleClose} sx={{ borderRadius: '8px', height: '80%', textTransform: 'none' }}>Cancel</Button>
+                            <Button color="inherit" fullWidth variant="outlined" onClick={handleClose} sx={{ borderRadius: '5px', height: '80%', textTransform: 'none' }}>Cancel</Button>
                         </Box>
                     </Box>
                 </Box>

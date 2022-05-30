@@ -52,19 +52,20 @@ export default function MintDialogComponent(props: DipositDialogProps) {
                 onClose={handleClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
+                style={{backdropFilter: 'blur(2px)'}}
                 PaperProps={{
                     style: {
-                      background: '#232735',
-                      borderRadius: '0 0 6px 6px',
+                      background: '#292929',
+                      borderRadius: '6px    ',
                       overflow: 'auto',
-                      fontSize: '0.8rem'
+                      fontSize: '0.8rem',
                     },
                   }}
             >
                 <Box fontSize="2vw" color="white" fontWeight="500" mt="2vw" px="2vw" pt="1vw">{'Mint'}</Box>
-                <Box display="flex" flexDirection="column" px="2vw" pt="2vw" pb="4vw">
+                <Box display="flex" flexDirection="column" px="2vw" pb="2vw">
 
-                    <Box display="flex" mt="2vw" alignItems="flex-start" flexDirection="column" width="400px">
+                    <Box display="flex" alignItems="flex-start" flexDirection="column" width="400px">
                         {
                             CoinInfo.map((c, key: number) => (
                                 <Box display="flex" alignItems="center" width="100%" mb="10px" p="20px" key={key} justifyContent='space-between'>
