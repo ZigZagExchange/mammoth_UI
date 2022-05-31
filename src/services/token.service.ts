@@ -1,4 +1,4 @@
-import { getStarknet } from "@argent/get-starknet";
+import { getStarknet } from "get-starknet";
 import { utils } from "ethers";
 import { compileCalldata, number, stark, uint256 } from "starknet";
 
