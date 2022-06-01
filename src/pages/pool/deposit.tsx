@@ -10,16 +10,9 @@ import {
   tokens,
 } from "../../services/pool.service";
 import LoadingIndicator from "../../components/Indicator";
-import {
-  decimalToBN,
-  padDecimal,
-  toFloatingPoint,
-} from "../../core/floating-point";
 
 const Deposit = () => {
-  const [depositAmount, changeAmount] = useState("0");
-  const [depositAmountDecimal, changeAmountDecimal] = useState("");
-
+  const [depositAmount, changeAmount] = useState(0);
   const [LPAmount, changeLPAmount] = useState("0");
   const [tokenIndex, changeIndex] = useState(0);
   const [isLoading, changeIsLoading] = useState(false);
@@ -44,40 +37,21 @@ const Deposit = () => {
     })();
   });
 
-  const predictDepositResult = async (number: string, decimal: string) => {
-    const total = BigNumber.from(number).mul(10000).add(decimalToBN(decimal));
-    const amount = await getDepositERC20Amount(tokenIndex, total.toString());
-    changeLPAmount(toFloatingPoint(amount.toString()));
+  const predictDepositResult = async (amount: number) => {
+    const result = await getDepositERC20Amount(tokenIndex, amount);
+    changeLPAmount(result);
   };
 
   const handleInputChange = async (e: any) => {
     e.preventDefault();
-    const val = e.target.value;
-    const parts = val.split(".");
+    let val = e.target.value;
 
-    const hasDecmial = depositAmountDecimal.length;
-
-    if (val.length > 0) {
-      let newNumber = "0";
-      if (parts[0].length) {
-        newNumber = parts[0];
-      }
-      changeAmount(newNumber);
-
-      let newDecimal = "";
-
-      if (parts[1]?.length) {
-        newDecimal = parts[1].substring(0, 4);
-      } else if (parts[1] === undefined && hasDecmial) {
-        newDecimal = "";
-      }
-      changeAmountDecimal(newDecimal);
-
-      await predictDepositResult(newNumber, newDecimal);
-    } else {
-      changeAmount("0");
-      changeAmountDecimal("");
+    if (typeof val === "string") {
+      val = parseFloat(val.replace(",", "."));
     }
+    val = Number.isNaN(val) ? 0 : val;
+    changeAmount(val);
+    await predictDepositResult(val);
   };
 
   const handleTokenSelect = async (e: any) => {
@@ -85,7 +59,7 @@ const Deposit = () => {
     const val = e.target.value;
     //await tokenApproval();
     changeIndex(parseInt(val));
-    await predictDepositResult(depositAmount, depositAmountDecimal);
+    await predictDepositResult(depositAmount);
   };
 
   const handleSubmit = async (e: any) => {
@@ -96,7 +70,7 @@ const Deposit = () => {
     let success = true;
     try {
       await depositPool(
-        depositAmount + padDecimal(depositAmountDecimal),
+        depositAmount,
         tokenIndex
       );
     } catch (e) {
@@ -141,13 +115,6 @@ const Deposit = () => {
     changeFailMsg("");
   };
 
-  const getFPString = () => {
-    if (depositAmountDecimal.length > 0) {
-      return depositAmount + "." + depositAmountDecimal;
-    }
-    return depositAmount;
-  };
-
   return (
     <div>
       {isLoading ? (
@@ -180,7 +147,7 @@ const Deposit = () => {
             className={styles.textbox}
             name="amount"
             aria-label="Set increment amount"
-            value={getFPString()}
+            value={depositAmount}
             type="number"
           />
         </div>

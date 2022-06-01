@@ -1,6 +1,4 @@
 import { getStarknet } from "get-starknet";
-import { shortString } from "starknet";
-
 import { Network } from "./token.service";
 
 export const isWalletConnected = (): boolean => !!getStarknet()?.isConnected;

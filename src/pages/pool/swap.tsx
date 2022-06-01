@@ -12,28 +12,19 @@ import {
   getLiquidityBalances
 } from "../../services/pool.service";
 import LoadingIndicator from "../../components/Indicator";
-import {
-  decimalToBN,
-  padDecimal,
-  toFloatingPoint,
-} from "../../core/floating-point";
 import { Button } from "../../components/Button/Button";
 import cx from "classnames";
-// import { BiError } from "react-icons/bi";
-// import { MdSwapCalls } from "react-icons/md";
 import { SwapButton } from "../../components/SwapButton";
 import SwapSwapInput from "../../components/SwapComponent/SwapSwapInput";
 import { Box } from "@mui/material";
-import { Modal } from "../../components/Modal";
 import DipositAndWithdrawComponent from "../../components/DipositAndWithdrawComponent";
 import MintDialogComponent from "../../components/MintDialogComponent";
 import _ from "lodash";
 
 
 const Swap = () => {
-  const [swapAmount, changeAmount] = useState("0");
-  const [swapAmountDecimal, changeAmountDecimal] = useState("");
-  const [LPAmount, changeLPAmount] = useState("0");
+  const [swapAmount, changeAmount] = useState(0);
+  const [LPAmount, changeLPAmount] = useState('0');
   const [tokenInIndex, changeIndexIn] = useState(0);
   const [tokenOutIndex, changeIndexOut] = useState(1);
   const [isLoading, changeIsLoading] = useState(false);
@@ -42,6 +33,8 @@ const Swap = () => {
   const [txMessage, changeTxMsg] = useState("Swap Complete");
   const [isTokenApproved, changeTokenApproved] = useState(false);
   const [failMsg, changeFailMsg] = useState("");
+  const [poolbalances, changeBalances] = useState(['0', '0', '0']);
+  const [liquidityBalance, changeLiquidityBalance] = useState('0');
 
   const tokenApproval = useCallback(async () => {
     const res: BigNumber = await getTokeAllowance(tokenInIndex);
@@ -58,44 +51,25 @@ const Swap = () => {
     })();
   });
 
-  const predictSwapResult = async (number: string, decimal: string) => {
-    const total = BigNumber.from(number).mul(10000).add(decimalToBN(decimal));
-    const amount = await getSwapAmount(
+  const predictSwapResult = async (amount: number) => {
+    const result = await getSwapAmount(
       tokenInIndex,
       tokenOutIndex,
-      total.toString()
+      amount
     );
-    changeLPAmount(toFloatingPoint(amount.toString()));
+    changeLPAmount(result);
   };
 
   const handleInputChange = async (e: any) => {
     e.preventDefault();
-    const val = e.target.value;
-    const parts = val.split(".");
+    let val = e.target.value;
 
-    const hasDecmial = swapAmountDecimal.length;
-
-    if (val.length > 0) {
-      let newNumber = "0";
-      if (parts[0].length) {
-        newNumber = parts[0];
-      }
-      changeAmount(newNumber);
-
-      let newDecimal = "";
-
-      if (parts[1]?.length) {
-        newDecimal = parts[1].substring(0, 4);
-      } else if (parts[1] === undefined && hasDecmial) {
-        newDecimal = "";
-      }
-      changeAmountDecimal(newDecimal);
-
-      await predictSwapResult(newNumber, newDecimal);
-    } else {
-      changeAmount("0");
-      changeAmountDecimal("");
+    if (typeof val === "string") {
+      val = parseFloat(val.replace(",", "."));
     }
+    val = Number.isNaN(val) ? 0 : val;
+    changeAmount(val);
+    await predictSwapResult(val);
   };
 
   const handleTokenInSelect = async (e: any) => {
@@ -111,7 +85,7 @@ const Swap = () => {
       changeIndexIn(val);
     }
 
-    await predictSwapResult(swapAmount, swapAmountDecimal);
+    await predictSwapResult(swapAmount);
   };
 
   const handleTokenOutSelect = async (e: any) => {
@@ -126,7 +100,7 @@ const Swap = () => {
     } else {
       changeIndexOut(val);
     }
-    await predictSwapResult(swapAmount, swapAmountDecimal);
+    await predictSwapResult(swapAmount);
   };
 
   const handleSubmit = async (e: any) => {
@@ -141,7 +115,7 @@ const Swap = () => {
     let success = true;
     try {
       await swapPool(
-        swapAmount + padDecimal(swapAmountDecimal),
+        swapAmount,
         tokenInIndex,
         tokenOutIndex
       );
@@ -184,13 +158,6 @@ const Swap = () => {
     changeFailMsg("");
   };
 
-  const getFPString = () => {
-    if (swapAmountDecimal.length > 0) {
-      return swapAmount + "." + swapAmountDecimal;
-    }
-    return swapAmount;
-  };
-
   const [modal, setModal] = useState(false);
   const [mintModal, setMintModal] = useState(false);
   const [swapDetails, _setSwapDetails] = useState(() => ({
@@ -203,26 +170,15 @@ const Swap = () => {
     currency: "ZZUSD",
   }));
 
-  const [poolbalances, changeBalances] = useState([
-    BigNumber.from(0),
-    BigNumber.from(0),
-    BigNumber.from(0),
-  ]);
-  const [liquidityBalance, changeLiquidityBalance] = useState("");
-
   useEffect(() => {
     (async () => {
-      const res = await getPoolBalances();
-      const fpBalances = res.map((e: BigNumber) =>
-        toFloatingPoint(e.toString())
-      );
-      changeBalances(fpBalances);
+      const res: string[] = await getPoolBalances();
+      changeBalances(res);
     })();
 
     (async () => {
-      const res: BigNumber = await getLiquidityBalances();
-      const res2 = toFloatingPoint(res.toString());
-      changeLiquidityBalance(res2);
+      const res: string = await getLiquidityBalances();
+      changeLiquidityBalance(res);
     })();
   }, []);
 
@@ -253,7 +209,7 @@ const Swap = () => {
       setToDetails(detail2);
     }
 
-    await predictSwapResult(swapAmount, swapAmountDecimal);
+    await predictSwapResult(swapAmount);
   }
 
   return (
@@ -282,13 +238,13 @@ const Swap = () => {
           <Box borderRadius={'24px'} boxShadow={'5px 5px 20px 2px #141414, 2px 2px 7px 0px #424242, -5px -5px 20px 2px #4a4a4a, -2px -2px 7px 0px #626262'} bgcolor="rgba(0, 0, 0, 0.2)" borderColor="lightgrey" width="70%" p="20px" display="flex" justifyContent={'space-between'}>
             <Box display='flex' flexDirection="column">
               <Box mb="30px">Total Token amount</Box>
-              <Box textAlign={'center'}>{liquidityBalance.toString()}</Box>
+              <Box textAlign={'center'}>{liquidityBalance}</Box>
             </Box>
             <Box display="flex" flexDirection="column" >
               <Box>Detailed balance report</Box>
               {
                 _.map(poolbalances, (each: any, index)=>{
-                  return <Box display={'flex'} key={index} justifyContent='space-between'>{tokens[index].name} :&nbsp; <b>{each.toString()}</b>{" "}</Box>
+                  return <Box display={'flex'} key={index} justifyContent='space-between'>{tokens[index].name} :&nbsp; <b>{each}</b>{" "}</Box>
                 })
               }
             </Box>
