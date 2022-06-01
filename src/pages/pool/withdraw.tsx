@@ -3,13 +3,11 @@ import styles from "../../styles/Pool.module.css";
 import React, { useCallback, useEffect, useState } from "react";
 import { BigNumber } from "ethers";
 import {
-  approveToken,
   withdrawPool,
   getWithdrawERC20Amount,
   tokens,
 } from "../../services/pool.service";
 import LoadingIndicator from "../../components/Indicator";
-import { waitForTransaction } from "../../services/wallet.service";
 import {
   decimalToBN,
   padDecimal,
@@ -74,12 +72,12 @@ const Withdraw = () => {
     changeIsLoading(true);
     let success = true;
     try {
-      const tx = await withdrawPool(
+      await withdrawPool(
         withdrawAmount + padDecimal(withdrawAmountDecimal),
         tokenIndex
       );
-      await waitForTransaction(tx.transaction_hash);
-    } catch (e) {
+    } catch (e) {      
+      console.log(e)
       success = false;
       changeFailMsg("Withdraw failed");
     }
