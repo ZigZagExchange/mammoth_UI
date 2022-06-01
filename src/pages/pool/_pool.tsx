@@ -9,30 +9,21 @@ import {
 } from "../../services/pool.service";
 import Image from "next/image";
 import styles from "../../styles/Pool.module.css";
-import { toFloatingPoint } from "../../core/floating-point";
 
 const Pool = () => {
-  const [poolbalances, changeBalances] = useState([
-    BigNumber.from(0),
-    BigNumber.from(0),
-    BigNumber.from(0),
-  ]);
+  const [poolbalances, changeBalances] = useState(['0', '0', '0']);
 
   const [liquidityBalance, changeLiquidityBalance] = useState("");
 
   useEffect(() => {
     (async () => {
-      const res = await getPoolBalances();
-      const fpBalances = res.map((e: BigNumber) =>
-        toFloatingPoint(e.toString())
-      );
-      changeBalances(fpBalances);
+      const res: string[] = await getPoolBalances();
+      changeBalances(res);
     })();
 
     (async () => {
-      const res: BigNumber = await getLiquidityBalances();
-      const res2 = toFloatingPoint(res.toString());
-      changeLiquidityBalance(res2);
+      const res: string = await getLiquidityBalances();
+      changeLiquidityBalance(res);
     })();
   }, []);
 
