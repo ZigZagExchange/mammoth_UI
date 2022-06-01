@@ -1,6 +1,5 @@
 import { getStarknet } from "get-starknet";
 import * as starknet from "starknet";
-import { BigNumber, BigNumberish, FixedNumber, utils } from "ethers";
 import { walletAddress } from "./wallet.service";
 import starknetERC20_ABI from "./ABI/starknetERC20_ABI.json";
 import starknetPool_ABI from "./ABI/starknetPool_ABI.json";
@@ -92,9 +91,7 @@ export const getApproveTokenFee = async (
       starknet.number.toBN(poolAddress.toString()), // address decimal
       Object.values(starknet.uint256.bnToUint256(amount.toString())),
     ].flatMap((x) => x)),
-  },
-    undefined
-  );
+  });
 
   return fee.toString();
 };
