@@ -1,14 +1,7 @@
 import React, { useEffect, useState } from "react";
-// import { useSelector } from "react-redux";
-// import { networkSelector } from "lib/store/features/api/apiSlice";
-// import { userSelector } from "lib/store/features/auth/authSlice";
 import styled from "@emotion/styled";
 import { FiChevronDown } from "react-icons/fi";
 import { Modal } from "../Modal";
-// import { useCoinEstimator, Modal } from "components";
-import { formatUSD } from "../../libs/utils";
-// import api from "lib/api";
-import SearchBox from "../SearchBox/SearchBox";
 import CoinInfo from "../../libs/CoinInfo.json";
 import _ from "lodash"
 

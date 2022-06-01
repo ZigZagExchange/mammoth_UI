@@ -20,16 +20,16 @@ export const transfer = async (
   transferAmount: string,
   network: keyof typeof erc20TokenAddressByNetwork
 ): Promise<any> => {
-  const account = getStarknet();
-  const [address] = await account.enable();
+  const wallet = getStarknet();
+  await wallet.enable();
   const tokenAddress = erc20TokenAddressByNetwork[network];
   const amountBn = utils.parseUnits(transferAmount, 18).toString();
 
   // checks that enable succeeded
-  if (account.isConnected === false)
+  if (wallet.isConnected === false)
     throw Error("starknet wallet not connected");  
 
-  const { code, transaction_hash } = await account.execute({
+  const { code, transaction_hash } = await wallet.account.execute({
     contractAddress: tokenAddress,
     entrypoint: 'transfer',
     calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
