@@ -1,9 +1,9 @@
 import { FC, useEffect, useState } from "react"
+import * as starknet from "starknet";
 
 import { truncateAddress } from "../services/address.service"
 import {
   getErc20TokenAddress,
-  mintToken,
   transfer,
 } from "../services/token.service"
 import {
@@ -11,7 +11,6 @@ import {
   getExplorerBaseUrl,
   networkId,
   signMessage,
-  waitForTransaction,
 } from "../services/wallet.service"
 import styles from "../styles/Home.module.css"
 
@@ -31,7 +30,7 @@ export const TokenDapp: FC = () => {
   useEffect(() => {
     ;(async () => {
       if (lastTransactionHash && transactionStatus === "pending") {
-        await waitForTransaction(lastTransactionHash)
+        await starknet.defaultProvider.waitForTransaction(lastTransactionHash);
         setTransactionStatus("success")
       }
     })()
@@ -58,10 +57,11 @@ export const TokenDapp: FC = () => {
       setTransactionStatus("approve")
 
       console.log("mint", mintAmount)
-      const result = await mintToken(mintAmount, network)
+      // const result = await mintToken(mintAmount, network)
+      const result = 'cant mint this'
       console.log(result)
 
-      setLastTransactionHash(result.transaction_hash)
+      setLastTransactionHash('0x0')
       setTransactionStatus("pending")
     } catch (e) {
       console.error(e)

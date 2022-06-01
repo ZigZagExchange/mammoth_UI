@@ -22,7 +22,6 @@ import {
     withdrawPool,
   } from "../services/pool.service";
   import LoadingIndicator from "./Indicator";
-  import { waitForTransaction } from "../services/wallet.service";
   import {
     decimalToBN,
     padDecimal,
@@ -298,11 +297,10 @@ export default function DipositAndWithdrawComponent(props: DipositDialogProps) {
     changeTxMsg(`Deposit ${tokens[tokenIndex].symbol} success`);
     let success = true;
     try {
-      const tx = await depositPool(
+      await depositPool(
         depositAmount + padDecimal(depositAmountDecimal),
         tokenIndex
       );
-      await waitForTransaction(tx.transaction_hash);
     } catch (e) {
       success = false;
       changeFailMsg("Deposit failed");
@@ -319,11 +317,10 @@ export default function DipositAndWithdrawComponent(props: DipositDialogProps) {
     changeIsLoading(true);
     let success = true;
     try {
-      const tx = await withdrawPool(
+      await withdrawPool(
         withdrawAmount + padDecimal(withdrawAmountDecimal),
         tokenIndex
       );
-      await waitForTransaction(tx.transaction_hash);
     } catch (e) {
       success = false;
       changeFailMsg("Withdraw failed");
