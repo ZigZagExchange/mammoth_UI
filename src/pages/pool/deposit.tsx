@@ -10,7 +10,6 @@ import {
   tokens,
 } from "../../services/pool.service";
 import LoadingIndicator from "../../components/Indicator";
-import { waitForTransaction } from "../../services/wallet.service";
 import {
   decimalToBN,
   padDecimal,
@@ -96,12 +95,12 @@ const Deposit = () => {
     changeTxMsg(`Deposit ${tokens[tokenIndex].symbol} success`);
     let success = true;
     try {
-      const tx = await depositPool(
+      await depositPool(
         depositAmount + padDecimal(depositAmountDecimal),
         tokenIndex
       );
-      await waitForTransaction(tx.transaction_hash);
     } catch (e) {
+      console.log(e)
       success = false;
       changeFailMsg("Deposit failed");
     }
@@ -122,6 +121,7 @@ const Deposit = () => {
     try {
       await approveToken(tokenIndex);
     } catch (e) {
+      console.log(e);
       success = false;
       changeFailMsg("Approval failed");
     }

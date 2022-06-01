@@ -9,11 +9,9 @@ import {
   tokens,
   getTokeAllowance,
   getPoolBalances,
-  getLiquidityBalances,
-  mintToken,
+  getLiquidityBalances
 } from "../../services/pool.service";
 import LoadingIndicator from "../../components/Indicator";
-import { waitForTransaction } from "../../services/wallet.service";
 import {
   decimalToBN,
   padDecimal,
@@ -142,14 +140,13 @@ const Swap = () => {
     );
     let success = true;
     try {
-      const tx = await swapPool(
+      await swapPool(
         swapAmount + padDecimal(swapAmountDecimal),
         tokenInIndex,
         tokenOutIndex
       );
-
-      await waitForTransaction(tx.transaction_hash);
-    } catch (e) {
+    } catch (e) {      
+      console.log(e)
       success = false;
       changeFailMsg("Swap failed");
     }

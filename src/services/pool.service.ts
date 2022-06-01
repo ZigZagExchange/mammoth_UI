@@ -1,7 +1,9 @@
 import { getStarknet } from "get-starknet";
-import { compileCalldata, number, stark, uint256 } from "starknet";
+import * as starknet from "starknet";
 import { BigNumber, BigNumberish, FixedNumber, utils } from "ethers";
-import { waitForTransaction } from "./wallet.service";
+import { walletAddress } from "./wallet.service";
+import starknetERC20_ABI from "./ABI/starknetERC20_ABI.json";
+import starknetPool_ABI from "./ABI/starknetPool_ABI.json";
 
 const tokenOne = {
   address: "0x032b911608a90366220ebbabd99f7a57b4b315804605e241920c37bcd74d76fc",
@@ -24,252 +26,272 @@ const tokenThree = {
 
 export const tokens = [tokenOne, tokenTwo, tokenThree];
 
-const routerAddress =
-  "0x07334817d544f8dc403da10e2b6732289e7abc5b04f0c17435e105bd5bd42195";
+const routerAddress = "0x07334817d544f8dc403da10e2b6732289e7abc5b04f0c17435e105bd5bd42195";
 
-const poolAddress =
-  "0x055dfb8a071d3ea23e63c3264edc0fecbde4162634e019c41c58a841db5689e6";
+const poolAddress = "0x055dfb8a071d3ea23e63c3264edc0fecbde4162634e019c41c58a841db5689e6";
 
-const mintSelector = stark.getSelectorFromName("mint");
-
-const balanceOfSelecter = stark.getSelectorFromName("balanceOf");
-
-const swapAmountSelector = stark.getSelectorFromName("view_out_given_in");
-
-const depositAmountSelector = stark.getSelectorFromName(
-  "view_pool_minted_given_single_in"
-);
-
-const withdrawAmountSelector = stark.getSelectorFromName(
-  "view_single_out_given_pool_in"
-);
-
-const approveERC20Selector = stark.getSelectorFromName("approve");
-const allowanceERC20Selector = stark.getSelectorFromName("allowance");
-const depositSelector = stark.getSelectorFromName("mammoth_deposit");
-const withdrawSelector = stark.getSelectorFromName("mammoth_withdraw");
-const swapSelector = stark.getSelectorFromName("mammoth_swap");
-
-function getUint256CalldataFromBN(bn: number.BigNumberish) {
-  return { type: "struct" as const, ...uint256.bnToUint256(bn) };
-}
-
-function normalizeNumber(x: BigNumberish) {
-  return BigNumber.from(x).mul("10000").toString();
-}
-
-function normalizeAndUint256(x: BigNumberish) {
-  return getUint256CalldataFromBN(normalizeNumber(x));
-}
 export const mintToken = async (tokenIndex: number): Promise<any> => {
-  const starknet = getStarknet();
-
-  const [activeAccount] = await starknet.enable();
-
-  // checks that enable succeeded
-  if (starknet.isConnected === false)
-    throw Error("starknet wallet not connected");
-
-  return await starknet.signer.invokeFunction(
-    tokens[tokenIndex].address,
-    mintSelector,
-    compileCalldata({
-      receiver: number.toBN(activeAccount).toString(), //receiver (self)
-      amount: getUint256CalldataFromBN(100000), // amount
-    })
+  const userWalletAddress = await walletAddress();
+  const tokenAddress = tokens[tokenIndex].address;
+  const erc20 = new starknet.Contract(starknetERC20_ABI as starknet.Abi, tokenAddress);
+  const { transaction_hash: mintTxHash } = await erc20.mint(
+    userWalletAddress,
+    starknet.uint256.bnToUint256('100000')
   );
+  await starknet.defaultProvider.waitForTransaction(mintTxHash);
 };
 
 export const getTokeAllowance = async (tokenIndex: number) => {
-  const starknet = getStarknet();
+  const userWalletAddress = await walletAddress();
+  const tokenAddress = tokens[tokenIndex].address;
 
-  const [activeAccount] = await starknet.enable();
-
-  // checks that enable succeeded
-  if (starknet.isConnected === false)
-    throw Error("starknet wallet not connected");
-
-  const res = await starknet.signer?.callContract({
-    contract_address: tokens[tokenIndex].address,
-    entry_point_selector: allowanceERC20Selector,
-    calldata: compileCalldata({
-      owner: activeAccount,
-      spender: poolAddress,
-    }),
-  });
-
-  return uint256.uint256ToBN({
-    low: res?.result[0],
-    high: res?.result[1],
-  });
+  const erc20 = new starknet.Contract(starknetERC20_ABI as starknet.Abi, tokenAddress);
+  const result = await erc20.allowance(
+    userWalletAddress,
+    poolAddress
+  );
+  const allowance = starknet.uint256.uint256ToBN(result[0]);
+  return allowance;
 };
 
 export const approveToken = async (
   tokenIndex: number,
   amount: string = "10000000"
 ): Promise<any> => {
-  const starknet = getStarknet();
+  const wallet = getStarknet();
+  await wallet.enable();
+  const tokenAddress = tokens[tokenIndex].address;
+  console.log('start')
 
-  const [activeAccount] = await starknet.enable();
+  const { code, transaction_hash } = await wallet.account.execute({
+    contractAddress: tokenAddress,
+    entrypoint: 'approve',
+    calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
+      starknet.number.toBN(poolAddress.toString()), // address decimal
+      Object.values(starknet.uint256.bnToUint256(amount.toString())),
+    ].flatMap((x) => x)),
+  });
 
-  // checks that enable succeeded
-  if (starknet.isConnected === false)
-    throw Error("starknet wallet not connected");
+  if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
+  await starknet.defaultProvider.waitForTransaction(transaction_hash);
+  return transaction_hash
+};
 
-  let uintAmount = getUint256CalldataFromBN(amount);
-  const tx = await starknet.signer.invokeFunction(
-    tokens[tokenIndex].address,
-    approveERC20Selector,
-    compileCalldata({
-      spender: poolAddress,
-      amount: uintAmount,
-    })
+export const getApproveTokenFee = async (
+  tokenIndex: number,
+  amount: string = "10000000"
+): Promise<any> => {
+  const wallet = getStarknet();
+  await wallet.enable();
+  const tokenAddress = tokens[tokenIndex].address;
+
+  const { amount: fee } = await wallet.account.estimateFee({
+    contractAddress: tokenAddress,
+    entrypoint: 'approve',
+    calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
+      starknet.number.toBN(poolAddress.toString()), // address decimal
+      Object.values(starknet.uint256.bnToUint256(amount.toString())),
+    ].flatMap((x) => x)),
+  },
+    undefined
   );
-  await waitForTransaction(tx.transaction_hash);
+
+  return fee.toString();
 };
 
 export const depositPool = async (
   amount: string,
   tokenIndex: number
 ): Promise<any> => {
-  const starknet = getStarknet();
-
-  const [activeAccount] = await starknet.enable();
+  const wallet = getStarknet();
+  const [address] = await wallet.enable();
+  const token = tokens[tokenIndex].address;
 
   // checks that enable succeeded
-  if (starknet.isConnected === false)
+  if (wallet.isConnected === false)
     throw Error("starknet wallet not connected");
 
-  return await starknet.signer.invokeFunction(
-    routerAddress,
-    depositSelector,
-    compileCalldata({
-      amount: getUint256CalldataFromBN(amount),
-      user_address: activeAccount,
-      pool_address: poolAddress,
-      erc20_address: tokens[tokenIndex].address,
-    })
-  );
+  const { code, transaction_hash } = await wallet.account.execute({
+    contractAddress: routerAddress,
+    entrypoint: 'mammoth_deposit',
+    calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
+      Object.values(starknet.uint256.bnToUint256(amount.toString())),
+      starknet.number.toBN(address),
+      starknet.number.toBN(poolAddress),
+      starknet.number.toBN(token)
+    ].flatMap((x) => x)),
+  });
+  if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
+  await starknet.defaultProvider.waitForTransaction(transaction_hash);
+  return transaction_hash;
+};
+
+export const getDepositPoolFee = async (
+  amount: string,
+  tokenIndex: number
+): Promise<any> => {
+  const wallet = getStarknet();
+  const [address] = await wallet.enable();
+  const token = tokens[tokenIndex].address;
+
+  // checks that enable succeeded
+  if (wallet.isConnected === false)
+    throw Error("starknet wallet not connected");
+
+  const { amount: fee } = await wallet.account.estimateFee({
+    contractAddress: routerAddress,
+    entrypoint: 'mammoth_deposit',
+    calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
+      Object.values(starknet.uint256.bnToUint256(amount.toString())),
+      starknet.number.toBN(address.toString()),
+      starknet.number.toBN(poolAddress.toString()),
+      starknet.number.toBN(token.toString())
+    ].flatMap((x) => x)),
+  });
+
+  return fee.toString();
 };
 
 export const withdrawPool = async (
   amount: string,
   tokenIndex: number
 ): Promise<any> => {
-  const starknet = getStarknet();
-
-  const [activeAccount] = await starknet.enable();
+  const wallet = getStarknet();
+  const [address] = await wallet.enable();
+  const token = tokens[tokenIndex].address;
 
   // checks that enable succeeded
-  if (starknet.isConnected === false)
+  if (wallet.isConnected === false)
     throw Error("starknet wallet not connected");
 
-  return await starknet.signer.invokeFunction(
-    routerAddress,
-    withdrawSelector,
-    compileCalldata({
-      amount: getUint256CalldataFromBN(amount),
-      user_address: activeAccount,
-      pool_address: poolAddress,
-      erc20_address: tokens[tokenIndex].address,
-    })
-  );
+  const { code, transaction_hash } = await wallet.account.execute({
+    contractAddress: routerAddress,
+    entrypoint: 'mammoth_withdraw',
+    calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
+      Object.values(starknet.uint256.bnToUint256(amount.toString())),
+      starknet.number.toBN(address.toString()),
+      starknet.number.toBN(poolAddress.toString()),
+      starknet.number.toBN(token.toString())
+    ].flatMap((x) => x)),
+  });
+  if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
+  await starknet.defaultProvider.waitForTransaction(transaction_hash);
+  return transaction_hash;
+};
+
+export const getWithdrawPoolFee = async (
+  amount: string,
+  tokenIndex: number
+): Promise<any> => {
+  const wallet = getStarknet();
+  const [address] = await wallet.enable();
+  const token = tokens[tokenIndex].address;
+
+  // checks that enable succeeded
+  if (wallet.isConnected === false)
+    throw Error("starknet wallet not connected");
+
+  const { amount: fee } = await wallet.account.estimateFee({
+    contractAddress: routerAddress,
+    entrypoint: 'mammoth_withdraw',
+    calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
+      Object.values(starknet.uint256.bnToUint256(amount.toString())),
+      starknet.number.toBN(address.toString()),
+      starknet.number.toBN(poolAddress.toString()),
+      starknet.number.toBN(token.toString())
+    ].flatMap((x) => x)),
+  });
+
+  return fee.toString();
 };
 
 export const swapPool = async (
   amount: string,
-  tokenIndex: number,
-  tokenIndex2: number
+  tokenIndexBuy: number,
+  tokenIndexSell: number
 ): Promise<any> => {
-  const starknet = getStarknet();
-
-  const [activeAccount] = await starknet.enable();
+  const wallet = getStarknet();
+  const [address] = await wallet.enable();
+  const buyToken = tokens[tokenIndexBuy].address;
+  const sellToken = tokens[tokenIndexSell].address;
 
   // checks that enable succeeded
-  if (starknet.isConnected === false)
+  if (wallet.isConnected === false)
     throw Error("starknet wallet not connected");
 
-  return await starknet.signer.invokeFunction(
-    routerAddress,
-    swapSelector,
-    compileCalldata({
-      amount: getUint256CalldataFromBN(amount),
-      user_address: activeAccount,
-      pool_address: poolAddress,
-      erc20_address_in: tokens[tokenIndex].address,
-      erc20_address_out: tokens[tokenIndex2].address,
-    })
-  );
+  const { code, transaction_hash } = await wallet.account.execute({
+    contractAddress: routerAddress,
+    entrypoint: 'mammoth_swap',
+    calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
+      Object.values(starknet.uint256.bnToUint256(amount.toString())),
+      starknet.number.toBN(address.toString()),
+      starknet.number.toBN(poolAddress.toString()),
+      starknet.number.toBN(buyToken.toString()),
+      starknet.number.toBN(sellToken.toString())
+    ].flatMap((x) => x)),
+  });
+  if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
+  await starknet.defaultProvider.waitForTransaction(transaction_hash);
+  return transaction_hash;
 };
 
-export const getPoolBalances = async (): Promise<any> => {
-  const starknet = getStarknet();
-
-  const [activeAccount] = await starknet.enable();
+export const getSwapPoolFee = async (
+  amount: string,
+  tokenIndexBuy: number,
+  tokenIndexSell: number
+): Promise<any> => {
+  const wallet = getStarknet();
+  const [address] = await wallet.enable();
+  const buyToken = tokens[tokenIndexBuy].address;
+  const sellToken = tokens[tokenIndexSell].address;
 
   // checks that enable succeeded
-  if (starknet.isConnected === false)
+  if (wallet.isConnected === false)
     throw Error("starknet wallet not connected");
 
-  const tokenOneBalance = starknet.provider.callContract({
-    contract_address: tokens[0].address,
-    entry_point_selector: balanceOfSelecter,
-    calldata: compileCalldata({
-      account: number.toBN(poolAddress).toString(), //receiver (self)
-    }),
+  const { amount: fee } = await wallet.account.estimateFee({
+    contractAddress: routerAddress,
+    entrypoint: 'mammoth_swap',
+    calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
+      Object.values(starknet.uint256.bnToUint256(amount.toString())),
+      starknet.number.toBN(address.toString()),
+      starknet.number.toBN(poolAddress.toString()),
+      starknet.number.toBN(buyToken.toString()),
+      starknet.number.toBN(sellToken.toString())
+    ].flatMap((x) => x)),
   });
 
-  const tokenTwoBalance = starknet.provider.callContract({
-    contract_address: tokens[1].address,
-    entry_point_selector: balanceOfSelecter,
-    calldata: compileCalldata({
-      account: number.toBN(poolAddress).toString(), //receiver (self)
-    }),
-  });
+  return fee.toString();
+};
 
-  const tokenThreeBalance = starknet.provider.callContract({
-    contract_address: tokens[2].address,
-    entry_point_selector: balanceOfSelecter,
-    calldata: compileCalldata({
-      account: number.toBN(poolAddress).toString(), //receiver (self)
-    }),
-  });
+export const getBalance = async (
+  tokenIndex: number,
+  address: string,
+): Promise<any> => {
+  const tokenAddress = tokens[tokenIndex].address;
+  const erc20 = new starknet.Contract(starknetERC20_ABI as starknet.Abi, tokenAddress);
+  const result = await erc20.balanceOf(address);
+  const balance = starknet.uint256.uint256ToBN(result[0]);
+  return balance.toString();
+}
 
+export const getPoolBalances = async (): Promise<any> => {
   const balances = await Promise.all([
-    tokenOneBalance,
-    tokenTwoBalance,
-    tokenThreeBalance,
+    getBalance(0, poolAddress),
+    getBalance(1, poolAddress),
+    getBalance(2, poolAddress)
   ]);
 
-  return balances.map((balance) => {
-    return uint256.uint256ToBN({
-      low: balance.result[0],
-      high: balance.result[1],
-    });
-  });
+  return balances;
 };
 
 export const getLiquidityBalances = async (): Promise<any> => {
-  const starknet = getStarknet();
+  const userWalletAddress = await walletAddress();
 
-  const [activeAccount] = await starknet.enable();
-
-  // checks that enable succeeded
-  if (starknet.isConnected === false)
-    throw Error("starknet wallet not connected");
-
-  const liquidityBalance = await starknet.provider.callContract({
-    contract_address: poolAddress,
-    entry_point_selector: balanceOfSelecter,
-    calldata: compileCalldata({
-      account: number.toBN(activeAccount).toString(), //receiver (self)
-    }),
-  });
-
-  return uint256.uint256ToBN({
-    low: liquidityBalance.result[0],
-    high: liquidityBalance.result[1],
-  });
+  const pool = new starknet.Contract(starknetPool_ABI as starknet.Abi, poolAddress);
+  const result = await pool.balanceOf(userWalletAddress);
+  const balance = starknet.uint256.uint256ToBN(result[0]);
+  return balance.toString();
 };
 
 // ERC 20 Swap amount
@@ -279,28 +301,16 @@ export const getSwapAmount = async (
   tokenOutIndex: number,
   amountIn: string
 ) => {
-  const starknet = getStarknet();
-
-  const [activeAccount] = await starknet.enable();
-
-  // checks that enable succeeded
-  if (starknet.isConnected === false)
-    throw Error("starknet wallet not connected");
-
-  const res = await starknet.provider.callContract({
-    contract_address: poolAddress,
-    entry_point_selector: swapAmountSelector,
-    calldata: compileCalldata({
-      amount_in: getUint256CalldataFromBN(amountIn),
-      erc20_address_in: tokens[tokenInIndex].address,
-      erc20_address_out: tokens[tokenOutIndex].address,
-    }),
-  });
-
-  return uint256.uint256ToBN({
-    low: res.result[0],
-    high: res.result[1],
-  });
+  const tokenInAddress = tokens[tokenInIndex].address;
+  const tokenOutAddress = tokens[tokenOutIndex].address;
+  const pool = new starknet.Contract(starknetPool_ABI as starknet.Abi, poolAddress);
+  const result = await pool.view_out_given_in(
+    Object.values(starknet.uint256.bnToUint256(amountIn)),
+    tokenInAddress,
+    tokenOutAddress
+  );
+  const swapAmount = starknet.uint256.uint256ToBN(result[0]);
+  return swapAmount.toString();
 };
 
 // ERC 20 deposit to lp amount
@@ -308,26 +318,14 @@ export const getDepositERC20Amount = async (
   tokenInIndex: number,
   amountIn: string
 ) => {
-  const starknet = getStarknet();
-
-  const [activeAccount] = await starknet.enable();
-
-  // checks that enable succeeded
-  if (starknet.isConnected === false)
-    throw Error("starknet wallet not connected");
-
-  const res = await starknet.provider.callContract({
-    contract_address: poolAddress,
-    entry_point_selector: depositAmountSelector,
-    calldata: compileCalldata({
-      amount_to_deposit: getUint256CalldataFromBN(amountIn),
-      erc20_address: tokens[tokenInIndex].address,
-    }),
-  });
-  return uint256.uint256ToBN({
-    low: res.result[0],
-    high: res.result[1],
-  });
+  const tokenInAddress = tokens[tokenInIndex].address;
+  const pool = new starknet.Contract(starknetPool_ABI as starknet.Abi, poolAddress);
+  const result = await pool.view_pool_minted_given_single_in(
+    Object.values(starknet.uint256.bnToUint256(amountIn)),
+    tokenInAddress
+  );
+  const swapAmount = starknet.uint256.uint256ToBN(result[0]);
+  return swapAmount.toString();
 };
 
 // LP Token withdraw to erc20 amount
@@ -335,25 +333,12 @@ export const getWithdrawERC20Amount = async (
   tokenInIndex: number,
   amountIn: string
 ) => {
-  const starknet = getStarknet();
-
-  const [activeAccount] = await starknet.enable();
-
-  // checks that enable succeeded
-  if (starknet.isConnected === false)
-    throw Error("starknet wallet not connected");
-
-  const res = await starknet.provider.callContract({
-    contract_address: poolAddress,
-    entry_point_selector: withdrawAmountSelector,
-    calldata: compileCalldata({
-      pool_amount_in: getUint256CalldataFromBN(amountIn),
-      erc20_address: tokens[tokenInIndex].address,
-    }),
-  });
-
-  return uint256.uint256ToBN({
-    low: res.result[0],
-    high: res.result[1],
-  });
+  const tokenInAddress = tokens[tokenInIndex].address;
+  const pool = new starknet.Contract(starknetPool_ABI as starknet.Abi, poolAddress);
+  const result = await pool.view_single_out_given_pool_in(
+    Object.values(starknet.uint256.bnToUint256(amountIn)),
+    tokenInAddress
+  );
+  const swapAmount = starknet.uint256.uint256ToBN(result[0]);
+  return swapAmount.toString();
 };
