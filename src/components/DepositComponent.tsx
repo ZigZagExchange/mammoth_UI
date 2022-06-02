@@ -16,12 +16,9 @@ import {
   depositPool,
   getDepositERC20Amount,
   getTokeAllowance,
-
   tokens,
-
 } from "../services/pool.service";
 import LoadingIndicator from "./Indicator";
-// import { waitForTransaction } from "../services/wallet.service";
 
 import { Button as CustomButton } from "./Button/Button";
 
@@ -29,7 +26,6 @@ interface DepositDialogProps {
   open: boolean;
   onClose: () => void;
 }
-
 
 const blue = {
   100: '#DAECFF',
@@ -197,7 +193,6 @@ export default function DepositComponent(props: DepositDialogProps) {
   };
 
   const [depositAmount, changeDepositAmount] = useState(0);
-
   const [LPAmount, changeLPAmount] = useState("0");
   const [tokenIndex, changeIndex] = useState(0);
   const [isLoading, changeIsLoading] = useState(false);
@@ -298,7 +293,6 @@ export default function DepositComponent(props: DepositDialogProps) {
     changeFailMsg("");
   };
 
-
   return (
     <Box>
       <Dialog
@@ -354,7 +348,7 @@ export default function DepositComponent(props: DepositDialogProps) {
             <Box flex={1} display="flex" flexDirection="column" mb="3vw" width="100%">
               <Box color="lightgray" fontSize="1vw" mb="1vw" >Amount</Box>
               <Box borderBottom=" 1px solid white" display="flex" justifyContent="space-between">
-                <CustomInput value={depositAmount} onChange={handleInputChange}/>
+                <CustomInput value={depositAmount} onChange={handleInputChange} />
               </Box>
 
               <Box color="white" fontSize="1vw" mt="1vw" textAlign="right">Receive&nbsp; <span style={{ color: '#ff1268' }}>{LPAmount.toString()}</span> LP TOkens</Box>
@@ -362,28 +356,28 @@ export default function DepositComponent(props: DepositDialogProps) {
           </Box>
           <Box display="flex" width="50%">
             <Box color="#09aaf5" width="100%" height="100%" mr="1vw">
-            
-              {!isTokenApproved && <CustomButton 
-                    className="bg_btn"
-                    text="Approve" 
-                    onClick={handleApprove}
-                    style={{width: '100px', marginRight: '10px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)'}}
-                />
+
+              {!isTokenApproved && <CustomButton
+                className="bg_btn"
+                text="Approve"
+                onClick={handleApprove}
+                style={{ width: '100px', marginRight: '10px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }}
+              />
               }
-              {isTokenApproved && <CustomButton 
-                    className="bg_btn"
-                    text="Deposit" 
-                    onClick={handleSubmit}
-                    style={{width: '100px', marginRight: '10px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)'}}
-                />
+              {isTokenApproved && <CustomButton
+                className="bg_btn"
+                text="Deposit"
+                onClick={handleSubmit}
+                style={{ width: '100px', marginRight: '10px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }}
+              />
               }
             </Box>
             <Box color="orangered" width="100%" height="100%">
-              <CustomButton 
-                  className="bg_btn"
-                  text="Cancel" 
-                  onClick={handleClose}
-                  style={{width: '100px', marginRight: '10px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)'}}
+              <CustomButton
+                className="bg_btn"
+                text="Cancel"
+                onClick={handleClose}
+                style={{ width: '100px', marginRight: '10px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }}
               />
             </Box>
           </Box>

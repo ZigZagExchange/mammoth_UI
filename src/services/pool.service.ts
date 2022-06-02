@@ -146,12 +146,7 @@ export const depositPool = async (
     ].flatMap((x) => x)),
   });
   if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
-  try {
-    await starknet.defaultProvider.waitForTransaction(transaction_hash);
-  } catch(e) {
-    console.log(e)
-  }
-  
+  await starknet.defaultProvider.waitForTransaction(transaction_hash);
   return transaction_hash;
 };
 

@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import { FiChevronDown } from "react-icons/fi";
-import { Modal } from "../Modal";
 import CoinInfo from "../../libs/CoinInfo.json";
 import _ from "lodash"
 
@@ -114,8 +112,8 @@ export const CustomSelect = React.forwardRef(function CustomSelect(
   return <SelectUnstyled {...props} ref={ref} components={components} />;
 });
 
-interface Props{
-  onChange: (e:any)=>void;
+interface Props {
+  onChange: (e: any) => void;
   currencies: any;
   balances: any;
   value: string;
@@ -139,10 +137,10 @@ const SwapCurrencySelector = ({
     setShowingOptions(false);
   };
 
-  useEffect(()=>{
-    const index = _.findIndex(CoinInfo, {"coin": value});
+  useEffect(() => {
+    const index = _.findIndex(CoinInfo, { "coin": value });
     changeIndex(index);
-  },[value])
+  }, [value])
 
   useEffect(() => {
     if (showingOptions) {
@@ -164,7 +162,7 @@ const SwapCurrencySelector = ({
 
   const handleTokenSelect = async (e: any) => {
     // e.preventDefault();
-    console.log("a=================",e)
+    console.log("a=================", e)
     const val = e;
     //await tokenApproval();
     changeIndex(parseInt(val));
@@ -186,7 +184,7 @@ const SwapCurrencySelector = ({
         </StyledOption>
       ))}
     </CustomSelect>
-    
+
   );
 };
 

@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import SwapCurrencySelector from "./SwapCurrencySelector";
 
-const SwapInputBox = styled((props: any)=>(<div {...props} />))`
+const SwapInputBox = styled((props: any) => (<div {...props} />))`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -91,7 +91,7 @@ const SwapSwapInput = ({
   );
 
   return (
-    <SwapInputBox readOnly={readOnly?"true":"false"}>
+    <SwapInputBox readOnly={readOnly ? "true" : "false"}>
       <div className="currencySelector">
         <SwapCurrencySelector
           currencies={currencies}

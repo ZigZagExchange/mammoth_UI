@@ -1,5 +1,3 @@
-import Pool from "./_pool";
-import styles from "../../styles/Pool.module.css";
 import React, { useCallback, useEffect, useState } from "react";
 import { BigNumber } from "ethers";
 import {
@@ -120,7 +118,7 @@ const Swap = () => {
         tokenInIndex,
         tokenOutIndex
       );
-    } catch (e) {      
+    } catch (e) {
       console.log(e)
       success = false;
       changeFailMsg("Swap failed");
@@ -184,28 +182,28 @@ const Swap = () => {
     })();
   }, []);
 
-  const switchTransferType = (e: any) => {}
+  const switchTransferType = (e: any) => { }
 
-  const setSwapDetails = async(values: any, from: boolean) => {
+  const setSwapDetails = async (values: any, from: boolean) => {
 
-    console.log("asdfadsfas",from, values)
+    console.log("asdfadsfas", from, values)
 
-    if(from) {
+    if (from) {
       const details = {
         ...swapDetails,
         ...values,
       };
-      if(details.currency === toDetail.currency) {
+      if (details.currency === toDetail.currency) {
         setToDetails(swapDetails);
       }
       _setSwapDetails(details);
     }
-    else{
+    else {
       const detail2 = {
         ...toDetail,
         ...values,
       };
-      if(detail2.currency === swapDetails.currency) {
+      if (detail2.currency === swapDetails.currency) {
         _setSwapDetails(toDetail);
       }
       setToDetails(detail2);
@@ -215,8 +213,8 @@ const Swap = () => {
   }
 
   return (
-   <>
-    {isLoading ? (
+    <>
+      {isLoading ? (
         <LoadingIndicator msg={loadingMsg} isLoading={true} />
       ) : null}
       {txComplete ? (
@@ -245,19 +243,19 @@ const Swap = () => {
             <Box display="flex" flexDirection="column" >
               <Box>Detailed balance report</Box>
               {
-                _.map(poolbalances, (each: any, index)=>{
+                _.map(poolbalances, (each: any, index) => {
                   return <Box display={'flex'} key={index} justifyContent='space-between'>{tokens[index].name} :&nbsp; <b>{each}</b>{" "}</Box>
                 })
               }
             </Box>
-            
+
           </Box>
           <Box ml="35px" width="25%" height="100%" display="flex" flexDirection="column" alignItems="center" justifyContent={'space-between'}>
-            <Button className="bg_btn" style={{borderRadius: '5px'}} text="MINT" onClick={()=>{setMintModal(true)}} />
-            <Button className="bg_btn" style={{borderRadius: '5px'}} text="Deposit" onClick={()=>{setModal(true)}} />
-            <Button className="bg_btn" style={{borderRadius: '5px'}} text="Withdraw" onClick={()=>{setWithdrawModal(true)}} />
+            <Button className="bg_btn" style={{ borderRadius: '5px' }} text="MINT" onClick={() => { setMintModal(true) }} />
+            <Button className="bg_btn" style={{ borderRadius: '5px' }} text="Deposit" onClick={() => { setModal(true) }} />
+            <Button className="bg_btn" style={{ borderRadius: '5px' }} text="Withdraw" onClick={() => { setWithdrawModal(true) }} />
           </Box>
-        </Box> 
+        </Box>
         <div className="swap_box">
           <div className="swap_box_top">
             <div className="swap_coin_title">
@@ -280,7 +278,7 @@ const Swap = () => {
               <div className="swap_box_line" />
             </div>
 
-            <div className="swap_coin_title" style={{marginBottom: '10px'}}>
+            <div className="swap_coin_title" style={{ marginBottom: '10px' }}>
               <Box fontSize="16px" fontWeight="600">To</Box>
               <Box fontSize="12px" fontWeight="400">1 USDC = 1.22 ZZUSDC</Box>
             </div>
@@ -301,17 +299,17 @@ const Swap = () => {
                 alt="mammoth pool logo"
               />
             </Box>
-            
 
-            <div className="swap_button" style={{marginTop: '30px'}}>
+
+            <div className="swap_button" style={{ marginTop: '30px' }}>
               {(!isTokenApproved) && (
                 <Button
                   loading={isLoading}
                   className={cx("bg_btn", {
                     // zig_disabled:
-                      // !hasAllowance || swapDetails.amount.length === 0,
+                    // !hasAllowance || swapDetails.amount.length === 0,
                   })}
-                  style={{height: '40px', fontSize: '18px'}}
+                  style={{ height: '40px', fontSize: '18px' }}
                   text="Approve"
                   // icon={<MdSwapCalls />}
                   onClick={handleApprove}
@@ -322,7 +320,7 @@ const Swap = () => {
                   loading={isLoading}
                   className={cx("bg_btn", {
                     // zig_disabled:
-                      // !hasAllowance || swapDetails.amount.length === 0,
+                    // !hasAllowance || swapDetails.amount.length === 0,
                   })}
                   text="Swap"
                   // icon={<MdSwapCalls />}
@@ -335,17 +333,17 @@ const Swap = () => {
       </Box>
       <DepositComponent
         open={modal}
-        onClose={()=>{setModal(false)}}
+        onClose={() => { setModal(false) }}
       />
       <WithdrawComponent
         open={withdrawModal}
-        onClose={()=>{setWithdrawModal(false)}}
+        onClose={() => { setWithdrawModal(false) }}
       />
       <MintDialogComponent
         open={mintModal}
-        onClose={()=>{setMintModal(false)}}
+        onClose={() => { setMintModal(false) }}
       />
-    </> 
+    </>
   );
 };
 

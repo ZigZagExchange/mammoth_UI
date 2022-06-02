@@ -73,7 +73,7 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
     changeWithdrawAmount(val);
     await predictWithdrawResult(val);
   };
-  
+
   const predictWithdrawResult = async (amount: number) => {
     const result = await getWithdrawERC20Amount(tokenIndex, amount);
     changeLPAmount(result);
@@ -86,7 +86,6 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
   const handleFailIndicatorClose = () => {
     changeFailMsg("");
   };
-
 
   return (
     <Box>
@@ -143,7 +142,7 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
             <Box flex={1} display="flex" flexDirection="column" mb="3vw" width="100%">
               <Box color="lightgray" fontSize="1vw" mb="1vw" >Amount</Box>
               <Box borderBottom=" 1px solid white" display="flex" justifyContent="space-between">
-                <CustomInput value={withdrawAmount} onChange={handleInputChange}/>
+                <CustomInput value={withdrawAmount} onChange={handleInputChange} />
               </Box>
 
               <Box color="white" fontSize="1vw" mt="1vw" textAlign="right">Receive&nbsp; <span style={{ color: '#ff1268' }}>{LPAmount.toString()}</span> LP TOkens</Box>
