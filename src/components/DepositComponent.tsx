@@ -16,20 +16,16 @@ import {
   depositPool,
   getDepositERC20Amount,
   getTokeAllowance,
-  getWithdrawERC20Amount,
+
   tokens,
-  withdrawPool,
+
 } from "../services/pool.service";
 import LoadingIndicator from "./Indicator";
 // import { waitForTransaction } from "../services/wallet.service";
-import {
-  decimalToBN,
-  padDecimal,
-  toFloatingPoint,
-} from "../core/floating-point";
+
 import { Button as CustomButton } from "./Button/Button";
 
-interface DipositDialogProps {
+interface DepositDialogProps {
   open: boolean;
   onClose: () => void;
 }
@@ -189,7 +185,7 @@ export const CustomInput = styled((props: any) => <input {...props} />)`
     }
 `
 
-export default function DipositComponent(props: DipositDialogProps) {
+export default function DepositComponent(props: DepositDialogProps) {
   const [open, setOpen] = React.useState(false);
   React.useEffect(() => {
     setOpen(props.open)
@@ -200,8 +196,7 @@ export default function DipositComponent(props: DipositDialogProps) {
     setOpen(false);
   };
 
-  const [depositAmount, changeAmount] = useState("0");
-  const [depositAmountDecimal, changeAmountDecimal] = useState("");
+  const [depositAmount, changeDepositAmount] = useState(0);
 
   const [LPAmount, changeLPAmount] = useState("0");
   const [tokenIndex, changeIndex] = useState(0);
@@ -227,41 +222,20 @@ export default function DipositComponent(props: DipositDialogProps) {
     })();
   });
 
-  const predictDepositResult = async (number: string, decimal: string) => {
-    const total = BigNumber.from(number).mul(10000).add(decimalToBN(decimal));
-    const amount = await getDepositERC20Amount(tokenIndex, total.toString());
-    changeLPAmount(toFloatingPoint(amount.toString()));
+  const predictDepositResult = async (amount: number) => {
+    const result = await getDepositERC20Amount(tokenIndex, amount);
+    changeLPAmount(result);
   };
-
   const handleInputChange = async (e: any) => {
-    console.log(e.target.value);
     e.preventDefault();
-    const val = e.target.value;
-    const parts = val.split(".");
+    let val = e.target.value;
 
-    const hasDecmial = depositAmountDecimal.length;
-
-    if (val.length > 0) {
-      let newNumber = "0";
-      if (parts[0].length) {
-        newNumber = parts[0];
-      }
-      changeAmount(newNumber);
-
-      let newDecimal = "";
-
-      if (parts[1]?.length) {
-        newDecimal = parts[1].substring(0, 4);
-      } else if (parts[1] === undefined && hasDecmial) {
-        newDecimal = "";
-      }
-      changeAmountDecimal(newDecimal);
-
-      await predictDepositResult(newNumber, newDecimal);
-    } else {
-      changeAmount("0");
-      changeAmountDecimal("");
+    if (typeof val === "string") {
+      val = parseFloat(val.replace(",", "."));
     }
+    val = Number.isNaN(val) ? 0 : val;
+    changeDepositAmount(val);
+    await predictDepositResult(val);
   };
 
   const handleTokenSelect = async (e: any) => {
@@ -270,7 +244,29 @@ export default function DipositComponent(props: DipositDialogProps) {
     const val = e;
     //await tokenApproval();
     changeIndex(parseInt(val));
-    await predictDepositResult(depositAmount, depositAmountDecimal);
+    await predictDepositResult(depositAmount);
+  };
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    changeIsLoading(true);
+    changeLoadingMsg(`Depositing ${tokens[tokenIndex].symbol}`);
+    changeTxMsg(`Deposit ${tokens[tokenIndex].symbol} success`);
+    let success = true;
+    try {
+      await depositPool(
+        depositAmount,
+        tokenIndex
+      );
+    } catch (e) {
+      success = false;
+      changeFailMsg("Deposit failed");
+    }
+    changeIsLoading(false);
+    if (success) {
+      changeTxComplete(true);
+      changeTokenApproved(true);
+    }
   };
 
   const handleApprove = async (e: any) => {
@@ -302,12 +298,6 @@ export default function DipositComponent(props: DipositDialogProps) {
     changeFailMsg("");
   };
 
-  const getFPString = () => {
-    if (depositAmountDecimal.length > 0) {
-      return depositAmount + "." + depositAmountDecimal;
-    }
-    return depositAmount;
-  };
 
   return (
     <Box>
@@ -364,7 +354,7 @@ export default function DipositComponent(props: DipositDialogProps) {
             <Box flex={1} display="flex" flexDirection="column" mb="3vw" width="100%">
               <Box color="lightgray" fontSize="1vw" mb="1vw" >Amount</Box>
               <Box borderBottom=" 1px solid white" display="flex" justifyContent="space-between">
-                <CustomInput value={getFPString()} onChange={handleInputChange} />
+                <CustomInput value={depositAmount} onChange={handleInputChange}/>
               </Box>
 
               <Box color="white" fontSize="1vw" mt="1vw" textAlign="right">Receive&nbsp; <span style={{ color: '#ff1268' }}>{LPAmount.toString()}</span> LP TOkens</Box>
@@ -383,7 +373,7 @@ export default function DipositComponent(props: DipositDialogProps) {
               {isTokenApproved && <CustomButton 
                     className="bg_btn"
                     text="Deposit" 
-                    onClick={handleApprove}
+                    onClick={handleSubmit}
                     style={{width: '100px', marginRight: '10px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)'}}
                 />
               }

@@ -1,25 +1,20 @@
 import * as React from 'react';
-import {useState, useEffect} from 'react';
-import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import { Box } from '@mui/material';
 import { Button as CustomButton } from "./Button/Button";
 import CoinInfo from "../libs/CoinInfo.json"
-import { BigNumber } from "ethers";
 import Image from "next/image";
-
-import { toFloatingPoint } from "../core/floating-point";
 import {
     mintToken,
     tokens,
   } from "../services/pool.service";
 
-interface DipositDialogProps {
+interface DepositDialogProps {
     open: boolean;
     onClose: () => void;
 }
 
-export default function MintDialogComponent(props: DipositDialogProps) {
+export default function MintDialogComponent(props: DepositDialogProps) {
     const [open, setOpen] = React.useState(false);
 
     React.useEffect(() => {

@@ -1,17 +1,15 @@
 import { FC, useEffect, useState } from "react"
+import * as starknet from "starknet";
 
 import { truncateAddress } from "../services/address.service"
 import {
   getErc20TokenAddress,
-  mintToken,
   transfer,
 } from "../services/token.service"
 import {
   addToken,
   getExplorerBaseUrl,
-  networkId,
-  signMessage,
-  waitForTransaction,
+  networkId
 } from "../services/wallet.service"
 import styles from "../styles/Home.module.css"
 
@@ -19,8 +17,6 @@ export const TokenDapp: FC = () => {
   const [mintAmount, setMintAmount] = useState("10")
   const [transferTo, setTransferTo] = useState("")
   const [transferAmount, setTransferAmount] = useState("1")
-  const [shortText, setShortText] = useState("")
-  const [lastSig, setLastSig] = useState<string[]>([])
   const [lastTransactionHash, setLastTransactionHash] = useState("")
   const [transactionStatus, setTransactionStatus] = useState<
     "idle" | "approve" | "pending" | "success"
@@ -31,7 +27,7 @@ export const TokenDapp: FC = () => {
   useEffect(() => {
     ;(async () => {
       if (lastTransactionHash && transactionStatus === "pending") {
-        await waitForTransaction(lastTransactionHash)
+        await starknet.defaultProvider.waitForTransaction(lastTransactionHash);
         setTransactionStatus("success")
       }
     })()
@@ -58,10 +54,11 @@ export const TokenDapp: FC = () => {
       setTransactionStatus("approve")
 
       console.log("mint", mintAmount)
-      const result = await mintToken(mintAmount, network)
+      // const result = await mintToken(mintAmount, network)
+      const result = 'cant mint this'
       console.log(result)
 
-      setLastTransactionHash(result.transaction_hash)
+      setLastTransactionHash('0x0')
       setTransactionStatus("pending")
     } catch (e) {
       console.error(e)
@@ -80,23 +77,6 @@ export const TokenDapp: FC = () => {
 
       setLastTransactionHash(result.transaction_hash)
       setTransactionStatus("pending")
-    } catch (e) {
-      console.error(e)
-      setTransactionStatus("idle")
-    }
-  }
-
-  const handleSignSubmit = async (e: React.FormEvent) => {
-    try {
-      e.preventDefault()
-      setTransactionStatus("approve")
-
-      console.log("sign", shortText)
-      const result = await signMessage(shortText)
-      console.log(result)
-
-      setLastSig(result)
-      setTransactionStatus("success")
     } catch (e) {
       console.error(e)
       setTransactionStatus("idle")
@@ -163,45 +143,7 @@ export const TokenDapp: FC = () => {
           <br />
           <input type="submit" disabled={buttonsDisabled} value="Transfer" />
         </form>
-      </div>
-      <div className="columns">
-        <form onSubmit={handleSignSubmit}>
-          <h2 className={styles.title}>Sign Message</h2>
-
-          <label htmlFor="mint-amount">Short Text</label>
-          <input
-            type="text"
-            id="short-text"
-            name="short-text"
-            value={shortText}
-            onChange={(e) => setShortText(e.target.value)}
-          />
-
-          <input type="submit" disabled={buttonsDisabled} value="Sign" />
-        </form>
-        <form>
-          <h2 className={styles.title}>Sign results</h2>
-
-          {/* Label and textarea for value r */}
-          <label htmlFor="r">r</label>
-          <textarea
-            className={styles.textarea}
-            id="r"
-            name="r"
-            value={lastSig[0]}
-            readOnly
-          />
-          {/* Label and textarea for value s */}
-          <label htmlFor="s">s</label>
-          <textarea
-            className={styles.textarea}
-            id="s"
-            name="s"
-            value={lastSig[1]}
-            readOnly
-          />
-        </form>
-      </div>
+      </div>      
       <h3 style={{ margin: 0 }}>
         ERC-20 token address
         <button

@@ -5,30 +5,19 @@ import { Box } from '@mui/material';
 import CoinInfo from "../libs/CoinInfo.json"
 
 import {
-  approveToken,
-  depositPool,
-  getDepositERC20Amount,
-  getTokeAllowance,
   getWithdrawERC20Amount,
-  tokens,
   withdrawPool,
 } from "../services/pool.service";
 import LoadingIndicator from "./Indicator";
-import { waitForTransaction } from "../services/wallet.service";
-import {
-  decimalToBN,
-  padDecimal,
-  toFloatingPoint,
-} from "../core/floating-point";
 import { Button as CustomButton } from "./Button/Button";
 import { CustomInput, CustomSelect, StyledOption } from "./DepositComponent";
 
-interface DipositDialogProps {
+interface WithdrawDialogProps {
   open: boolean;
   onClose: () => void;
 }
 
-export default function WithdrawComponent(props: DipositDialogProps) {
+export default function WithdrawComponent(props: WithdrawDialogProps) {
   const [open, setOpen] = React.useState(false);
   React.useEffect(() => {
     setOpen(props.open)
@@ -39,26 +28,20 @@ export default function WithdrawComponent(props: DipositDialogProps) {
     setOpen(false);
   };
 
-  const [withdrawAmount, changeAmount] = useState("0");
-  const [withdrawAmountDecimal, changeAmountDecimal] = useState("");
+  const [withdrawAmount, changeWithdrawAmount] = useState(0);
   const [LPAmount, changeLPAmount] = useState("0");
   const [tokenIndex, changeIndex] = useState(0);
   const [isLoading, changeIsLoading] = useState(false);
   const [txComplete, changeTxComplete] = useState(false);
   const [failMsg, changeFailMsg] = useState("");
 
-  const predictDepositResult = async (number: string, decimal: string) => {
-    const total = BigNumber.from(number).mul(10000).add(decimalToBN(decimal));
-    const amount = await getDepositERC20Amount(tokenIndex, total.toString());
-    changeLPAmount(toFloatingPoint(amount.toString()));
-  };
 
   const handleTokenSelect = async (e: any) => {
     e.preventDefault();
     const val = e.target.value;
     //await tokenApproval();
     changeIndex(parseInt(val));
-    await predictWithdrawResult(withdrawAmount, withdrawAmountDecimal);
+    await predictWithdrawResult(withdrawAmount);
   };
 
   const Withdraw = async (e: any) => {
@@ -66,11 +49,10 @@ export default function WithdrawComponent(props: DipositDialogProps) {
     changeIsLoading(true);
     let success = true;
     try {
-      const tx = await withdrawPool(
-        withdrawAmount + padDecimal(withdrawAmountDecimal),
+      await withdrawPool(
+        withdrawAmount,
         tokenIndex
       );
-      await waitForTransaction(tx.transaction_hash);
     } catch (e) {
       success = false;
       changeFailMsg("Withdraw failed");
@@ -81,40 +63,20 @@ export default function WithdrawComponent(props: DipositDialogProps) {
     }
   };
 
-  const handleWithdrawInputChange = async (e: any) => {
+  const handleInputChange = async (e: any) => {
     e.preventDefault();
-    const val = e.target.value;
-    const parts = val.split(".");
-
-    const hasDecmial = withdrawAmountDecimal.length;
-
-    if (val.length > 0) {
-      let newNumber = "0";
-      if (parts[0].length) {
-        newNumber = parts[0];
-      }
-      changeAmount(newNumber);
-
-      let newDecimal = "";
-
-      if (parts[1]?.length) {
-        newDecimal = parts[1].substring(0, 4);
-      } else if (parts[1] === undefined && hasDecmial) {
-        newDecimal = "";
-      }
-      changeAmountDecimal(newDecimal);
-
-      await predictWithdrawResult(newNumber, newDecimal);
-    } else {
-      changeAmount("0");
-      changeAmountDecimal("");
+    let val = e.target.value;
+    if (typeof val === "string") {
+      val = parseFloat(val.replace(",", "."));
     }
+    val = Number.isNaN(val) ? 0 : val;
+    changeWithdrawAmount(val);
+    await predictWithdrawResult(val);
   };
-
-  const predictWithdrawResult = async (number: string, decimal: string) => {
-    const total = BigNumber.from(number).mul(10000).add(decimalToBN(decimal));
-    const amount = await getWithdrawERC20Amount(tokenIndex, total.toString());
-    changeLPAmount(toFloatingPoint(amount.toString()));
+  
+  const predictWithdrawResult = async (amount: number) => {
+    const result = await getWithdrawERC20Amount(tokenIndex, amount);
+    changeLPAmount(result);
   };
 
   const handleIndicatorClose = () => {
@@ -125,12 +87,6 @@ export default function WithdrawComponent(props: DipositDialogProps) {
     changeFailMsg("");
   };
 
-  const getFPString = () => {
-    if (withdrawAmountDecimal.length > 0) {
-      return withdrawAmount + "." + withdrawAmountDecimal;
-    }
-    return withdrawAmount;
-  };
 
   return (
     <Box>
@@ -187,7 +143,7 @@ export default function WithdrawComponent(props: DipositDialogProps) {
             <Box flex={1} display="flex" flexDirection="column" mb="3vw" width="100%">
               <Box color="lightgray" fontSize="1vw" mb="1vw" >Amount</Box>
               <Box borderBottom=" 1px solid white" display="flex" justifyContent="space-between">
-                <CustomInput value={getFPString()} onChange={handleWithdrawInputChange} />
+                <CustomInput value={withdrawAmount} onChange={handleInputChange}/>
               </Box>
 
               <Box color="white" fontSize="1vw" mt="1vw" textAlign="right">Receive&nbsp; <span style={{ color: '#ff1268' }}>{LPAmount.toString()}</span> LP TOkens</Box>

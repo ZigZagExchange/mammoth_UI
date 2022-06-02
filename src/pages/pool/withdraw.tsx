@@ -8,55 +8,30 @@ import {
   tokens,
 } from "../../services/pool.service";
 import LoadingIndicator from "../../components/Indicator";
-import {
-  decimalToBN,
-  padDecimal,
-  toFloatingPoint,
-} from "../../core/floating-point";
 
 const Withdraw = () => {
-  const [withdrawAmount, changeAmount] = useState("0");
-  const [withdrawAmountDecimal, changeAmountDecimal] = useState("");
-  const [LPAmount, changeLPAmount] = useState("0");
+  const [withdrawAmount, changeAmount] = useState(0);
+  const [LPAmount, changeLPAmount] = useState('0');
   const [tokenIndex, changeIndex] = useState(0);
   const [isLoading, changeIsLoading] = useState(false);
   const [txComplete, changeTxComplete] = useState(false);
   const [failMsg, changeFailMsg] = useState("");
 
-  const predictWithdrawResult = async (number: string, decimal: string) => {
-    const total = BigNumber.from(number).mul(10000).add(decimalToBN(decimal));
-    const amount = await getWithdrawERC20Amount(tokenIndex, total.toString());
-    changeLPAmount(toFloatingPoint(amount.toString()));
+  const predictWithdrawResult = async (amount: number) => {
+    const result = await getWithdrawERC20Amount(tokenIndex, amount);
+    changeLPAmount(result);
   };
 
   const handleInputChange = async (e: any) => {
     e.preventDefault();
-    const val = e.target.value;
-    const parts = val.split(".");
+    let val = e.target.value;
 
-    const hasDecmial = withdrawAmountDecimal.length;
-
-    if (val.length > 0) {
-      let newNumber = "0";
-      if (parts[0].length) {
-        newNumber = parts[0];
-      }
-      changeAmount(newNumber);
-
-      let newDecimal = "";
-
-      if (parts[1]?.length) {
-        newDecimal = parts[1].substring(0, 4);
-      } else if (parts[1] === undefined && hasDecmial) {
-        newDecimal = "";
-      }
-      changeAmountDecimal(newDecimal);
-
-      await predictWithdrawResult(newNumber, newDecimal);
-    } else {
-      changeAmount("0");
-      changeAmountDecimal("");
+    if (typeof val === "string") {
+      val = parseFloat(val.replace(",", "."));
     }
+    val = Number.isNaN(val) ? 0 : val;
+    changeAmount(val);
+    await predictWithdrawResult(val);
   };
 
   const handleTokenSelect = async (e: any) => {
@@ -64,7 +39,7 @@ const Withdraw = () => {
     const val = e.target.value;
     //await tokenApproval();
     changeIndex(parseInt(val));
-    await predictWithdrawResult(withdrawAmount, withdrawAmountDecimal);
+    await predictWithdrawResult(withdrawAmount);
   };
 
   const handleSubmit = async (e: any) => {
@@ -73,7 +48,7 @@ const Withdraw = () => {
     let success = true;
     try {
       await withdrawPool(
-        withdrawAmount + padDecimal(withdrawAmountDecimal),
+        withdrawAmount,
         tokenIndex
       );
     } catch (e) {      
@@ -93,13 +68,6 @@ const Withdraw = () => {
 
   const handleFailIndicatorClose = () => {
     changeFailMsg("");
-  };
-
-  const getFPString = () => {
-    if (withdrawAmountDecimal.length > 0) {
-      return withdrawAmount + "." + withdrawAmountDecimal;
-    }
-    return withdrawAmount;
   };
 
   return (
@@ -131,7 +99,7 @@ const Withdraw = () => {
               className={styles.textbox}
               name="amount"
               aria-label="Set increment amount"
-              value={getFPString()}
+              value={withdrawAmount}
               type="number"
             />
           </div>
