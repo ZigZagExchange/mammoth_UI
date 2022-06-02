@@ -359,6 +359,7 @@ export const getSwapAmount = async (
   tokenIndexSell: number,
   amountBuy: number
 ) => {
+  console.log(`getSwapAmount: amountBuy ==> ${amountBuy}`)
   if (!amountBuy) return '0';
   const buyTokenAddress = tokens[tokenIndexBuy].address;
   const buyTokenDecimals = tokens[tokenIndexBuy].decimals;
@@ -377,10 +378,12 @@ export const getSwapAmount = async (
   );
   const amountSellBN: ethers.BigNumber = starknet.uint256.uint256ToBN(result[0]);
   if (amountSellBN.lt(1 / sellTokenDecimals)) return '0';
-  return ethers.utils.formatUnits(
+  const decimalString = ethers.utils.formatUnits(
     amountSellBN.toString(),
     sellTokenDecimals
   ).toString();
+  console.log(`getSwapAmount: return ==> ${decimalString}`)
+  return decimalString;
 };
 
 // ERC 20 deposit to lp amount
@@ -388,7 +391,8 @@ export const getDepositERC20Amount = async (
   tokenIndexDeposit: number,
   amountDeposit: number
 ) => {
-  if (amountDeposit) return '0';
+  console.log(`getDepositERC20Amount: amountDeposit ==> ${amountDeposit}`)
+  if (!amountDeposit) return '0';
 
   const depositTokenAddress = tokens[tokenIndexDeposit].address;
   const depositTokenDecimals = tokens[tokenIndexDeposit].decimals;
@@ -404,10 +408,12 @@ export const getDepositERC20Amount = async (
   );
   const depositReturnBN: ethers.BigNumber = starknet.uint256.uint256ToBN(result[0]);
   if (depositReturnBN.lt(1 / decimalsLpToken)) return '0';
-  return ethers.utils.formatUnits(
+  const decimalString = ethers.utils.formatUnits(
     depositReturnBN.toString(),
     decimalsLpToken
   ).toString();
+  console.log(`getDepositERC20Amount: result ==> ${decimalString}`)
+  return decimalString;
 };
 
 // LP Token withdraw to erc20 amount
@@ -415,13 +421,13 @@ export const getWithdrawERC20Amount = async (
   tokenIndexWithdraw: number,
   amountLPWithdraw: number
 ) => {
+  console.log(`getWithdrawERC20Amount: result ==> ${amountLPWithdraw}`)
   if (!amountLPWithdraw) return '0';
 
   const withdrawTokenAddress = tokens[tokenIndexWithdraw].address;
   const withdrawTokenDecimals = tokens[tokenIndexWithdraw].decimals;
   const pool = new starknet.Contract(starknetPool_ABI as starknet.Abi, poolAddress);
   const decimalsLpToken = Number(await pool.decimals());
-  const temp = await pool.decimals()
   const withdrawLpAmountBN = ethers.utils.parseUnits(
     amountLPWithdraw.toFixed(decimalsLpToken),
     decimalsLpToken
@@ -433,8 +439,10 @@ export const getWithdrawERC20Amount = async (
   );
   const withdrawAmountBN: ethers.BigNumber = starknet.uint256.uint256ToBN(result[0]);
   if (withdrawAmountBN.lt(1 / withdrawTokenDecimals)) return '0';
-  return ethers.utils.formatUnits(
+  const decimalString = ethers.utils.formatUnits(
     withdrawAmountBN.toString(),
     withdrawTokenDecimals
   ).toString();
+  console.log(`getWithdrawERC20Amount: result ==> ${decimalString}`)
+  return decimalString;
 };

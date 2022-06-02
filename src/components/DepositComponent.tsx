@@ -234,10 +234,7 @@ export default function DepositComponent(props: DepositDialogProps) {
   };
 
   const handleTokenSelect = async (e: any) => {
-    // e.preventDefault();
-    console.log(e)
     const val = e;
-    //await tokenApproval();
     changeIndex(parseInt(val));
     await predictDepositResult(depositAmount);
   };

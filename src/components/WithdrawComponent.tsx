@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { BigNumber } from "ethers";
 import Dialog from '@mui/material/Dialog';
 import { Box } from '@mui/material';
 import CoinInfo from "../libs/CoinInfo.json"
@@ -35,11 +34,8 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
   const [txComplete, changeTxComplete] = useState(false);
   const [failMsg, changeFailMsg] = useState("");
 
-
   const handleTokenSelect = async (e: any) => {
-    e.preventDefault();
-    const val = e.target.value;
-    //await tokenApproval();
+    const val = e;
     changeIndex(parseInt(val));
     await predictWithdrawResult(withdrawAmount);
   };
