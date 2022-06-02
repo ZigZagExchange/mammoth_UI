@@ -4,11 +4,11 @@ import {
   approveToken,
   swapPool,
   getSwapAmount,
-  tokens,
-  getTokeAllowance,
+  getTokenAllowance,
   getPoolBalances,
   getLiquidityBalances
 } from "../../services/pool.service";
+import {tokens } from "../../services/constants";
 import LoadingIndicator from "../../components/Indicator";
 import { Button } from "../../components/Button/Button";
 import cx from "classnames";
@@ -36,7 +36,7 @@ const Swap = () => {
   const [liquidityBalance, changeLiquidityBalance] = useState('0');
 
   const tokenApproval = useCallback(async () => {
-    const res: BigNumber = await getTokeAllowance(tokenInIndex);
+    const res: BigNumber = await getTokenAllowance(tokenInIndex);
     if (res.isZero()) {
       changeTokenApproved(false);
     } else {

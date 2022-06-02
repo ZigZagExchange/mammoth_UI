@@ -4,10 +4,8 @@ import { Box } from '@mui/material';
 import { Button as CustomButton } from "./Button/Button";
 import CoinInfo from "../libs/CoinInfo.json"
 import Image from "next/image";
-import {
-  mintToken,
-  tokens,
-} from "../services/pool.service";
+import { mintToken } from "../services/pool.service";
+import {tokens } from "../services/constants";
 
 interface DepositDialogProps {
   open: boolean;
