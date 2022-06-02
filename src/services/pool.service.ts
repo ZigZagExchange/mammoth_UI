@@ -6,21 +6,21 @@ import starknetERC20_ABI from "./ABI/starknetERC20_ABI.json";
 import starknetPool_ABI from "./ABI/starknetPool_ABI.json";
 
 const tokenOne = {
-  address: "0x032b911608a90366220ebbabd99f7a57b4b315804605e241920c37bcd74d76fc",
+  address: "0x00b66defccaa972feefe72bc81e06e26b0ec86a9cfb7d7f600f4308012b45d64",
   name: "FantieCoin",
   symbol: "FC",
   decimals: 6,
 };
 
 const tokenTwo = {
-  address: "0x067e22e3d37bc747b6444efe1e39b9a06f6f4610a77a7a87866b328467699afc",
+  address: "0x071f27ef9eb51b0661dc62190fe5805a91b3b6492e539908e0738624c7c6ceff",
   name: "testUSDC",
   symbol: "TUSDC",
   decimals: 4,
 };
 
 const tokenThree = {
-  address: "0x012fd485450708217ffca7b9dd17e0323a3ea0299ccef5d8411577f120293977",
+  address: "0x05d701f0f27c1ba8fe5f58e5e280a34f6e13495fd4f4768bd602c72958b8d858",
   name: "testETH",
   symbol: "TEETH",
   decimals: 8,
@@ -28,9 +28,9 @@ const tokenThree = {
 
 export const tokens = [tokenOne, tokenTwo, tokenThree];
 
-const routerAddress = "0x07334817d544f8dc403da10e2b6732289e7abc5b04f0c17435e105bd5bd42195";
+const routerAddress = "0x00350377c012092645a86b5dd05e45a2ffeb24b695302d5d71d656729e0e8eaf";
 
-const poolAddress = "0x055dfb8a071d3ea23e63c3264edc0fecbde4162634e019c41c58a841db5689e6";
+const poolAddress = "0x0645abc1c81eaf250b1f831bfcf681f7cf6e231360ff51161d9dbc27221fc8fb";
 
 export const mintToken = async (
   tokenIndex: number,
