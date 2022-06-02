@@ -1,4 +1,4 @@
-import { getStarknet } from "@argent/get-starknet";
+import { getStarknet } from "get-starknet";
 import { shortString } from "starknet";
 
 import { Network } from "./token.service";
@@ -87,9 +87,6 @@ export const signMessage = async (message: string) => {
     },
   });
 };
-
-export const waitForTransaction = async (hash: string) =>
-  await getStarknet().provider.waitForTx(hash);
 
 export const addWalletChangeListener = async (
   handleEvent: (accounts: string[]) => void

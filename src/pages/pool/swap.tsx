@@ -9,11 +9,9 @@ import {
   tokens,
   getTokeAllowance,
   getPoolBalances,
-  getLiquidityBalances,
-  mintToken,
+  getLiquidityBalances
 } from "../../services/pool.service";
 import LoadingIndicator from "../../components/Indicator";
-import { waitForTransaction } from "../../services/wallet.service";
 import {
   decimalToBN,
   padDecimal,
@@ -21,16 +19,14 @@ import {
 } from "../../core/floating-point";
 import { Button } from "../../components/Button/Button";
 import cx from "classnames";
-// import { BiError } from "react-icons/bi";
-// import { MdSwapCalls } from "react-icons/md";
 import { SwapButton } from "../../components/SwapButton";
 import SwapSwapInput from "../../components/SwapComponent/SwapSwapInput";
 import { Box } from "@mui/material";
-import { Modal } from "../../components/Modal";
-import DipositAndWithdrawComponent from "../../components/DipositAndWithdrawComponent";
+import DipositComponent from "../../components/DepositComponent";
 import MintDialogComponent from "../../components/MintDialogComponent";
 import _ from "lodash";
-
+import WithdrawComponent from "../../components/WithdrawComponent";
+import Image from "next/image";
 
 const Swap = () => {
   const [swapAmount, changeAmount] = useState("0");
@@ -142,14 +138,13 @@ const Swap = () => {
     );
     let success = true;
     try {
-      const tx = await swapPool(
+      await swapPool(
         swapAmount + padDecimal(swapAmountDecimal),
         tokenInIndex,
         tokenOutIndex
       );
-
-      await waitForTransaction(tx.transaction_hash);
-    } catch (e) {
+    } catch (e) {      
+      console.log(e)
       success = false;
       changeFailMsg("Swap failed");
     }
@@ -195,6 +190,7 @@ const Swap = () => {
   };
 
   const [modal, setModal] = useState(false);
+  const [withdrawModal, setWithdrawModal] = useState(false);
   const [mintModal, setMintModal] = useState(false);
   const [swapDetails, _setSwapDetails] = useState(() => ({
     amount: "",
@@ -233,7 +229,7 @@ const Swap = () => {
 
   const setSwapDetails = async(values: any, from: boolean) => {
 
-    console.log("asdfadsfas",from)
+    console.log("asdfadsfas",from, values)
 
     if(from) {
       const details = {
@@ -282,8 +278,8 @@ const Swap = () => {
 
       <Box display="flex" justifyContent={'center'} flexDirection="column" alignItems={'center'} pt="100px">
         <Box display="flex" width={'auto'} mb="50px" justifyContent={'center'} alignItems="center">
-          <Box borderRadius={'24px'} boxShadow={'5px 5px 20px 2px #141414, 2px 2px 7px 0px #424242, -5px -5px 20px 2px #4a4a4a, -2px -2px 7px 0px #626262'} bgcolor="rgba(0, 0, 0, 0.2)" borderColor="lightgrey" width="70%" p="20px" display="flex" justifyContent={'space-between'}>
-            <Box display='flex' flexDirection="column">
+          <Box borderRadius={'8px'} border="1px solid rgba(255, 255, 255, 0.13)" width="100%" p="30px" display="flex" justifyContent={'space-between'}>
+            <Box display='flex' flexDirection="column" mr="20px">
               <Box mb="30px">Total Token amount</Box>
               <Box textAlign={'center'}>{liquidityBalance.toString()}</Box>
             </Box>
@@ -297,15 +293,17 @@ const Swap = () => {
             </Box>
             
           </Box>
-          <Box ml="35px" width="25%" display="flex" flexDirection="column" alignItems="center">
-            <Button className="bg_btn" style={{borderRadius: '20px'}} text="MINT" onClick={()=>{setMintModal(true)}} />
-            <Button className="bg_btn" style={{borderRadius: '20px'}} text="Dipost/Withdraw" onClick={()=>{setModal(true)}} />
+          <Box ml="35px" width="25%" height="100%" display="flex" flexDirection="column" alignItems="center" justifyContent={'space-between'}>
+            <Button className="bg_btn" style={{borderRadius: '5px'}} text="MINT" onClick={()=>{setMintModal(true)}} />
+            <Button className="bg_btn" style={{borderRadius: '5px'}} text="Dipost" onClick={()=>{setModal(true)}} />
+            <Button className="bg_btn" style={{borderRadius: '5px'}} text="Withdraw" onClick={()=>{setWithdrawModal(true)}} />
           </Box>
         </Box> 
         <div className="swap_box">
           <div className="swap_box_top">
             <div className="swap_coin_title">
-              <h5>FROM</h5>
+              <Box fontSize="16px" fontWeight="600">From</Box>
+              <Box fontSize="12px" fontWeight="400">Available Balance: 1.09393USDC</Box>
             </div>
             <SwapSwapInput
               // balances={balances}
@@ -314,21 +312,18 @@ const Swap = () => {
               value={swapDetails}
               onChange={setSwapDetails}
             />
+            <Box mt="10px" color="rgba(255, 255, 255, 0.72)" fontSize="11px" textAlign="right">Estimated value: ~$ 30.33</Box>
           </div>
 
           <div className="swap_box_bottom">
             <div className="swap_box_swap_wrapper">
               <SwapButton onClick={switchTransferType} />
+              <div className="swap_box_line" />
             </div>
 
-            <div className="swap_coin_stats">
-              <div className="swap_coin_stat">
-                <div className="swap_coin_details">
-                  <div className="swap_coin_title">
-                    <h5>TO</h5>
-                  </div>
-                </div>
-              </div>
+            <div className="swap_coin_title" style={{marginBottom: '10px'}}>
+              <Box fontSize="16px" fontWeight="600">To</Box>
+              <Box fontSize="12px" fontWeight="400">1 USDC = 1.22 ZZUSDC</Box>
             </div>
             <SwapSwapInput
               // balances={balances}
@@ -336,7 +331,18 @@ const Swap = () => {
               from={false}
               value={toDetail}
               onChange={setSwapDetails}
+              readOnly
             />
+            <Box mt="10px" color="rgba(255, 255, 255, 0.72)" fontSize="11px" justifyContent="flex-end" alignItems="center" display="flex">
+              <Box mr="5px">Estimated value: ~$ 30.33</Box>
+              <Image
+                src="/Icon.svg"
+                width="20"
+                height="20"
+                alt="mammoth pool logo"
+              />
+            </Box>
+            
 
             <div className="swap_button" style={{marginTop: '30px'}}>
               {(!isTokenApproved) && (
@@ -346,7 +352,7 @@ const Swap = () => {
                     // zig_disabled:
                       // !hasAllowance || swapDetails.amount.length === 0,
                   })}
-                  style={{height: '50px', fontSize: '18px'}}
+                  style={{height: '40px', fontSize: '18px'}}
                   text="Approve"
                   // icon={<MdSwapCalls />}
                   onClick={handleApprove}
@@ -368,9 +374,13 @@ const Swap = () => {
           </div>
         </div>
       </Box>
-      <DipositAndWithdrawComponent
+      <DipositComponent
         open={modal}
         onClose={()=>{setModal(false)}}
+      />
+      <WithdrawComponent
+        open={withdrawModal}
+        onClose={()=>{setWithdrawModal(false)}}
       />
       <MintDialogComponent
         open={mintModal}

@@ -2,64 +2,70 @@ import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import SwapCurrencySelector from "./SwapCurrencySelector";
 
-const SwapInputBox = styled.div`
+const SwapInputBox = styled((props: any)=>(<div {...props} />))`
   display: flex;
   flex-direction: row;
   align-items: center;
-  background: #fff;
-  border-radius: 24px;
-  border: none;
   position: relative;
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  background: rgba(0, 0, 0, 0.3);
-  box-shadow: 0px 0px 22px -5px black inset;
-  color: white;
+  background: ${props => props.readOnly === "true" ? "none" : "rgba(255, 255, 255, 0.05)"};
+  /* Background[light]/300 */
+  border: ${props => props.readOnly === "true" ? "none" : "1px solid rgba(255, 255, 255, 0.08)"};
+  border-radius: 8px;
 
   input,
   input:focus {
-    font-family: "Iceland", sans-serif;
     width: calc(100% - 148px);
-    height: 70px;
-    background: transparent;
-    padding: 20px 20px 20px 7px;
+    height: 40px;
+    background: transparent !important;
+    padding: 20px 10px 20px 7px;
     font-size: 28px;
     border: none;
     outline: none;
     text-align: right;
     -webkit-appearance: none;
     appearance: none;
-  }
-
-  .maxLink {
-    position: absolute;
-    color: #05cbea;
-    top: -58px;
-    right: 0;
-    padding: 6px 12px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 8px;
-    user-select: none;
-
-    &:hover {
-      background: rgba(0, 0, 0, 0.7);
-    }
+    color: white;
+    font-weight: 600;
+    cursor: ${props => props.readOnly === "true" ? "default !important" : "text"};
   }
 
   .currencySelector {
-    width: 148px;
-    margin-left: 15px;
+    width: ${props => props.readOnly === "true" ? "148px" : "208px"};
+    display: flex;
+    align-items: center;
   }
 `;
 
+const MaxButton = styled.button`
+  outline: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  gap: 2px;
+  width: 36px;
+  height: 28px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  border: none;
+  font-weight: 400;
+  font-size: 10px;
+  color: #2AABEE;
+  margin-left: 10px;
+`
+
 interface Props {
   value?: any;
-  onChange: (e:any, from: boolean)=>void;
+  onChange: (e: any, from: boolean) => void;
   currencies?: string;
   balances?: any;
   className?: string;
   from: boolean;
+  readOnly?: boolean;
 }
 
 const SwapSwapInput = ({
@@ -68,7 +74,8 @@ const SwapSwapInput = ({
   currencies,
   balances = {},
   className,
-  from
+  from,
+  readOnly
 }: Props) => {
   const setCurrency = useCallback(
     (currency) => onChange({ currency, amount: "" }, from),
@@ -83,14 +90,8 @@ const SwapSwapInput = ({
     (balances[value.currency] && balances[value.currency].valueReadable) || 0
   );
 
-  const setMax = () => {
-    if (maxBalance > 0) {
-      onChange({ amount: maxBalance || "" }, from);
-    }
-  };
-
   return (
-    <SwapInputBox>
+    <SwapInputBox readOnly={readOnly?"true":"false"}>
       <div className="currencySelector">
         <SwapCurrencySelector
           currencies={currencies}
@@ -98,6 +99,7 @@ const SwapSwapInput = ({
           onChange={setCurrency}
           value={value.currency}
         />
+        {!readOnly && <MaxButton>Max</MaxButton>}
       </div>
       <input
         onChange={setAmount}
@@ -105,10 +107,8 @@ const SwapSwapInput = ({
         className={className}
         placeholder="0.00"
         type="text"
+        disabled={readOnly}
       />
-      <a className="maxLink" href="#max" onClick={setMax}>
-        Max
-      </a>
     </SwapInputBox>
   );
 };
