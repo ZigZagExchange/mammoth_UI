@@ -1,108 +1,119 @@
 import React, { useEffect, useState } from "react";
 import styled from "@emotion/styled";
-import { FiChevronDown } from "react-icons/fi";
-import { Modal } from "../Modal";
 import CoinInfo from "../../libs/CoinInfo.json";
 import _ from "lodash"
 
-const StyledSwapCurrencySelector = styled.div`
-  height: 46px;
-  padding: 0 10px;
-  background: #fff;
-  border-radius: 15px;
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  border: 1px solid #fff;
-  box-shadow: 2px 2px 2px 0 rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-  user-select: none;
+import SelectUnstyled, {
+  SelectUnstyledProps,
+  selectUnstyledClasses,
+} from '@mui/base/SelectUnstyled';
+import { PopperUnstyled } from '@mui/base';
+import { StyledOption } from "../DepositComponent";
 
-  &:hover {
-    border-color: #7b8ab6;
-  }
+const blue = {
+  100: '#DAECFF',
+  200: '#99CCF3',
+  400: '#3399FF',
+  500: '#007FFF',
+  600: '#0072E5',
+  900: '#003A75',
+};
 
-  select {
-    width: 100%;
-    height: 100%;
-    border: none;
+const grey = {
+  100: '#E7EBF0',
+  200: '#E0E3E7',
+  300: '#CDD2D7',
+  400: '#B2BAC2',
+  500: '#A0AAB4',
+  600: '#6F7E8C',
+  700: '#3E5060',
+  800: '#2D3843',
+  900: '#1A2027',
+};
+
+const StyledButton = styled('button')(
+  ({ theme }) => `
+    font-family: IBM Plex Sans, sans-serif;
+    font-size: 0.875rem;
+    box-sizing: border-box;
+    height: 40px;
+    min-width: 130px;
     background: transparent;
-  }
-`;
-
-const SwapCurrencyWrapper = styled.div`
-  position: relative;
-
-  .currencyIcon > img {
-    width: 28px;
-    height: 28px;
-    object-fit: contain;
-  }
-
-  .currencyName {
-    flex: 1 1 auto;
-    margin-left: 8px;
-    font-size: 15px;
-    color: #333;
-
-    svg {
-      position: relative;
-      top: -1px;
-      margin-left: 5px;
-    }
-  }
-`;
-
-const SwapCurrencyOptions = styled.ul`
-  width: 100%;
-  overflow: auto;
-  padding: 0;
-  font-size: 16px;
-  cursor: pointer;
-  color: wheat;
-
-  & img {
-    width: 28px;
-    height: 28px;
-    object-fit: contain;
-    margin-right: 13px;
-  }
-
-  .currencyBalance {
-    line-height: 1.1;
-    text-align: right;
-    margin-left: auto;
-
-    strong {
-      display: block;
-      font-weight: 600;
-      font-family: "Iceland", sans-serif;
-      font-size: 18px;
-      color: #69f;
-    }
-
-    small {
-      font-size: 12px;
-    }
-  }
-
-  .currencyOption {
+    border: none;
+    border-radius: 5px;
+    margin: 0.5em;
+    padding: 10px;
+    text-align: left;
+    line-height: 1.5;
+    color: white;
     display: flex;
-    padding: 13px;
-    flex-direction: row;
     align-items: center;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    margin-bottom: 10px;
-
+  
     &:hover {
-      background: rgba(0, 0, 0, 0.3);
+      background: transparent;
     }
-  }
-`;
+  
+    &.${selectUnstyledClasses.focusVisible} {
+      outline: 3px solid '#232735';
+    }
+  
+    &.${selectUnstyledClasses.expanded} {
+      &::after {
+        content: '▴';
+        margin-left: 10px;
+      }
+    }
+  
+    &::after {
+      content: '▾';
+      float: right;
+      margin-left: 10px;
+    }
+  
+    & img {
+      margin-right: 10px;
+    }
+    `,
+);
 
-interface Props{
-  onChange: (e:any)=>void;
+const StyledListbox = styled('ul')(
+  ({ theme }) => `
+    font-family: IBM Plex Sans, sans-serif;
+    font-size: 0.875rem;
+    box-sizing: border-box;
+    
+    padding: 1px;
+    margin: 0px 0;
+    min-width: 485px;
+    max-height: 485px;
+    background: #25263d;
+    border-radius: 5px;
+    color: white;
+    overflow: auto;
+    outline: 0px;
+    `,
+);
+
+const StyledPopper = styled(PopperUnstyled)`
+    z-index: 1;
+  `;
+
+export const CustomSelect = React.forwardRef(function CustomSelect(
+  props: SelectUnstyledProps<number>,
+  ref: any,
+) {
+  const components: SelectUnstyledProps<number>['components'] = {
+    Root: StyledButton,
+    Listbox: StyledListbox,
+    Popper: StyledPopper,
+    ...props.components,
+  };
+
+  return <SelectUnstyled {...props} ref={ref} components={components} />;
+});
+
+interface Props {
+  onChange: (e: any) => void;
   currencies: any;
   balances: any;
   value: string;
@@ -114,28 +125,22 @@ const SwapCurrencySelector = ({
   balances = {},
   value,
 }: Props) => {
-  const [show, setShow] = useState(false);
   const [showingOptions, setShowingOptions] = useState(false);
   // const network = useSelector(networkSelector);
   // const user = useSelector(userSelector);
   // const coinEstimator = useCoinEstimator();
-  const [image, setImage] = useState("");
 
-  const [availableTickers, setTickers] = useState(['USDC', 'ZZUSDC', 'LUNA']);
-
-  // useEffect(() => {
-  //   onChange(api.marketInfo["ETH"] ? "ETH" : tickers[0]);
-  // }, [user.id, network, currencies]);
+  const [tokenIndex, changeIndex] = useState(0);
 
   const hideOptions = (e: any) => {
     if (e) e.preventDefault();
     setShowingOptions(false);
   };
 
-  useEffect(()=>{
-    const val = _.find(CoinInfo, {"coin": value});
-    setImage(val?.url || "");
-  },[value])
+  useEffect(() => {
+    const index = _.findIndex(CoinInfo, { "coin": value });
+    changeIndex(index);
+  }, [value])
 
   useEffect(() => {
     if (showingOptions) {
@@ -155,62 +160,31 @@ const SwapCurrencySelector = ({
   const currency = {};
   // const image = getCurrencyLogo(value);
 
-  const selectOption = (ticker: any) => (e: any) => {
-    if (e) e.preventDefault();
-    onChange(ticker.coin);
-    console.log(ticker.url)
-    setImage(ticker.url);
+  const handleTokenSelect = async (e: any) => {
+    // e.preventDefault();
+    console.log("a=================", e)
+    const val = e;
+    //await tokenApproval();
+    changeIndex(parseInt(val));
+    onChange(CoinInfo[e].coin);
   };
 
   return (
-    <SwapCurrencyWrapper>
-      <StyledSwapCurrencySelector onClick={() => setShow(true)}>
-        <div className="currencyIcon">
-          <img src={image} alt={"img"} />
-        </div>
-        <div className="currencyName">
-          {value}
-          <FiChevronDown />
-        </div>
-      </StyledSwapCurrencySelector>
-      <Modal
-        title="Select a token to Swap"
-        onClose={() => setShow(false)}
-        show={show}
-      >
-        <SwapCurrencyOptions onClick={() => setShow(false)}>
-          {_.map(CoinInfo, (ticker, key) =>
-            ticker.coin === value ? null : (
-              <li
-                key={key}
-                onClick={selectOption(ticker)}
-                tabIndex={0}
-                className="currencyOption"
-              >
-                <div className="currencyIcon">
-                  <img
-                    src={ticker.url}
-                    alt={"symbol"}
-                  />
-                </div>
-                <div className="currencyName">{ticker.coin}</div>
-                {balances[ticker.coin] && (
-                  <div className="currencyBalance">
-                    <strong>{balances[ticker.coin].valueReadable}</strong>
-                    <small>
-                      $
-                      {/* {formatUSD(
-                        coinEstimator(ticker) * balances[ticker].valueReadable
-                      )} */}
-                    </small>
-                  </div>
-                )}
-              </li>
-            )
-          )}
-        </SwapCurrencyOptions>
-      </Modal>
-    </SwapCurrencyWrapper>
+    <CustomSelect onChange={handleTokenSelect} value={tokenIndex}>
+      {CoinInfo.map((c: any, index: number) => (
+        <StyledOption key={c.coin} value={index}>
+          <img
+            loading="lazy"
+            width="30"
+            src={c.url}
+            srcSet={c.url}
+            alt={`coin`}
+          />
+          {c.coin}
+        </StyledOption>
+      ))}
+    </CustomSelect>
+
   );
 };
 
