@@ -4,33 +4,11 @@ import { ethers } from "ethers";
 import { walletAddress } from "./wallet.service";
 import starknetERC20_ABI from "./ABI/starknetERC20_ABI.json";
 import starknetPool_ABI from "./ABI/starknetPool_ABI.json";
-
-const tokenOne = {
-  address: "0x00b66defccaa972feefe72bc81e06e26b0ec86a9cfb7d7f600f4308012b45d64",
-  name: "FantieCoin",
-  symbol: "FC",
-  decimals: 6,
-};
-
-const tokenTwo = {
-  address: "0x071f27ef9eb51b0661dc62190fe5805a91b3b6492e539908e0738624c7c6ceff",
-  name: "testUSDC",
-  symbol: "TUSDC",
-  decimals: 4,
-};
-
-const tokenThree = {
-  address: "0x05d701f0f27c1ba8fe5f58e5e280a34f6e13495fd4f4768bd602c72958b8d858",
-  name: "testETH",
-  symbol: "TEETH",
-  decimals: 8,
-};
-
-export const tokens = [tokenOne, tokenTwo, tokenThree];
-
-const routerAddress = "0x00350377c012092645a86b5dd05e45a2ffeb24b695302d5d71d656729e0e8eaf";
-
-const poolAddress = "0x0645abc1c81eaf250b1f831bfcf681f7cf6e231360ff51161d9dbc27221fc8fb";
+import {
+  tokens,
+  routerAddress,
+  poolAddress
+} from "./constants";
 
 export const mintToken = async (
   tokenIndex: number,
@@ -54,8 +32,9 @@ export const mintToken = async (
   }
 };
 
-export const getTokeAllowance = async (tokenIndex: number) => {
+export const getTokenAllowance = async (tokenIndex: number) => {
   const userWalletAddress = await walletAddress();
+  if (!userWalletAddress) return 0;
   const tokenAddress = tokens[tokenIndex].address;
 
   const erc20 = new starknet.Contract(starknetERC20_ABI as starknet.Abi, tokenAddress);
@@ -65,6 +44,16 @@ export const getTokeAllowance = async (tokenIndex: number) => {
   );
   const allowance = starknet.uint256.uint256ToBN(result[0]);
   return allowance;
+};
+
+export const getAllowances = async (tokenIndex: number) => {
+  const allowances = [];
+  for (let i = 0; i < tokens.length; i++) {
+    allowances[i] = getTokenAllowance(i);
+  }
+  // wait for all
+  await Promise.all(allowances);
+  return allowances;
 };
 
 export const approveToken = async (
@@ -329,12 +318,24 @@ export const getBalance = async (
 }
 
 export const getPoolBalances = async (): Promise<any> => {
-  const balances = await Promise.all([
-    getBalance(0, poolAddress),
-    getBalance(1, poolAddress),
-    getBalance(2, poolAddress)
-  ]);
+  const balances = [];
+  for (let i = 0; i < tokens.length; i++) {
+    balances[i] = getBalance(i, poolAddress);
+  }
+  // wait for all
+  await Promise.all(balances);
+  return balances;
+};
 
+export const getUserBalances = async (): Promise<any> => {
+  const userWalletAddress = await walletAddress();
+  if (!userWalletAddress) return [];
+  const balances = [];
+  for (let i = 0; i < tokens.length; i++) {
+    balances[i] = getBalance(i, userWalletAddress);
+  }
+  // wait for all
+  await Promise.all(balances);
   return balances;
 };
 

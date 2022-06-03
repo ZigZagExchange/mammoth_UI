@@ -5,8 +5,8 @@ import { BigNumber } from "ethers";
 import {
   withdrawPool,
   getWithdrawERC20Amount,
-  tokens,
 } from "../../services/pool.service";
+import {tokens } from "../../services/constants";
 import LoadingIndicator from "../../components/Indicator";
 
 const Withdraw = () => {
