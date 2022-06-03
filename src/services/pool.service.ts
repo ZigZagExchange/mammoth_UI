@@ -49,10 +49,8 @@ export const getTokenAllowance = async (tokenIndex: number) => {
 export const getAllowances = async (tokenIndex: number) => {
   const allowances = [];
   for (let i = 0; i < tokens.length; i++) {
-    allowances[i] = getTokenAllowance(i);
+    allowances[i] = await getTokenAllowance(i);
   }
-  // wait for all
-  await Promise.all(allowances);
   return allowances;
 };
 
@@ -318,12 +316,10 @@ export const getBalance = async (
 }
 
 export const getPoolBalances = async (): Promise<any> => {
-  const balances = [];
+  const balances = [tokens.length];
   for (let i = 0; i < tokens.length; i++) {
-    balances[i] = getBalance(i, poolAddress);
+    balances[i] = await getBalance(i, poolAddress);
   }
-  // wait for all
-  await Promise.all(balances);
   return balances;
 };
 
@@ -332,10 +328,8 @@ export const getUserBalances = async (): Promise<any> => {
   if (!userWalletAddress) return [];
   const balances = [];
   for (let i = 0; i < tokens.length; i++) {
-    balances[i] = getBalance(i, userWalletAddress);
+    balances[i] = await getBalance(i, userWalletAddress);
   }
-  // wait for all
-  await Promise.all(balances);
   return balances;
 };
 
