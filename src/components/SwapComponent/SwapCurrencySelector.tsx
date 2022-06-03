@@ -151,7 +151,7 @@ const StyledPopper = styled(PopperUnstyled)`
   `;
 
 export const CustomSelect = React.forwardRef(function CustomSelect(
-  props: SelectUnstyledProps<number> & {borderBox: boolean},
+  props: SelectUnstyledProps<number> & {borderBox?: boolean},
   ref: any,
 ) {
   const components: SelectUnstyledProps<number>['components'] = {
