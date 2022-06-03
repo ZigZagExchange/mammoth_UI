@@ -1,12 +1,10 @@
-import { BigNumber } from "ethers";
-import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import {
   getLiquidityBalances,
   getPoolBalances,
   mintToken,
-  tokens,
 } from "../../services/pool.service";
+import {tokens } from "../../services/constants";
 import Image from "next/image";
 import styles from "../../styles/Pool.module.css";
 

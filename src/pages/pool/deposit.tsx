@@ -6,9 +6,9 @@ import {
   approveToken,
   depositPool,
   getDepositERC20Amount,
-  getTokeAllowance,
-  tokens,
+  getTokenAllowance,
 } from "../../services/pool.service";
+import {tokens } from "../../services/constants";
 import LoadingIndicator from "../../components/Indicator";
 
 const Deposit = () => {
@@ -23,7 +23,7 @@ const Deposit = () => {
   const [isTokenApproved, changeTokenApproved] = useState(false);
 
   const tokenApproval = useCallback(async () => {
-    const res: BigNumber = await getTokeAllowance(tokenIndex);
+    const res: BigNumber = await getTokenAllowance(tokenIndex);
     if (res.isZero()) {
       changeTokenApproved(false);
     } else {
