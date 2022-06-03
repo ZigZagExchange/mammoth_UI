@@ -546,6 +546,26 @@ blockquote footer {
   margin-right: 10px;
 }
 
+.bg_btn_deposit {
+  display: flex;
+  align-items: center;
+  transition: all 0.1s linear;
+  height: 55px;
+  padding: 4px 30px;
+  font-weight: bold;
+  background: linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%);;
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.08), 0px 3px 3px -1px rgba(0, 0, 0, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+  width: 100%;
+  justify-content: center;
+  position: relative;
+  color: white;
+  font-size: 18px;
+  line-height: 1.5;
+  outline: none;
+}
+
 .btn_loader {
   position: absolute;
 }
@@ -586,6 +606,9 @@ blockquote footer {
 .zig_disabled {
   opacity: 0.6;
   pointer-events: none;
+  cursor: not-allowed;
+  background: rgba(98, 210, 173, 0.75);
+  border: 2px solid #62D2AD;
 }
 
 .zig_btn_loading {

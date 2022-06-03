@@ -2,7 +2,7 @@ import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import SwapCurrencySelector from "./SwapCurrencySelector";
 
-const SwapInputBox = styled((props: any) => (<div {...props} />))`
+const SwapInputBox = styled((props: any)=>(<div {...props} />))`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -66,6 +66,7 @@ interface Props {
   className?: string;
   from: boolean;
   readOnly?: boolean;
+  borderBox?: boolean;
 }
 
 const SwapSwapInput = ({
@@ -75,7 +76,8 @@ const SwapSwapInput = ({
   balances = {},
   className,
   from,
-  readOnly
+  readOnly,
+  borderBox
 }: Props) => {
   const setCurrency = useCallback(
     (currency) => onChange({ currency, amount: "" }, from),
@@ -91,13 +93,14 @@ const SwapSwapInput = ({
   );
 
   return (
-    <SwapInputBox readOnly={readOnly ? "true" : "false"}>
+    <SwapInputBox readOnly={readOnly?"true":"false"}>
       <div className="currencySelector">
         <SwapCurrencySelector
           currencies={currencies}
           balances={balances}
           onChange={setCurrency}
           value={value.currency}
+          borderBox={borderBox}
         />
         {!readOnly && <MaxButton>Max</MaxButton>}
       </div>

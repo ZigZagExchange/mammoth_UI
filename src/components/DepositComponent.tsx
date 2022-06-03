@@ -19,13 +19,18 @@ import {
 } from "../services/pool.service";
 import {tokens } from "../services/constants";
 import LoadingIndicator from "./Indicator";
+// import { waitForTransaction } from "../services/wallet.service";
 
 import { Button as CustomButton } from "./Button/Button";
+import SwapSwapInput from "./SwapComponent/SwapSwapInput";
+import _ from "lodash";
+import cx from "classnames";
 
 interface DepositDialogProps {
   open: boolean;
   onClose: () => void;
 }
+
 
 const blue = {
   100: '#DAECFF',
@@ -193,6 +198,7 @@ export default function DepositComponent(props: DepositDialogProps) {
   };
 
   const [depositAmount, changeDepositAmount] = useState(0);
+
   const [LPAmount, changeLPAmount] = useState("0");
   const [tokenIndex, changeIndex] = useState(0);
   const [isLoading, changeIsLoading] = useState(false);
@@ -201,6 +207,10 @@ export default function DepositComponent(props: DepositDialogProps) {
   const [txMessage, changeTxMsg] = useState("Deposit Complete");
   const [failMsg, changeFailMsg] = useState("");
   const [isTokenApproved, changeTokenApproved] = useState(false);
+  const [swapDetails, _setSwapDetails] = useState(() => ({
+    amount: "",
+    currency: "USDC",
+  }));
 
   const tokenApproval = useCallback(async () => {
     const res: BigNumber = await getTokenAllowance(tokenIndex);
@@ -220,23 +230,6 @@ export default function DepositComponent(props: DepositDialogProps) {
   const predictDepositResult = async (amount: number) => {
     const result = await getDepositERC20Amount(tokenIndex, amount);
     changeLPAmount(result);
-  };
-  const handleInputChange = async (e: any) => {
-    e.preventDefault();
-    let val = e.target.value;
-
-    if (typeof val === "string") {
-      val = parseFloat(val.replace(",", "."));
-    }
-    val = Number.isNaN(val) ? 0 : val;
-    changeDepositAmount(val);
-    await predictDepositResult(val);
-  };
-
-  const handleTokenSelect = async (e: any) => {
-    const val = e;
-    changeIndex(parseInt(val));
-    await predictDepositResult(depositAmount);
   };
 
   const handleSubmit = async (e: any) => {
@@ -290,6 +283,28 @@ export default function DepositComponent(props: DepositDialogProps) {
     changeFailMsg("");
   };
 
+  const setSwapDetails = async (values: any, from: boolean) => {
+    const details = {
+      ...swapDetails,
+      ...values,
+    };
+    _setSwapDetails(details);
+    console.log("val=========",details)
+
+    let val = details.amount;
+
+    if (typeof val === "string") {
+      val = parseFloat(val.replace(",", "."));
+    }
+    val = Number.isNaN(val) ? 0 : val;
+    const index = _.findIndex(CoinInfo, {coin: details.currency});
+    console.log("index", index);
+    changeIndex(index);
+    changeDepositAmount(val);
+    await predictDepositResult(val);
+  }
+
+
   return (
     <Box>
       <Dialog
@@ -300,11 +315,10 @@ export default function DepositComponent(props: DepositDialogProps) {
         style={{ backdropFilter: 'blur(2px)' }}
         PaperProps={{
           style: {
-            background: '#2B2E4A',
+            background: 'linear-gradient(180deg, #32374B 0%, #1C1E27 100%)',
             borderRadius: '6px',
             overflow: 'auto',
             fontSize: '0.8rem',
-            minWidth: '500px',
           },
         }}
       >
@@ -325,56 +339,36 @@ export default function DepositComponent(props: DepositDialogProps) {
             onClose={handleFailIndicatorClose}
           />
         ) : null}
-        <Box fontSize="1vw" fontWeight="500" px="1.5vw" py="1vw" color="white">Deposit</Box>
-        <Box display="flex" flexDirection="column" px="2vw" pt="2vw" pb="4vw" bgcolor={'#191A33'}>
-          <CustomSelect onChange={handleTokenSelect} value={tokenIndex}>
-            {CoinInfo.map((c: any, index: number) => (
-              <StyledOption key={c.coin} value={index}>
-                <img
-                  loading="lazy"
-                  width="20"
-                  src={c.url}
-                  srcSet={c.url}
-                  alt={`coin`}
-                />
-                {c.coin}
-              </StyledOption>
-            ))}
-          </CustomSelect>
-          <Box display="flex" mt="2vw" alignItems="flex-start" flexDirection="column" width="100%">
-            <Box flex={1} display="flex" flexDirection="column" mb="3vw" width="100%">
-              <Box color="lightgray" fontSize="1vw" mb="1vw" >Amount</Box>
-              <Box borderBottom=" 1px solid white" display="flex" justifyContent="space-between">
-                <CustomInput value={depositAmount} onChange={handleInputChange} />
-              </Box>
-
-              <Box color="white" fontSize="1vw" mt="1vw" textAlign="right">Receive&nbsp; <span style={{ color: '#ff1268' }}>{LPAmount.toString()}</span> LP TOkens</Box>
-            </Box>
+        <Box fontSize="18px" fontWeight="700" px="30px" py="25px" color="white">Deposit</Box>
+        <Box display="flex" flexDirection="column" px="40px" pb="50px" bgcolor={'#232735'}>
+          <Box bgcolor="#181B25" color="#636EA8" mt="33px" mb="23px" p="11px 13px" fontFamily="Inter" fontWeight={700} fontSize="13px">
+            Tip: When you add liquidity, you will receive pool tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and can be redeemed at any time.
           </Box>
-          <Box display="flex" width="50%">
-            <Box color="#09aaf5" width="100%" height="100%" mr="1vw">
-
-              {!isTokenApproved && <CustomButton
-                className="bg_btn"
+          <SwapSwapInput
+            // balances={balances}
+            // currencies={currencies}
+            from={true}
+            value={swapDetails}
+            onChange={setSwapDetails}
+            borderBox
+          />
+          <Box textAlign={'right'} mt="20px" mb="42px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {35000} USDC</Box>
+          <Box display="flex" width="100%">
+            <Box width="100%" height="100%" display="flex">
+               <CustomButton
+                className={cx("bg_btn_deposit", {
+                  zig_disabled: isTokenApproved,
+                })}
                 text="Approve"
                 onClick={handleApprove}
-                style={{ width: '100px', marginRight: '10px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }}
+                style={{marginRight: '10px' }}
               />
-              }
-              {isTokenApproved && <CustomButton
-                className="bg_btn"
-                text="Deposit"
-                onClick={handleSubmit}
-                style={{ width: '100px', marginRight: '10px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }}
-              />
-              }
-            </Box>
-            <Box color="orangered" width="100%" height="100%">
               <CustomButton
-                className="bg_btn"
-                text="Cancel"
-                onClick={handleClose}
-                style={{ width: '100px', marginRight: '10px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }}
+                className={cx("bg_btn_deposit", {
+                  zig_disabled: !isTokenApproved,
+                })}
+                text="Supply"
+                onClick={handleSubmit}
               />
             </Box>
           </Box>
