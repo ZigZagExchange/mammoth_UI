@@ -30,6 +30,7 @@ const Swap = () => {
   const [failMsg, changeFailMsg] = useState("");
   const [poolbalances, changeBalances] = useState(['0', '0', '0']);
   const [liquidityBalance, changeLiquidityBalance] = useState('0');
+  const [tokenAllowance, setTokenAllowance] = useState("0");
 
 
   const [modal, setModal] = useState(false);
@@ -58,12 +59,8 @@ const Swap = () => {
   }, []);
 
   const tokenApproval = useCallback(async () => {
-    const res: BigNumber = await getTokenAllowance(getTokenIndex(fromDetails.symbol));
-    if (res.isZero()) {
-      changeTokenApproved(false);
-    } else {
-      changeTokenApproved(true);
-    }
+    const result: string = await getTokenAllowance(getTokenIndex(fromDetails.symbol));
+    setTokenAllowance(result);
   }, [fromDetails.symbol]);
 
   useEffect(() => {
@@ -116,7 +113,6 @@ const Swap = () => {
     changeIsLoading(false);
     if (success) {
       changeTxComplete(true);
-      changeTokenApproved(true);
     }
   };
 
@@ -143,7 +139,6 @@ const Swap = () => {
     changeIsLoading(false);
     if (success) {
       changeTxComplete(true);
-      changeTokenApproved(true);
     }
   };
 
@@ -187,6 +182,8 @@ const Swap = () => {
       }
       setToDetails(detail2);
     }
+
+    changeTokenApproved(Number(tokenAllowance) > Number(fromDetails.amount));
   }
 
   return (

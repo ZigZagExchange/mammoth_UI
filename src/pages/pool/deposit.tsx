@@ -21,14 +21,11 @@ const Deposit = () => {
   const [txMessage, changeTxMsg] = useState("Deposit Complete");
   const [failMsg, changeFailMsg] = useState("");
   const [isTokenApproved, changeTokenApproved] = useState(false);
+  const [tokenAllowance, setTokenAllowance] = useState("0");
 
   const tokenApproval = useCallback(async () => {
-    const res: BigNumber = await getTokenAllowance(tokenIndex);
-    if (res.isZero()) {
-      changeTokenApproved(false);
-    } else {
-      changeTokenApproved(true);
-    }
+    const result: string = await getTokenAllowance(tokenIndex);
+    setTokenAllowance(result);
   }, [tokenIndex]);
 
   useEffect(() => {
@@ -50,7 +47,8 @@ const Deposit = () => {
       val = parseFloat(val.replace(",", "."));
     }
     val = Number.isNaN(val) ? 0 : val;
-    changeAmount(val);
+    changeAmount(val);    
+    changeTokenApproved(Number(tokenAllowance) > val);
     await predictDepositResult(val);
   };
 
@@ -81,7 +79,6 @@ const Deposit = () => {
     changeIsLoading(false);
     if (success) {
       changeTxComplete(true);
-      changeTokenApproved(true);
     }
   };
 
@@ -103,7 +100,6 @@ const Deposit = () => {
     if (success) {
       console.log("success");
       changeTxComplete(true);
-      changeTokenApproved(true);
     }
   };
 

@@ -206,18 +206,15 @@ export default function DepositComponent(props: DepositDialogProps) {
   const [txMessage, changeTxMsg] = useState("Deposit Complete");
   const [failMsg, changeFailMsg] = useState("");
   const [isTokenApproved, changeTokenApproved] = useState(false);
+  const [tokenAllowance, setTokenAllowance] = useState("0");
   const [swapDetails, _setSwapDetails] = useState(() => ({
     amount: "",
     symbol: tokens[0].symbol,
   }));
 
   const tokenApproval = useCallback(async () => {
-    const res: BigNumber = await getTokenAllowance(tokenIndex);
-    if (res.isZero()) {
-      changeTokenApproved(false);
-    } else {
-      changeTokenApproved(true);
-    }
+    const result: string = await getTokenAllowance(tokenIndex);
+    setTokenAllowance(result);
   }, [tokenIndex]);
 
   useEffect(() => {
@@ -249,7 +246,6 @@ export default function DepositComponent(props: DepositDialogProps) {
     changeIsLoading(false);
     if (success) {
       changeTxComplete(true);
-      changeTokenApproved(true);
     }
   };
 
@@ -270,7 +266,6 @@ export default function DepositComponent(props: DepositDialogProps) {
     if (success) {
       console.log("success");
       changeTxComplete(true);
-      changeTokenApproved(true);
     }
   };
 
@@ -300,6 +295,8 @@ export default function DepositComponent(props: DepositDialogProps) {
     console.log("index", index);
     changeIndex(index);
     changeDepositAmount(val);
+
+    changeTokenApproved(Number(tokenAllowance) > val);
     await predictDepositResult(val);
   }
 
