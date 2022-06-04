@@ -5,6 +5,7 @@ const tokenOne = {
   name: "FantieCoin",
   symbol: "FC",
   decimals: 12,
+  logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/9078.png"
 };
 
 const tokenTwo = {
@@ -12,6 +13,7 @@ const tokenTwo = {
   name: "testUSDC",
   symbol: "TUSDC",
   decimals: 6,
+  logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"
 };
 
 const tokenThree = {
@@ -19,6 +21,7 @@ const tokenThree = {
   name: "testETH",
   symbol: "TEETH",
   decimals: 18,
+  logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png"
 };
 
 export const tokens = [tokenOne, tokenTwo, tokenThree];

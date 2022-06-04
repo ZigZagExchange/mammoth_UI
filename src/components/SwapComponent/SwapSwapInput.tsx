@@ -67,6 +67,7 @@ interface Props {
   from: boolean;
   readOnly?: boolean;
   borderBox?: boolean;
+  listWidth?: string;
 }
 
 const SwapSwapInput = ({
@@ -77,10 +78,11 @@ const SwapSwapInput = ({
   className,
   from,
   readOnly,
-  borderBox
+  borderBox,
+  listWidth
 }: Props) => {
   const setCurrency = useCallback(
-    (currency) => onChange({ currency, amount: "" }, from),
+    (symbol) => onChange({ symbol, amount: "" }, from),
     [onChange]
   );
   const setAmount = useCallback(
@@ -89,7 +91,7 @@ const SwapSwapInput = ({
   );
 
   let maxBalance = parseFloat(
-    (balances[value.currency] && balances[value.currency].valueReadable) || 0
+    (balances[value.symbol] && balances[value.symbol].valueReadable) || 0
   );
 
   return (
@@ -99,8 +101,9 @@ const SwapSwapInput = ({
           currencies={currencies}
           balances={balances}
           onChange={setCurrency}
-          value={value.currency}
+          value={value.symbol}
           borderBox={borderBox}
+          listWidth={listWidth}
         />
         {!readOnly && <MaxButton>Max</MaxButton>}
       </div>

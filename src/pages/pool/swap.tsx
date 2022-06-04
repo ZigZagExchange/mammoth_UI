@@ -22,10 +22,6 @@ import DepositComponent from "../../components/DepositComponent";
 import Image from "next/image";
 
 const Swap = () => {
-  const [swapAmount, changeAmount] = useState(0);
-  const [LPAmount, changeLPAmount] = useState('0');
-  const [tokenInIndex, changeIndexIn] = useState(0);
-  const [tokenOutIndex, changeIndexOut] = useState(1);
   const [isLoading, changeIsLoading] = useState(false);
   const [loadingMsg, changeLoadingMsg] = useState("Awaiting Swap");
   const [txComplete, changeTxComplete] = useState(false);
@@ -35,14 +31,40 @@ const Swap = () => {
   const [poolbalances, changeBalances] = useState(['0', '0', '0']);
   const [liquidityBalance, changeLiquidityBalance] = useState('0');
 
+
+  const [modal, setModal] = useState(false);
+  const [withdrawModal, setWithdrawModal] = useState(false);
+  const [mintModal, setMintModal] = useState(false);
+  const [fromDetails, setFromDetails] = useState(() => ({
+    amount: "",
+    symbol: tokens[0].symbol,
+  }));
+
+  const [toDetails, setToDetails] = useState(() => ({
+    amount: "",
+    symbol: tokens[1].symbol,
+  }));
+
+  useEffect(() => {
+    (async () => {
+      const res: string[] = await getPoolBalances();
+      changeBalances(res);
+    })();
+
+    (async () => {
+      const res: string = await getLiquidityBalances();
+      changeLiquidityBalance(res);
+    })();
+  }, []);
+
   const tokenApproval = useCallback(async () => {
-    const res: BigNumber = await getTokenAllowance(tokenInIndex);
+    const res: BigNumber = await getTokenAllowance(getTokenIndex(fromDetails.symbol));
     if (res.isZero()) {
       changeTokenApproved(false);
     } else {
       changeTokenApproved(true);
     }
-  }, [tokenInIndex]);
+  }, [fromDetails.symbol]);
 
   useEffect(() => {
     (async () => {
@@ -50,73 +72,41 @@ const Swap = () => {
     })();
   });
 
+  useEffect(()=>{
+    (async() =>{
+      await predictSwapResult(getString2Number(fromDetails.amount));
+    })();
+  }, [toDetails.amount, fromDetails])
+
   const predictSwapResult = async (amount: number) => {
     const result = await getSwapAmount(
-      tokenInIndex,
-      tokenOutIndex,
+      getTokenIndex(fromDetails.symbol),
+      getTokenIndex(toDetails.symbol),
       amount
     );
-    changeLPAmount(result);
-  };
-
-  const handleInputChange = async (e: any) => {
-    e.preventDefault();
-    let val = e.target.value;
-
-    if (typeof val === "string") {
-      val = parseFloat(val.replace(",", "."));
-    }
-    val = Number.isNaN(val) ? 0 : val;
-    changeAmount(val);
-    await predictSwapResult(val);
-  };
-
-  const handleTokenInSelect = async (e: any) => {
-    e.preventDefault();
-    const val = e.target.value;
-
-    const newTokenIn = parseInt(val);
-    if (newTokenIn == tokenOutIndex) {
-      const temp = tokenInIndex;
-      changeIndexOut(temp);
-      changeIndexIn(newTokenIn);
-    } else {
-      changeIndexIn(val);
-    }
-
-    await predictSwapResult(swapAmount);
-  };
-
-  const handleTokenOutSelect = async (e: any) => {
-    e.preventDefault();
-    const val = e.target.value;
-
-    const newTokenOut = parseInt(val);
-    if (newTokenOut === tokenInIndex) {
-      const temp = tokenOutIndex;
-      changeIndexIn(temp);
-      changeIndexOut(newTokenOut);
-    } else {
-      changeIndexOut(val);
-    }
-    await predictSwapResult(swapAmount);
+    // changeLPAmount(result);
+    const detail2 = {
+      ...toDetails,
+      ...{amount: `${result}`},
+    };
+    setToDetails(detail2);
   };
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     changeIsLoading(true);
     changeLoadingMsg(
-      `Swapping ${tokens[tokenInIndex].symbol} for ${tokens[tokenOutIndex].symbol}`
+      `Swapping ${tokens[getTokenIndex(fromDetails.symbol)].symbol} for ${tokens[getTokenIndex(toDetails.symbol)].symbol}`
     );
     changeTxMsg(
-      `Swap ${tokens[tokenInIndex].symbol} for ${tokens[tokenOutIndex].symbol} success`
+      `Swap ${tokens[getTokenIndex(fromDetails.symbol)].symbol} for ${tokens[getTokenIndex(toDetails.symbol)].symbol} success`
     );
     let success = true;
     try {
       await swapPool(
-        swapAmount,
-        tokenInIndex,
-        tokenOutIndex
+        getString2Number(toDetails.amount),
+        getTokenIndex(fromDetails.symbol),
+        getTokenIndex(toDetails.symbol)
       );
     } catch (e) {
       console.log(e)
@@ -130,14 +120,22 @@ const Swap = () => {
     }
   };
 
+  const getString2Number = (amount: string) => {
+    return Number.isNaN(amount) ? 0 : Number(amount)
+  }
+
+  const getTokenIndex = (symbol: string) => {
+    return _.findIndex(tokens, {symbol})
+  }
+
   const handleApprove = async (e: any) => {
     e.preventDefault();
     changeIsLoading(true);
-    changeLoadingMsg(`Approving ${tokens[tokenInIndex].symbol}`);
-    changeTxMsg(`${tokens[tokenOutIndex].symbol} approved`);
+    changeLoadingMsg(`Approving ${tokens[getTokenIndex(fromDetails.symbol)].symbol}`);
+    changeTxMsg(`${tokens[getTokenIndex(toDetails.symbol)].symbol} approved`);
     let success = true;
     try {
-      await approveToken(tokenInIndex);
+      await approveToken(getTokenIndex(fromDetails.symbol));
     } catch (e) {
       success = false;
       changeFailMsg("Approval failed");
@@ -157,59 +155,38 @@ const Swap = () => {
     changeFailMsg("");
   };
 
-  const [modal, setModal] = useState(false);
-  const [withdrawModal, setWithdrawModal] = useState(false);
-  const [mintModal, setMintModal] = useState(false);
-  const [swapDetails, _setSwapDetails] = useState(() => ({
-    amount: "",
-    currency: "USDC",
-  }));
 
-  const [toDetail, setToDetails] = useState(() => ({
-    amount: "",
-    currency: "ZZUSD",
-  }));
+  const switchTransferType = (e: any) => {
+    setFromDetails(toDetails);
+    const value = {amount: ""};
+    setToDetails({...fromDetails, ...value})
+    console.log({...fromDetails, ...value})
+    // predictSwapResult(Number.isNaN(toDetails.amount) ? 0 : Number(toDetails.amount));
+  }
 
-  useEffect(() => {
-    (async () => {
-      const res: string[] = await getPoolBalances();
-      changeBalances(res);
-    })();
-
-    (async () => {
-      const res: string = await getLiquidityBalances();
-      changeLiquidityBalance(res);
-    })();
-  }, []);
-
-  const switchTransferType = (e: any) => { }
-
-  const setSwapDetails = async (values: any, from: boolean) => {
+  const setSwapDetails = async (values: {amount: string, symbol: string}, from: boolean) => {
 
     console.log("asdfadsfas", from, values)
 
     if (from) {
       const details = {
-        ...swapDetails,
+        ...fromDetails,
         ...values,
       };
-      if (details.currency === toDetail.currency) {
-        setToDetails(swapDetails);
+      if (details.symbol === toDetails.symbol) {
+        setToDetails({...fromDetails, ...{amount: ''}});
       }
-      _setSwapDetails(details);
-    }
-    else {
+      setFromDetails(details);
+    } else {
       const detail2 = {
-        ...toDetail,
+        ...toDetails,
         ...values,
       };
-      if (detail2.currency === swapDetails.currency) {
-        _setSwapDetails(toDetail);
+      if (detail2.symbol === fromDetails.symbol) {
+        setFromDetails({...toDetails, ...{amount: ''}});
       }
       setToDetails(detail2);
     }
-
-    await predictSwapResult(swapAmount);
   }
 
   return (
@@ -266,7 +243,7 @@ const Swap = () => {
               // balances={balances}
               // currencies={currencies}
               from={true}
-              value={swapDetails}
+              value={fromDetails}
               onChange={setSwapDetails}
             />
             <Box mt="10px" color="rgba(255, 255, 255, 0.72)" fontSize="11px" textAlign="right">Estimated value: ~$ 30.33</Box>
@@ -286,9 +263,9 @@ const Swap = () => {
               // balances={balances}
               // currencies={currencies}
               from={false}
-              value={toDetail}
+              value={toDetails}
               onChange={setSwapDetails}
-              readOnly
+              readOnly={true}
             />
             <Box mt="10px" color="rgba(255, 255, 255, 0.72)" fontSize="11px" justifyContent="flex-end" alignItems="center" display="flex">
               <Box mr="5px">Estimated value: ~$ 30.33</Box>
@@ -307,7 +284,7 @@ const Swap = () => {
                   loading={isLoading}
                   className={cx("bg_btn", {
                     // zig_disabled:
-                    // !hasAllowance || swapDetails.amount.length === 0,
+                    // !hasAllowance || fromDetails.amount.length === 0,
                   })}
                   style={{ height: '40px', fontSize: '18px' }}
                   text="Approve"
@@ -320,7 +297,7 @@ const Swap = () => {
                   loading={isLoading}
                   className={cx("bg_btn", {
                     // zig_disabled:
-                    // !hasAllowance || swapDetails.amount.length === 0,
+                    // !hasAllowance || fromDetails.amount.length === 0,
                   })}
                   text="Swap"
                   // icon={<MdSwapCalls />}
