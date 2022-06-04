@@ -242,8 +242,7 @@ export const swapPool = async (
   tokenIndexBuy: number,
   tokenIndexSell: number
 ): Promise<any> => {
-  console.log(`swapPool: amount: ${amount}`)
-  amount = 10;
+  if (!amount) return;
   console.log(`swapPool: amount: ${amount}`)
 
   const wallet = getStarknet();
