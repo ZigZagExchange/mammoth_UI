@@ -43,16 +43,22 @@ export const mintToken = async (
 
 export const getTokenAllowance = async (tokenIndex: number) => {
   const userWalletAddress = await walletAddress();
-  if (!userWalletAddress) return 0;
+  if (!userWalletAddress) return '0';
   const tokenAddress = tokens[tokenIndex].address;
+  const tokenDecimals = tokens[tokenIndex].decimals;
 
   const erc20 = new starknet.Contract(starknetERC20_ABI as starknet.Abi, tokenAddress);
   const result = await erc20.allowance(
     userWalletAddress,
     poolAddress
   );
-  const allowance = starknet.uint256.uint256ToBN(result[0]);
-  return allowance;
+  const allowanceBN = starknet.uint256.uint256ToBN(result[0]);
+  if (allowanceBN.lt(1 / tokenDecimals)) return '0';
+  const decimalString = ethers.utils.formatUnits(
+    allowanceBN.toString(),
+    tokenDecimals
+  ).toString();
+  return decimalString;
 };
 
 export const getAllowances = async (tokenIndex: number) => {

@@ -21,14 +21,11 @@ const Deposit = () => {
   const [txMessage, changeTxMsg] = useState("Deposit Complete");
   const [failMsg, changeFailMsg] = useState("");
   const [isTokenApproved, changeTokenApproved] = useState(false);
+  const [tokenAllowance, setTokenAllowance] = useState("0");
 
   const tokenApproval = useCallback(async () => {
-    const res: BigNumber = await getTokenAllowance(tokenIndex);
-    if (res.isZero()) {
-      changeTokenApproved(false);
-    } else {
-      changeTokenApproved(true);
-    }
+    const result: string = await getTokenAllowance(tokenIndex);
+    setTokenAllowance(result);
   }, [tokenIndex]);
 
   useEffect(() => {
