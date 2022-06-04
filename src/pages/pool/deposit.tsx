@@ -47,7 +47,8 @@ const Deposit = () => {
       val = parseFloat(val.replace(",", "."));
     }
     val = Number.isNaN(val) ? 0 : val;
-    changeAmount(val);
+    changeAmount(val);    
+    changeTokenApproved(Number(tokenAllowance) > val);
     await predictDepositResult(val);
   };
 
@@ -78,7 +79,6 @@ const Deposit = () => {
     changeIsLoading(false);
     if (success) {
       changeTxComplete(true);
-      changeTokenApproved(true);
     }
   };
 
@@ -100,7 +100,6 @@ const Deposit = () => {
     if (success) {
       console.log("success");
       changeTxComplete(true);
-      changeTokenApproved(true);
     }
   };
 

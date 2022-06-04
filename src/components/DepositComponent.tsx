@@ -246,7 +246,6 @@ export default function DepositComponent(props: DepositDialogProps) {
     changeIsLoading(false);
     if (success) {
       changeTxComplete(true);
-      changeTokenApproved(true);
     }
   };
 
@@ -267,7 +266,6 @@ export default function DepositComponent(props: DepositDialogProps) {
     if (success) {
       console.log("success");
       changeTxComplete(true);
-      changeTokenApproved(true);
     }
   };
 
@@ -297,6 +295,8 @@ export default function DepositComponent(props: DepositDialogProps) {
     console.log("index", index);
     changeIndex(index);
     changeDepositAmount(val);
+
+    changeTokenApproved(Number(tokenAllowance) > val);
     await predictDepositResult(val);
   }
 

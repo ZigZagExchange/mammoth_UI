@@ -113,7 +113,6 @@ const Swap = () => {
     changeIsLoading(false);
     if (success) {
       changeTxComplete(true);
-      changeTokenApproved(true);
     }
   };
 
@@ -140,7 +139,6 @@ const Swap = () => {
     changeIsLoading(false);
     if (success) {
       changeTxComplete(true);
-      changeTokenApproved(true);
     }
   };
 
@@ -184,6 +182,8 @@ const Swap = () => {
       }
       setToDetails(detail2);
     }
+
+    changeTokenApproved(Number(tokenAllowance) > Number(fromDetails.amount));
   }
 
   return (
