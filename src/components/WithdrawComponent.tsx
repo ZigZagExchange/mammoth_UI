@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { BigNumber } from "ethers";
 import Dialog from '@mui/material/Dialog';
 import { Box } from '@mui/material';
-import CoinInfo from "../libs/CoinInfo.json"
+import { tokens } from "../services/constants";
 import _ from "lodash";
 import {
   getWithdrawERC20Amount,
@@ -38,7 +38,7 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
   const [failMsg, changeFailMsg] = useState("");
   const [swapDetails, _setSwapDetails] = useState(() => ({
     amount: "",
-    currency: "USDC",
+    symbol: tokens[0].symbol,
   }));
 
   const Withdraw = async (e: any) => {
@@ -87,7 +87,7 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
       val = parseFloat(val.replace(",", "."));
     }
     val = Number.isNaN(val) ? 0 : val;
-    const index = _.findIndex(CoinInfo, {coin: details.currency});
+    const index = _.findIndex(tokens, {symbol: details.symbol});
     console.log("index", index);
     changeIndex(index);
     changeWithdrawAmount(val);
@@ -140,6 +140,7 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
             value={swapDetails}
             onChange={setSwapDetails}
             borderBox
+            listWidth="505px"
           />
           <Box textAlign={'right'} mt="20px" mb="42px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {35000} USDC</Box>
           <Box display="flex" width="50%">

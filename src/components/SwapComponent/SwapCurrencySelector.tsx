@@ -7,7 +7,7 @@ import { FiChevronDown } from "react-icons/fi";
 // import { useCoinEstimator, Modal } from "components";
 import { formatUSD } from "../../libs/utils";
 // import api from "lib/api";
-import CoinInfo from "../../libs/CoinInfo.json";
+import { tokens } from "../../services/constants";
 import _ from "lodash"
 
 import SelectUnstyled, {
@@ -128,7 +128,7 @@ const StyledBorderedButton = styled('button')(
     `,
 );
 
-const StyledListbox = styled('ul')(
+const StyledListbox = (width?: string) => styled('ul')(
   ({ theme }) => `
     font-family: IBM Plex Sans, sans-serif;
     font-size: 0.875rem;
@@ -136,7 +136,7 @@ const StyledListbox = styled('ul')(
     
     padding: 1px;
     margin: 0px 0;
-    min-width: 485px;
+    min-width: ${width ? width : "485px"};
     max-height: 485px;
     background: #25263d;
     border-radius: 5px;
@@ -151,12 +151,13 @@ const StyledPopper = styled(PopperUnstyled)`
   `;
 
 export const CustomSelect = React.forwardRef(function CustomSelect(
-  props: SelectUnstyledProps<number> & {borderBox?: boolean},
+  props: SelectUnstyledProps<number> & {borderBox?: boolean, width?: string},
   ref: any,
 ) {
+  console.log("listWidth==============", props.width)
   const components: SelectUnstyledProps<number>['components'] = {
     Root: props.borderBox ? StyledBorderedButton : StyledButton,
-    Listbox: StyledListbox,
+    Listbox: StyledListbox(props.width),
     Popper: StyledPopper,
     ...props.components,
   };
@@ -170,6 +171,7 @@ interface Props{
   balances: any;
   value: string;
   borderBox?: boolean;
+  listWidth?: string;
 }
 
 const SwapCurrencySelector = ({
@@ -178,6 +180,7 @@ const SwapCurrencySelector = ({
   balances = {},
   value,
   borderBox,
+  listWidth,
 }: Props) => {
   const [showingOptions, setShowingOptions] = useState(false);
   // const network = useSelector(networkSelector);
@@ -192,7 +195,7 @@ const SwapCurrencySelector = ({
   };
 
   useEffect(()=>{
-    const index = _.findIndex(CoinInfo, {"coin": value});
+    const index = _.findIndex(tokens, {symbol: value});
     changeIndex(index);
   },[value])
 
@@ -210,8 +213,8 @@ const SwapCurrencySelector = ({
     return null;
   }
 
-  // const currency = api.getCurrencyInfo(value);
-  const currency = {};
+  // const symbol = api.getCurrencyInfo(value);
+  const symbol = {};
   // const image = getCurrencyLogo(value);
 
   const handleTokenSelect = async (e: any) => {
@@ -220,21 +223,21 @@ const SwapCurrencySelector = ({
     const val = e;
     //await tokenApproval();
     changeIndex(parseInt(val));
-    onChange(CoinInfo[e].coin);
+    onChange(tokens[e].symbol);
   };
 
   return (
-    <CustomSelect onChange={handleTokenSelect} value={tokenIndex} borderBox={borderBox}>
-      {CoinInfo.map((c: any, index: number) => (
-        <StyledOption key={c.coin} value={index}>
+    <CustomSelect onChange={handleTokenSelect} value={tokenIndex} borderBox={borderBox} width={listWidth}>
+      {tokens.map((c: any, index: number) => (
+        <StyledOption key={c.symbol} value={index}>
           <img
             loading="lazy"
             width="30"
-            src={c.url}
-            srcSet={c.url}
+            src={c.logo}
+            srcSet={c.logo}
             alt={`coin`}
           />
-          {c.coin}
+          {c.symbol}
         </StyledOption>
       ))}
     </CustomSelect>

@@ -2,7 +2,6 @@ import * as React from 'react';
 import Dialog from '@mui/material/Dialog';
 import { Box } from '@mui/material';
 import { Button as CustomButton } from "./Button/Button";
-import CoinInfo from "../libs/CoinInfo.json"
 import Image from "next/image";
 import { mintToken } from "../services/pool.service";
 import {tokens } from "../services/constants";
@@ -59,11 +58,11 @@ export default function MintDialogComponent(props: DepositDialogProps) {
         <Box display="flex" flexDirection="column" px="2vw" pb="2vw" bgcolor={'#191A33'}>
           <Box display="flex" alignItems="flex-start" flexDirection="column" width="400px">
             {
-              CoinInfo.map((c, key: number) => (
+              tokens.map((c, key: number) => (
                 <Box display="flex" alignItems="center" width="100%" mb="10px" p="20px" key={key} justifyContent='space-between'>
                   <Box width="50%" display="flex" alignItems="center">
-                    <img src={c.url} width="30px" alt="image" />
-                    <Box ml="20px" color="white">{c.coin}</Box>
+                    <img src={c.logo} width="30px" alt="image" />
+                    <Box ml="20px" color="white">{c.symbol}</Box>
                   </Box>
                   <CustomButton className="bg_btn" style={{ width: '100px', marginRight: '10px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }} text="MINT" onClick={() => handleMint(key)} />
                   <CustomButton className="bg_btn" style={{ width: '100px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }} onClick={() => handleCopy(key)}  >

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { BigNumber } from "ethers";
 import Dialog from '@mui/material/Dialog';
 import { Box } from '@mui/material';
-import CoinInfo from "../libs/CoinInfo.json"
+import { tokens } from "../services/constants";
 import SelectUnstyled, {
   SelectUnstyledProps,
   selectUnstyledClasses,
@@ -17,7 +17,6 @@ import {
   getDepositERC20Amount,
   getTokenAllowance
 } from "../services/pool.service";
-import {tokens } from "../services/constants";
 import LoadingIndicator from "./Indicator";
 // import { waitForTransaction } from "../services/wallet.service";
 
@@ -59,7 +58,7 @@ const StyledButton = styled('button')(
     font-size: 0.875rem;
     box-sizing: border-box;
     min-height: calc(1.5em + 22px);
-    min-width: 320px;
+    min-width: 390px;
     background: #232735;
     border: 1px solid #3C435A;
     border-radius: 5px;
@@ -209,7 +208,7 @@ export default function DepositComponent(props: DepositDialogProps) {
   const [isTokenApproved, changeTokenApproved] = useState(false);
   const [swapDetails, _setSwapDetails] = useState(() => ({
     amount: "",
-    currency: "USDC",
+    symbol: tokens[0].symbol,
   }));
 
   const tokenApproval = useCallback(async () => {
@@ -297,7 +296,7 @@ export default function DepositComponent(props: DepositDialogProps) {
       val = parseFloat(val.replace(",", "."));
     }
     val = Number.isNaN(val) ? 0 : val;
-    const index = _.findIndex(CoinInfo, {coin: details.currency});
+    const index = _.findIndex(tokens, {symbol: details.symbol});
     console.log("index", index);
     changeIndex(index);
     changeDepositAmount(val);
@@ -351,6 +350,7 @@ export default function DepositComponent(props: DepositDialogProps) {
             value={swapDetails}
             onChange={setSwapDetails}
             borderBox
+            listWidth="505px"
           />
           <Box textAlign={'right'} mt="20px" mb="42px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {35000} USDC</Box>
           <Box display="flex" width="100%">
