@@ -135,7 +135,10 @@ const Swap = () => {
     changeTxMsg(`${tokens[getTokenIndex(toDetails.symbol)].symbol} approved`);
     let success = true;
     try {
-      await approveToken(getTokenIndex(fromDetails.symbol));
+      await approveToken(
+        getTokenIndex(fromDetails.symbol),
+        Number(fromDetails.amount) * 1.05
+      );
     } catch (e) {
       success = false;
       changeFailMsg("Approval failed");
