@@ -268,7 +268,7 @@ const Swap = () => {
               value={fromDetails}
               onChange={setSwapDetails}
             />
-            <Box mt="10px" color="rgba(255, 255, 255, 0.72)" fontSize="11px" textAlign="right">Estimated value: ~$ 30.33</Box>
+            {/* <Box mt="10px" color="rgba(255, 255, 255, 0.72)" fontSize="11px" textAlign="right">Estimated value: ~$ 30.33</Box> */}
           </div>
 
           <div className="swap_box_bottom">
@@ -290,7 +290,7 @@ const Swap = () => {
               readOnly={true}
             />
             <Box mt="10px" color="rgba(255, 255, 255, 0.72)" fontSize="11px" justifyContent="flex-end" alignItems="center" display="flex">
-              <Box mr="5px">Estimated value: ~$ 30.33</Box>
+              {/* <Box mr="5px">Estimated value: ~$ 30.33</Box> */}
               <Image
                 src="/Icon.svg"
                 width="20"
