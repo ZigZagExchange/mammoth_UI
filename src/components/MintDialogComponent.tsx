@@ -3,8 +3,8 @@ import Dialog from '@mui/material/Dialog';
 import { Box } from '@mui/material';
 import { Button as CustomButton } from "./Button/Button";
 import Image from "next/image";
-import { mintToken } from "../services/pool.service";
-import {tokens } from "../services/constants";
+import { mintToken, approveAllTokens } from "../services/pool.service";
+import { tokens } from "../services/constants";
 
 interface DepositDialogProps {
   open: boolean;
@@ -25,6 +25,11 @@ export default function MintDialogComponent(props: DepositDialogProps) {
 
   const handleMint = async (tokenIndex: number) => {
     await mintToken(tokenIndex);
+  };
+
+  const approveAll = async () => {
+    console.log('allow all')
+    await approveAllTokens();
   };
 
   const handleCopy = (tokenIndex: number) => {
@@ -82,7 +87,7 @@ export default function MintDialogComponent(props: DepositDialogProps) {
           </Box>
           <Box display="flex" width="100%">
             <Box color="orangered" width="100%" height="100%">
-              <CustomButton className="bg_btn" style={{ background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }} text="Approve All" onClick={handleClose} />
+              <CustomButton className="bg_btn" style={{ background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }} text="Approve All" onClick={() => approveAll()} />
             </Box>
           </Box>
         </Box>

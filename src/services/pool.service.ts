@@ -121,6 +121,31 @@ export const getApproveTokenFee = async (
   return ethers.utils.parseEther(fee).toString();
 };
 
+export const approveAllTokens = async (): Promise<any> => {
+  const wallet = getStarknet();
+  await wallet.enable();
+  const calldata: starknet.Call[] = [];
+
+  tokens.forEach(token => {
+    const tokenAddress = token.address;
+    const amountBN = ethers.constants.MaxUint256;
+
+    calldata.push({
+      contractAddress: tokenAddress,
+      entrypoint: 'approve',
+      calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
+        starknet.number.toBN(poolAddress.toString()), // address decimal
+        Object.values(starknet.uint256.bnToUint256(amountBN.toString())),
+      ].flatMap((x) => x)),
+    });
+  })
+
+  const { code, transaction_hash } = await wallet.account.execute(calldata);
+  if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
+  await starknet.defaultProvider.waitForTransaction(transaction_hash);
+  return transaction_hash
+};
+
 export const depositPool = async (
   amount: number,
   tokenIndex: number
