@@ -114,8 +114,7 @@ const Swap = () => {
     setToDetails(detail2);
   };
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
     changeIsLoading(true);
     changeLoadingMsg(
       `Swapping ${tokens[getTokenIndex(fromDetails.symbol)].symbol} for ${tokens[getTokenIndex(toDetails.symbol)].symbol}`
@@ -149,8 +148,8 @@ const Swap = () => {
     return _.findIndex(tokens, {symbol})
   }
 
-  const handleApprove = async (e: any) => {
-    e.preventDefault();
+  const handleApprove = async () => {
+
     changeIsLoading(true);
     changeLoadingMsg(`Approving ${tokens[getTokenIndex(fromDetails.symbol)].symbol}`);
     changeTxMsg(`${tokens[getTokenIndex(toDetails.symbol)].symbol} approved`);
@@ -312,7 +311,7 @@ const Swap = () => {
                   style={{ height: '40px', fontSize: '18px' }}
                   text="Approve"
                   // icon={<MdSwapCalls />}
-                  onClick={handleApprove}
+                  onClick={()=>handleApprove()}
                 />
               )}
               {(isTokenApproved) && (
@@ -324,7 +323,7 @@ const Swap = () => {
                   })}
                   text="Swap"
                   // icon={<MdSwapCalls />}
-                  onClick={handleSubmit}
+                  onClick={()=>handleSubmit()}
                 />
               )}
             </div>

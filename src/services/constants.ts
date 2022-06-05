@@ -4,7 +4,7 @@ const tokenOne = {
   address: "0x04dfb7a11a8e68adbd0d67e31a5e2d23a2bcc60d6a97a915f0c7eb8aad21abc7",
   name: "FantieCoin",
   symbol: "FC",
-  decimals: 12,
+  decimals: 18,
   logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/9078.png"
 };
 
@@ -12,7 +12,7 @@ const tokenTwo = {
   address: "0x00e84923223c2946469d247e10a26711af93ec6393e5f31cb4144225b5895cae",
   name: "testUSDC",
   symbol: "TUSDC",
-  decimals: 6,
+  decimals: 18,
   logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"
 };
 
