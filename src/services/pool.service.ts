@@ -34,7 +34,7 @@ export const mintToken = async (
     });
   
     if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
-    await starknet.defaultProvider.waitForTransaction(transaction_hash);
+    await wallet.provider.waitForTransaction(transaction_hash);
     return transaction_hash
   } catch (e) {
     console.log(e)
@@ -92,7 +92,7 @@ export const approveToken = async (
   });
 
   if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
-  await starknet.defaultProvider.waitForTransaction(transaction_hash);
+  await wallet.provider.waitForTransaction(transaction_hash);
   return transaction_hash
 };
 
@@ -148,7 +148,7 @@ export const depositPool = async (
     ].flatMap((x) => x)),
   });
   if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
-  await starknet.defaultProvider.waitForTransaction(transaction_hash);
+  await wallet.provider.waitForTransaction(transaction_hash);
   return transaction_hash;
 };
 
@@ -209,7 +209,7 @@ export const withdrawPool = async (
     ].flatMap((x) => x)),
   });
   if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
-  await starknet.defaultProvider.waitForTransaction(transaction_hash);
+  await wallet.provider.waitForTransaction(transaction_hash);
   return transaction_hash;
 };
 
@@ -276,7 +276,7 @@ export const swapPool = async (
     ].flatMap((x) => x)),
   });
   if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
-  await starknet.defaultProvider.waitForTransaction(transaction_hash);
+  await wallet.provider.waitForTransaction(transaction_hash);
   return transaction_hash;
 };
 
