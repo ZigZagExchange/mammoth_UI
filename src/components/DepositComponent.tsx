@@ -301,7 +301,10 @@ export default function DepositComponent(props: DepositDialogProps) {
     changeIsLoading(true);
     let success = true;
     try {
-      await approveToken(tokenIndex);
+      await approveToken(
+        tokenIndex,
+        (depositAmount * 1.05)
+      );
     } catch (e) {
       success = false;
       changeFailMsg("Approval failed");
