@@ -12,21 +12,30 @@ import {
 
 export const mintToken = async (
   tokenIndex: number,
-  amount: number = 5000
+  amount: number = 25
 ): Promise<any> => {
   try {
-    const total = amount + Math.random() * 5000;
-
-    const userWalletAddress = await walletAddress();
+    const wallet = getStarknet();
+    const [address] = await wallet.enable();
     const tokenAddress = tokens[tokenIndex].address;
-    const erc20 = new starknet.Contract(starknetERC20_ABI as starknet.Abi, tokenAddress);
-    const { transaction_hash: mintTxHash } = await erc20.mint(
-      userWalletAddress,
-      starknet.uint256.bnToUint256(total)
+    const tokenDecimals = tokens[tokenIndex].decimals;
+    const amountBN = ethers.utils.parseUnits(
+      amount.toFixed(tokenDecimals),
+      tokenDecimals
     );
-    console.log(`mintToken: wait for ${mintTxHash}`)
-    await starknet.defaultProvider.waitForTransaction(mintTxHash);
-    console.log(`mintToken: done ${mintTxHash}`)
+
+    const { code, transaction_hash } = await wallet.account.execute({
+      contractAddress: tokenAddress,
+      entrypoint: 'mint',
+      calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
+        starknet.number.toBN(address.toString()), // address decimal
+        Object.values(starknet.uint256.bnToUint256(amountBN.toString())),
+      ].flatMap((x) => x)),
+    });
+  
+    if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
+    await starknet.defaultProvider.waitForTransaction(transaction_hash);
+    return transaction_hash
   } catch (e) {
     console.log(e)
   }
@@ -34,16 +43,22 @@ export const mintToken = async (
 
 export const getTokenAllowance = async (tokenIndex: number) => {
   const userWalletAddress = await walletAddress();
-  if (!userWalletAddress) return 0;
+  if (!userWalletAddress) return '0';
   const tokenAddress = tokens[tokenIndex].address;
+  const tokenDecimals = tokens[tokenIndex].decimals;
 
   const erc20 = new starknet.Contract(starknetERC20_ABI as starknet.Abi, tokenAddress);
   const result = await erc20.allowance(
     userWalletAddress,
     poolAddress
   );
-  const allowance = starknet.uint256.uint256ToBN(result[0]);
-  return allowance;
+  const allowanceBN = starknet.uint256.uint256ToBN(result[0]);
+  if (allowanceBN.lt(1 / tokenDecimals)) return '0';
+  const decimalString = ethers.utils.formatUnits(
+    allowanceBN.toString(),
+    tokenDecimals
+  ).toString();
+  return decimalString;
 };
 
 export const getAllowances = async (tokenIndex: number) => {
@@ -233,8 +248,7 @@ export const swapPool = async (
   tokenIndexBuy: number,
   tokenIndexSell: number
 ): Promise<any> => {
-  console.log(`swapPool: amount: ${amount}`)
-  amount = 10;
+  if (!amount) return;
   console.log(`swapPool: amount: ${amount}`)
 
   const wallet = getStarknet();
