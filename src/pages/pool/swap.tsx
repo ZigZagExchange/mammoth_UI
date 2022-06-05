@@ -8,6 +8,7 @@ import {
   getPoolBalances,
   getLiquidityBalances
 } from "../../services/pool.service";
+import {truncateAddress} from "../../services/address.service"
 import {tokens } from "../../services/constants";
 import LoadingIndicator from "../../components/Indicator";
 import { Button } from "../../components/Button/Button";
@@ -20,6 +21,9 @@ import _ from "lodash";
 import WithdrawComponent from "../../components/WithdrawComponent";
 import DepositComponent from "../../components/DepositComponent";
 import Image from "next/image";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { getStarknet } from "get-starknet";
 
 const Swap = () => {
   const [isLoading, changeIsLoading] = useState(false);
@@ -45,6 +49,7 @@ const Swap = () => {
     amount: "",
     symbol: tokens[1].symbol,
   }));
+  const [address, setAddress] = useState("")
 
   useEffect(() => {
     (async () => {
@@ -55,6 +60,10 @@ const Swap = () => {
     (async () => {
       const res: string = await getLiquidityBalances();
       changeLiquidityBalance(res);
+      const wallet = getStarknet();
+      const [address] = await wallet.enable();
+      setAddress(address);
+      console.log(address)
     })();
   }, []);
 
@@ -74,6 +83,22 @@ const Swap = () => {
       await predictSwapResult(getString2Number(fromDetails.amount));
     })();
   }, [toDetails.amount, fromDetails])
+
+  useEffect(()=>{
+    if(!txComplete) return;
+    console.log("asdadfasdf", txMessage)
+    openErrorWindow(txMessage, 1)
+  }, [txComplete])
+
+  useEffect(()=>{
+    if(failMsg.length)
+      openErrorWindow(failMsg, 2)
+  },[failMsg])
+
+  useEffect(()=>{
+    if(!isLoading) return;
+    openErrorWindow(loadingMsg, 3)
+  }, [isLoading])
 
   const predictSwapResult = async (amount: number) => {
     const result = await getSwapAmount(
@@ -142,15 +167,6 @@ const Swap = () => {
     }
   };
 
-  const handleIndicatorClose = () => {
-    changeTxComplete(false);
-  };
-
-  const handleFailIndicatorClose = () => {
-    changeFailMsg("");
-  };
-
-
   const switchTransferType = (e: any) => {
     setFromDetails(toDetails);
     const value = {amount: ""};
@@ -186,27 +202,37 @@ const Swap = () => {
     changeTokenApproved(Number(tokenAllowance) > Number(fromDetails.amount));
   }
 
+  const openErrorWindow = (value: string, flag: number) => {
+    if(flag === 3)
+      toast.warn(
+        value,
+        {
+          closeOnClick: false,
+          autoClose: 15000,
+        },
+      );
+    if(flag ===2 )
+      toast.error(
+        value,
+        {
+          closeOnClick: false,
+          autoClose: 15000,
+        },
+      );
+    if(flag === 1) {
+      toast.success(
+        value,
+        {
+          closeOnClick: false,
+          autoClose: 15000,
+        },
+      );
+    }
+  }
+
   return (
     <>
-      {isLoading ? (
-        <LoadingIndicator msg={loadingMsg} isLoading={true} />
-      ) : null}
-      {txComplete ? (
-        <LoadingIndicator
-          closeable={true}
-          msg={txMessage}
-          onClose={handleIndicatorClose}
-        />
-      ) : null}
-      {failMsg.length ? (
-        <LoadingIndicator
-          closeable={true}
-          msg={failMsg}
-          onClose={handleFailIndicatorClose}
-        />
-      ) : null}
-
-
+      <Box py="10px" borderRadius={'8px'} px="30px" ml="20px" mt="20px" width="190px" border="1px solid rgba(255, 255, 255, 0.13)">{address && truncateAddress(address)}</Box>
       <Box display="flex" justifyContent={'center'} flexDirection="column" alignItems={'center'} pt="100px">
         <Box display="flex" width={'auto'} mb="50px" justifyContent={'center'} alignItems="center">
           <Box borderRadius={'8px'} border="1px solid rgba(255, 255, 255, 0.13)" width="100%" p="30px" display="flex" justifyContent={'space-between'}>
@@ -317,6 +343,7 @@ const Swap = () => {
         open={mintModal}
         onClose={() => { setMintModal(false) }}
       />
+      <ToastContainer />
     </>
   );
 };

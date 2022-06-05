@@ -13,6 +13,8 @@ import { Button as CustomButton } from "./Button/Button";
 import { CustomInput, CustomSelect, StyledOption } from "./DepositComponent";
 import cx from "classnames";
 import SwapSwapInput from "./SwapComponent/SwapSwapInput";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface WithdrawDialogProps {
   open: boolean;
@@ -41,8 +43,50 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
     symbol: tokens[0].symbol,
   }));
 
-  const Withdraw = async (e: any) => {
-    e.preventDefault();
+  React.useEffect(()=>{
+    if(!txComplete) return;
+    openErrorWindow("Awaiting Withdraw", 1)
+  }, [txComplete])
+
+  React.useEffect(()=>{
+    if(failMsg.length)
+      openErrorWindow(failMsg, 2)
+  },[failMsg])
+
+  React.useEffect(()=>{
+    if(!isLoading) return;
+    openErrorWindow("Withdraw Complete", 3)
+  }, [isLoading])
+
+  const openErrorWindow = (value: string, flag: number) => {
+    if(flag === 3)
+      toast.warn(
+        value,
+        {
+          closeOnClick: false,
+          autoClose: 15000,
+        },
+      );
+    if(flag ===2 )
+      toast.error(
+        value,
+        {
+          closeOnClick: false,
+          autoClose: 15000,
+        },
+      );
+    if(flag === 1) {
+      toast.success(
+        value,
+        {
+          closeOnClick: false,
+          autoClose: 15000,
+        },
+      );
+    }
+  }
+
+  const handleWithdraw = async () => {
     changeIsLoading(true);
     let success = true;
     try {
@@ -111,23 +155,6 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
           },
         }}
       >
-        {isLoading ? (
-          <LoadingIndicator msg={"Awaiting Withdraw"} isLoading={true} />
-        ) : null}
-        {txComplete ? (
-          <LoadingIndicator
-            closeable={true}
-            msg={"Withdraw Complete"}
-            onClose={handleIndicatorClose}
-          />
-        ) : null}
-        {failMsg.length ? (
-          <LoadingIndicator
-            closeable={true}
-            msg={failMsg}
-            onClose={handleFailIndicatorClose}
-          />
-        ) : null}
         <Box fontSize="18px" fontWeight="700" px="30px" py="25px" color="white">Withdraw</Box>
         <Box display="flex" flexDirection="column" px="40px" pb="50px" bgcolor={'#232735'}>
           <Box bgcolor="#181B25" color="#636EA8" mt="33px" mb="23px" p="11px 13px" fontFamily="Inter" fontWeight={700} fontSize="13px">
@@ -148,12 +175,13 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
               <CustomButton
                 className="bg_btn_deposit"
                 text="Withdraw"
-                onClick={Withdraw}
+                onClick={()=>handleWithdraw()}
               />
             </Box>
           </Box>
         </Box>
       </Dialog>
+      <ToastContainer />
     </Box>
   );
 }

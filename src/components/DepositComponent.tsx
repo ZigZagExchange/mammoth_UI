@@ -24,6 +24,8 @@ import { Button as CustomButton } from "./Button/Button";
 import SwapSwapInput from "./SwapComponent/SwapSwapInput";
 import _ from "lodash";
 import cx from "classnames";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 interface DepositDialogProps {
   open: boolean;
@@ -223,13 +225,56 @@ export default function DepositComponent(props: DepositDialogProps) {
     })();
   });
 
+  useEffect(()=>{
+    if(!txComplete) return;
+    openErrorWindow(txMessage, 1)
+  }, [txComplete])
+
+  useEffect(()=>{
+    if(failMsg.length)
+      openErrorWindow(failMsg, 2)
+  },[failMsg])
+
+  useEffect(()=>{
+    if(!isLoading) return;
+    openErrorWindow(loadingMsg, 3)
+  }, [isLoading])
+
+  const openErrorWindow = (value: string, flag: number) => {
+    if(flag === 3)
+      toast.warn(
+        value,
+        {
+          closeOnClick: false,
+          autoClose: 15000,
+        },
+      );
+    if(flag ===2 )
+      toast.error(
+        value,
+        {
+          closeOnClick: false,
+          autoClose: 15000,
+        },
+      );
+    if(flag === 1) {
+      toast.success(
+        value,
+        {
+          closeOnClick: false,
+          autoClose: 15000,
+        },
+      );
+    }
+  }
+
   const predictDepositResult = async (amount: number) => {
     const result = await getDepositERC20Amount(tokenIndex, amount);
     changeLPAmount(result);
   };
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
+  const handleSubmit = async () => {
+
     changeIsLoading(true);
     changeLoadingMsg(`Depositing ${tokens[tokenIndex].symbol}`);
     changeTxMsg(`Deposit ${tokens[tokenIndex].symbol} success`);
@@ -249,8 +294,7 @@ export default function DepositComponent(props: DepositDialogProps) {
     }
   };
 
-  const handleApprove = async (e: any) => {
-    e.preventDefault();
+  const handleApprove = async () => {
 
     changeLoadingMsg(`Approving ${tokens[tokenIndex].symbol}`);
     changeTxMsg(`${tokens[tokenIndex].symbol} approved`);
@@ -318,23 +362,7 @@ export default function DepositComponent(props: DepositDialogProps) {
           },
         }}
       >
-        {isLoading ? (
-          <LoadingIndicator msg={loadingMsg} isLoading={true} />
-        ) : null}
-        {txComplete ? (
-          <LoadingIndicator
-            closeable={true}
-            msg={txMessage}
-            onClose={handleIndicatorClose}
-          />
-        ) : null}
-        {failMsg.length ? (
-          <LoadingIndicator
-            closeable={true}
-            msg={failMsg}
-            onClose={handleFailIndicatorClose}
-          />
-        ) : null}
+
         <Box fontSize="18px" fontWeight="700" px="30px" py="25px" color="white">Deposit</Box>
         <Box display="flex" flexDirection="column" px="40px" pb="50px" bgcolor={'#232735'}>
           <Box bgcolor="#181B25" color="#636EA8" mt="33px" mb="23px" p="11px 13px" fontFamily="Inter" fontWeight={700} fontSize="13px">
@@ -357,7 +385,7 @@ export default function DepositComponent(props: DepositDialogProps) {
                   zig_disabled: isTokenApproved,
                 })}
                 text="Approve"
-                onClick={handleApprove}
+                onClick={()=>handleApprove()}
                 style={{marginRight: '10px' }}
               />
               <CustomButton
@@ -365,12 +393,13 @@ export default function DepositComponent(props: DepositDialogProps) {
                   zig_disabled: !isTokenApproved,
                 })}
                 text="Supply"
-                onClick={handleSubmit}
+                onClick={()=>handleSubmit()}
               />
             </Box>
           </Box>
         </Box>
       </Dialog>
+      <ToastContainer />
     </Box>
   );
 }
