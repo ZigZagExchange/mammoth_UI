@@ -168,7 +168,7 @@ export const CustomSelect = React.forwardRef(function CustomSelect(
 interface Props{
   onChange: (e:any)=>void;
   currencies: any;
-  balances: any;
+  balances: string[];
   value: string;
   borderBox?: boolean;
   listWidth?: string;
@@ -177,7 +177,7 @@ interface Props{
 const SwapCurrencySelector = ({
   onChange,
   currencies,
-  balances = {},
+  balances = [],
   value,
   borderBox,
   listWidth,
