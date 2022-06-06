@@ -25,6 +25,7 @@ import Image from "next/image";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getStarknet } from "get-starknet";
+import { getTokenIndex } from "../../libs/utils";
 
 const Swap = () => {
   const [isLoading, changeIsLoading] = useState(false);
@@ -52,6 +53,7 @@ const Swap = () => {
     symbol: tokens[1].symbol,
   }));
   const [address, setAddress] = useState("")
+  const [swapRate, setSwapRate] = useState(0);
 
   useEffect(() => {
     (async () => {
@@ -75,6 +77,17 @@ const Swap = () => {
     const result: string = await getTokenAllowance(getTokenIndex(fromDetails.symbol));
     setTokenAllowance(result);
   }, [fromDetails.symbol]);
+
+  useEffect(()=>{
+    (async () => {
+      const res: string = await getSwapAmount(
+        getTokenIndex(fromDetails.symbol),
+        getTokenIndex(toDetails.symbol),
+        1
+      );
+      setSwapRate(Number(res));
+    })();
+  },[fromDetails.symbol, toDetails.symbol])
 
   useEffect(() => {
     (async () => {
@@ -146,10 +159,6 @@ const Swap = () => {
 
   const getString2Number = (amount: string) => {
     return Number.isNaN(amount) ? 0 : Number(amount)
-  }
-
-  const getTokenIndex = (symbol: string) => {
-    return _.findIndex(tokens, {symbol})
   }
 
   const handleApprove = async () => {
@@ -266,10 +275,10 @@ const Swap = () => {
           <div className="swap_box_top">
             <div className="swap_coin_title">
               <Box fontSize="16px" fontWeight="600">From</Box>
-              <Box fontSize="12px" fontWeight="400">Available Balance: 1.09393USDC</Box>
+              <Box fontSize="12px" fontWeight="400">Available Balance: {Number(userBalances[getTokenIndex(fromDetails.symbol)]).toFixed(4)} {fromDetails.symbol}</Box>
             </div>
             <SwapSwapInput
-              // balances={balances}
+              balances={userBalances}
               // currencies={currencies}
               from={true}
               value={fromDetails}
@@ -286,7 +295,7 @@ const Swap = () => {
 
             <div className="swap_coin_title" style={{ marginBottom: '10px' }}>
               <Box fontSize="16px" fontWeight="600">To</Box>
-              <Box fontSize="12px" fontWeight="400">1 USDC = 1.22 ZZUSDC</Box>
+              <Box fontSize="12px" fontWeight="400">1 {fromDetails.symbol} = {swapRate} {toDetails.symbol}</Box>
             </div>
             <SwapSwapInput
               // balances={balances}
@@ -296,17 +305,6 @@ const Swap = () => {
               onChange={setSwapDetails}
               readOnly={true}
             />
-            <Box mt="10px" color="rgba(255, 255, 255, 0.72)" fontSize="11px" justifyContent="flex-end" alignItems="center" display="flex">
-              {/* <Box mr="5px">Estimated value: ~$ 30.33</Box> */}
-              <Image
-                src="/Icon.svg"
-                width="20"
-                height="20"
-                alt="mammoth pool logo"
-              />
-            </Box>
-
-
             <div className="swap_button" style={{ marginTop: '30px' }}>
               {(!isTokenApproved) && (
                 <Button
