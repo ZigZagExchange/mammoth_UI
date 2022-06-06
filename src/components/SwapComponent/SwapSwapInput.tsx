@@ -1,6 +1,9 @@
 import React, { useCallback } from "react";
 import styled from "@emotion/styled";
 import SwapCurrencySelector from "./SwapCurrencySelector";
+import { tokens } from "../../services/constants";
+import _ from "lodash";
+import { getTokenIndex } from "../../libs/utils";
 
 const SwapInputBox = styled((props: any)=>(<div {...props} />))`
   display: flex;
@@ -56,30 +59,33 @@ const MaxButton = styled.button`
   font-size: 10px;
   color: #2AABEE;
   margin-left: 10px;
+  margin-right: 10px;
 `
 
 interface Props {
   value?: any;
   onChange: (e: any, from: boolean) => void;
   currencies?: string;
-  balances?: any;
+  balances?: string[];
   className?: string;
   from: boolean;
   readOnly?: boolean;
   borderBox?: boolean;
   listWidth?: string;
+  isWithdraw?: boolean;
 }
 
 const SwapSwapInput = ({
   value = {},
   onChange,
   currencies,
-  balances = {},
+  balances = [],
   className,
   from,
   readOnly,
   borderBox,
-  listWidth
+  listWidth,
+  isWithdraw
 }: Props) => {
   const setCurrency = useCallback(
     (symbol) => onChange({ symbol, amount: "" }, from),
@@ -90,9 +96,12 @@ const SwapSwapInput = ({
     [onChange]
   );
 
-  let maxBalance = parseFloat(
-    (balances[value.symbol] && balances[value.symbol].valueReadable) || 0
-  );
+  const setMax = () => {
+    if(isWithdraw) onChange(null, from);
+    console.log(balances)
+    console.log(value)
+    onChange({ amount: balances[getTokenIndex(value.symbol)]}, from)
+  }
 
   return (
     <SwapInputBox readOnly={readOnly?"true":"false"}>
@@ -105,7 +114,7 @@ const SwapSwapInput = ({
           borderBox={borderBox}
           listWidth={listWidth}
         />
-        {!readOnly && <MaxButton>Max</MaxButton>}
+        {!readOnly && <MaxButton onClick={setMax}>Max</MaxButton>}
       </div>
       <input
         onChange={setAmount}

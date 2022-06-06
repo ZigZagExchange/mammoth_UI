@@ -6,6 +6,7 @@ import {
   getSwapAmount,
   getTokenAllowance,
   getPoolBalances,
+  getUserBalances,
   getLiquidityBalances
 } from "../../services/pool.service";
 import {truncateAddress} from "../../services/address.service"
@@ -33,6 +34,7 @@ const Swap = () => {
   const [isTokenApproved, changeTokenApproved] = useState(false);
   const [failMsg, changeFailMsg] = useState("");
   const [poolbalances, changeBalances] = useState(['0', '0', '0']);
+  const [userBalances, changeUserBalances] = useState(['0','0','0'])
   const [liquidityBalance, changeLiquidityBalance] = useState('0');
   const [tokenAllowance, setTokenAllowance] = useState("0");
 
@@ -54,7 +56,9 @@ const Swap = () => {
   useEffect(() => {
     (async () => {
       const res: string[] = await getPoolBalances();
+      const _userBal : string[] = await getUserBalances();
       changeBalances(res);
+      changeUserBalances(_userBal)
     })();
 
     (async () => {
@@ -336,6 +340,7 @@ const Swap = () => {
       <DepositComponent
         open={modal}
         onClose={() => { setModal(false) }}
+        balance={userBalances}
       />
       <WithdrawComponent
         open={withdrawModal}

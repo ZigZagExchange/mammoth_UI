@@ -26,10 +26,12 @@ import _ from "lodash";
 import cx from "classnames";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getTokenIndex } from "../libs/utils";
 
 interface DepositDialogProps {
   open: boolean;
   onClose: () => void;
+  balance: string[];
 }
 
 
@@ -316,14 +318,6 @@ export default function DepositComponent(props: DepositDialogProps) {
     }
   };
 
-  const handleIndicatorClose = () => {
-    changeTxComplete(false);
-  };
-
-  const handleFailIndicatorClose = () => {
-    changeFailMsg("");
-  };
-
   const setSwapDetails = async (values: any, from: boolean) => {
     const details = {
       ...swapDetails,
@@ -372,7 +366,7 @@ export default function DepositComponent(props: DepositDialogProps) {
             Tip: When you add liquidity, you will receive pool tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and can be redeemed at any time.
           </Box>
           <SwapSwapInput
-            // balances={balances}
+            balances={props.balance}
             // currencies={currencies}
             from={true}
             value={swapDetails}
@@ -380,7 +374,7 @@ export default function DepositComponent(props: DepositDialogProps) {
             borderBox
             listWidth="505px"
           />
-          <Box textAlign={'right'} mt="20px" mb="42px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {35000} USDC</Box>
+          <Box textAlign={'right'} mt="20px" mb="42px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {Number(props.balance[getTokenIndex(swapDetails.symbol)]).toFixed(4)} {swapDetails.symbol}</Box>
           <Box display="flex" width="100%">
             <Box width="100%" height="100%" display="flex">
                <CustomButton

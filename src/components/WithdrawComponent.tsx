@@ -7,6 +7,7 @@ import _ from "lodash";
 import {
   getWithdrawERC20Amount,
   withdrawPool,
+  getLiquidityBalances
 } from "../services/pool.service";
 import LoadingIndicator from "./Indicator";
 import { Button as CustomButton } from "./Button/Button";
@@ -23,14 +24,6 @@ interface WithdrawDialogProps {
 
 export default function WithdrawComponent(props: WithdrawDialogProps) {
   const [open, setOpen] = React.useState(false);
-  React.useEffect(() => {
-    setOpen(props.open)
-  }, [props.open])
-
-  const handleClose = () => {
-    props.onClose();
-    setOpen(false);
-  };
 
   const [withdrawAmount, changeWithdrawAmount] = useState(0);
   const [LPAmount, changeLPAmount] = useState("0");
@@ -42,6 +35,20 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
     amount: "",
     symbol: tokens[0].symbol,
   }));
+  const [liquidityBalance, changeLiquidityBalance] = useState('0');
+
+  React.useEffect(() => {
+    setOpen(props.open);
+    (async()=>{
+      const val= await getLiquidityBalances()
+      changeLiquidityBalance(val);
+    })();
+  }, [props.open])
+
+  const handleClose = () => {
+    props.onClose();
+    setOpen(false);
+  };
 
   React.useEffect(()=>{
     if(!txComplete) return;
@@ -109,19 +116,20 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
     changeLPAmount(result);
   };
 
-  const handleIndicatorClose = () => {
-    changeTxComplete(false);
-  };
-
-  const handleFailIndicatorClose = () => {
-    changeFailMsg("");
-  };
-
   const setSwapDetails = async (values: any, from: boolean) => {
-    const details = {
-      ...swapDetails,
-      ...values,
-    };
+    let details
+    if(!values.amount) {
+      details = {
+        ...swapDetails,
+        ...{amount: liquidityBalance}
+      }
+    } else {
+      details = {
+        ...swapDetails,
+        ...values,
+      };
+    }
+    console.log(values)
     _setSwapDetails(details);
     console.log("val=========",details)
 
@@ -161,7 +169,6 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
             Tip: When you add liquidity, you will receive pool tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and can be redeemed at any time.
           </Box>
           <SwapSwapInput
-            // balances={balances}
             // currencies={currencies}
             from={true}
             value={swapDetails}
@@ -169,7 +176,7 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
             borderBox
             listWidth="505px"
           />
-          <Box textAlign={'right'} mt="20px" mb="42px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {35000} USDC</Box>
+          <Box textAlign={'right'} mt="20px" mb="42px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {liquidityBalance} LP tokens</Box>
           <Box display="flex" width="50%">
             <Box color="#09aaf5" width="100%" height="100%" mr="1vw">
               <CustomButton

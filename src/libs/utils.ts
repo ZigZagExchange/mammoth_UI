@@ -1,5 +1,7 @@
 import { BigNumber } from "ethers";
+import _ from "lodash";
 import isString from "lodash/isString";
+import { tokens } from "../services/constants";
 
 export function formatUSD(floatNum: string) {
   const num = parseFloat(floatNum || '0')
@@ -13,6 +15,10 @@ export function formatAmount(amount: any, currency: any) {
   return parseFloat(String(amount / Math.pow(10, currency.decimals))).toFixed(
     Math.min(5, currency.decimals)
   );
+}
+
+export function getTokenIndex(symbol: string) {
+  return _.findIndex(tokens, {symbol})
 }
 
 export function formatPrice(input: any) {
