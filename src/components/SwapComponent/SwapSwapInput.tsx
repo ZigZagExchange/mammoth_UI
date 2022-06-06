@@ -13,9 +13,9 @@ const SwapInputBox = styled((props: any)=>(<div {...props} />))`
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  background: ${props => props.readOnly === "true" ? "none" : "rgba(255, 255, 255, 0.05)"};
+  background: ${props => props.readOnly ? "none" : "rgba(255, 255, 255, 0.05)"};
   /* Background[light]/300 */
-  border: ${props => props.readOnly === "true" ? "none" : "1px solid rgba(255, 255, 255, 0.08)"};
+  border: ${props => props.readOnly ? "none" : "1px solid rgba(255, 255, 255, 0.08)"};
   border-radius: 8px;
 
   input,
@@ -32,11 +32,11 @@ const SwapInputBox = styled((props: any)=>(<div {...props} />))`
     appearance: none;
     color: white;
     font-weight: 600;
-    cursor: ${props => props.readOnly === "true" ? "default !important" : "text"};
+    cursor: ${props => props.readOnly ? "default !important" : "text"};
   }
 
   .currencySelector {
-    width: ${props => props.readOnly === "true" ? "148px" : "208px"};
+    width: ${props => props.readOnly ? "148px" : "208px"};
     display: flex;
     align-items: center;
   }
@@ -104,7 +104,7 @@ const SwapSwapInput = ({
   }
 
   return (
-    <SwapInputBox readOnly={readOnly?"true":"false"}>
+    <SwapInputBox readOnly={readOnly}>
       <div className="currencySelector">
         <SwapCurrencySelector
           currencies={currencies}
