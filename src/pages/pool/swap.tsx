@@ -85,6 +85,7 @@ const Swap = () => {
         getTokenIndex(toDetails.symbol),
         1
       );
+      console.log(res);
       setSwapRate(Number(res));
     })();
   },[fromDetails.symbol, toDetails.symbol])
@@ -191,9 +192,6 @@ const Swap = () => {
   }
 
   const setSwapDetails = async (values: {amount: string, symbol: string}, from: boolean) => {
-
-    console.log("asdfadsfas", from, values)
-
     if (from) {
       const details = {
         ...fromDetails,

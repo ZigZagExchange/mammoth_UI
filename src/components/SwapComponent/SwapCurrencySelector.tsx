@@ -154,7 +154,6 @@ export const CustomSelect = React.forwardRef(function CustomSelect(
   props: SelectUnstyledProps<number> & {borderBox?: boolean, width?: string},
   ref: any,
 ) {
-  console.log("listWidth==============", props.width)
   const components: SelectUnstyledProps<number>['components'] = {
     Root: props.borderBox ? StyledBorderedButton : StyledButton,
     Listbox: StyledListbox(props.width),

@@ -411,6 +411,7 @@ export const getSwapAmount = async (
     sellTokenAddress
   );
   const amountSellBN: ethers.BigNumber = starknet.uint256.uint256ToBN(result[0]);
+  console.log(amountSellBN.toString());
   if (amountSellBN.lt(1 / sellTokenDecimals)) return '0';
   const decimalString = ethers.utils.formatUnits(
     amountSellBN.toString(),
