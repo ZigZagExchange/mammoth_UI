@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { BigNumber } from "ethers";
 import {
   approveToken,
   swapPool,
@@ -11,7 +10,6 @@ import {
 } from "../../services/pool.service";
 import { truncateAddress } from "../../services/address.service"
 import { tokens } from "../../services/constants";
-import LoadingIndicator from "../../components/Indicator";
 import { Button } from "../../components/Button/Button";
 import cx from "classnames";
 import { SwapButton } from "../../components/SwapButton";
@@ -21,12 +19,12 @@ import MintDialogComponent from "../../components/MintDialogComponent";
 import _ from "lodash";
 import WithdrawComponent from "../../components/WithdrawComponent";
 import DepositComponent from "../../components/DepositComponent";
-import Image from "next/image";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getStarknet } from "get-starknet";
 import styled from "@emotion/styled";
 import { connectWallet, disconnectWallet, getExplorerBaseUrl } from "../../services/wallet.service";
+import { getTokenIndex } from "../../libs/utils";
 
 const Swap = () => {
   const [isLoading, changeIsLoading] = useState(false);
@@ -81,6 +79,18 @@ const Swap = () => {
     const result: string = await getTokenAllowance(getTokenIndex(fromDetails.symbol));
     setTokenAllowance(result);
   }, [fromDetails.symbol]);
+
+  useEffect(()=>{
+    (async () => {
+      const res: string = await getSwapAmount(
+        getTokenIndex(fromDetails.symbol),
+        getTokenIndex(toDetails.symbol),
+        1
+      );
+      console.log(res);
+      setSwapRate(Number(res));
+    })();
+  },[fromDetails.symbol, toDetails.symbol])
 
   useEffect(() => {
     (async () => {
@@ -165,10 +175,6 @@ const Swap = () => {
     return Number.isNaN(amount) ? 0 : Number(amount)
   }
 
-  const getTokenIndex = (symbol: string) => {
-    return _.findIndex(tokens, {symbol})
-  }
-
   const handleApprove = async () => {
 
     changeIsLoading(true);
@@ -198,10 +204,7 @@ const Swap = () => {
     // predictSwapResult(Number.isNaN(toDetails.amount) ? 0 : Number(toDetails.amount));
   }
 
-  const setSwapDetails = async (values: { amount: string, symbol: string }, from: boolean) => {
-
-    console.log("asdfadsfas", from, values)
-
+  const setSwapDetails = async (values: {amount: string, symbol: string}, from: boolean) => {
     if (from) {
       const details = {
         ...fromDetails,

@@ -32,7 +32,7 @@ export const mintToken = async (
         Object.values(starknet.uint256.bnToUint256(amountBN.toString())),
       ].flatMap((x) => x)),
     });
-  
+
     if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
     await starknet.defaultProvider.waitForTransaction(transaction_hash);
     return transaction_hash
@@ -214,10 +214,12 @@ export const withdrawPool = async (
   const wallet = getStarknet();
   const [address] = await wallet.enable();
   const tokenAddress = tokens[tokenIndex].address;
-  const tokenDecimals = tokens[tokenIndex].decimals;
+
+  const pool = new starknet.Contract(starknetPool_ABI as starknet.Abi, poolAddress);
+  const decimalsLpToken = Number(await pool.decimals());
   const amountBN = ethers.utils.parseUnits(
-    amount.toFixed(tokenDecimals),
-    tokenDecimals
+    amount.toFixed(decimalsLpToken),
+    decimalsLpToken
   );
 
   // checks that enable succeeded
@@ -355,21 +357,20 @@ export const getBalance = async (
 }
 
 export const getPoolBalances = async (): Promise<any> => {
-  const balances = [tokens.length];
-  for (let i = 0; i < tokens.length; i++) {
-    balances[i] = await getBalance(i, poolAddress);
-  }
-  return balances;
+  const promise: Promise<any>[] = tokens.map(async (_, index) => {
+    return await getBalance(index, poolAddress);
+  });
+  return await Promise.all(promise);
 };
 
 export const getUserBalances = async (): Promise<any> => {
   const userWalletAddress = await walletAddress();
   if (!userWalletAddress) return [];
-  const balances = [];
-  for (let i = 0; i < tokens.length; i++) {
-    balances[i] = await getBalance(i, userWalletAddress);
-  }
-  return balances;
+
+  const promise: Promise<any>[] = tokens.map(async (_, index) => {
+    return await getBalance(index, userWalletAddress);
+  });
+  return await Promise.all(promise);
 };
 
 export const getLiquidityBalances = async (): Promise<any> => {
@@ -411,6 +412,7 @@ export const getSwapAmount = async (
     sellTokenAddress
   );
   const amountSellBN: ethers.BigNumber = starknet.uint256.uint256ToBN(result[0]);
+  console.log(amountSellBN.toString());
   if (amountSellBN.lt(1 / sellTokenDecimals)) return '0';
   const decimalString = ethers.utils.formatUnits(
     amountSellBN.toString(),
@@ -480,3 +482,37 @@ export const getWithdrawERC20Amount = async (
   console.log(`getWithdrawERC20Amount: result ==> ${decimalString}`)
   return decimalString;
 };
+
+// this is not used and should probably removed 
+/*
+export const transfer = async (
+  tokenIndex: number,
+  transferTo: string,
+  transferAmount: number,
+): Promise<any> => {
+  const wallet = getStarknet();
+  await wallet.enable();
+  const tokenAddress = tokens[tokenIndex].address;
+  const tokenDecimals = tokens[tokenIndex].decimals;
+  const amountBN = ethers.utils.parseUnits(
+    transferAmount.toFixed(tokenDecimals),
+    tokenDecimals
+  );
+
+  // checks that enable succeeded
+  if (wallet.isConnected === false)
+    throw Error("starknet wallet not connected");  
+
+  const { code, transaction_hash } = await wallet.account.execute({
+    contractAddress: tokenAddress,
+    entrypoint: 'transfer',
+    calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
+      starknet.number.toBN(transferTo.toString()),
+      starknet.uint256.bnToUint256(amountBN)
+    ].flatMap((x) => x)),
+  });  
+  if (code !== 'TRANSACTION_RECEIVED') return false;
+  await starknet.defaultProvider.waitForTransaction(transaction_hash);
+  return transaction_hash;
+};
+*/

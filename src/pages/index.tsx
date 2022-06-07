@@ -3,7 +3,6 @@ import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { TokenDapp } from "../components/TokenDapp";
 import { truncateAddress } from "../services/address.service";
 import {
   addWalletChangeListener,
