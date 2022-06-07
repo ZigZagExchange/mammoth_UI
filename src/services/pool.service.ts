@@ -214,10 +214,12 @@ export const withdrawPool = async (
   const wallet = getStarknet();
   const [address] = await wallet.enable();
   const tokenAddress = tokens[tokenIndex].address;
-  const tokenDecimals = tokens[tokenIndex].decimals;
+  
+  const pool = new starknet.Contract(starknetPool_ABI as starknet.Abi, poolAddress);
+  const decimalsLpToken = Number(await pool.decimals());
   const amountBN = ethers.utils.parseUnits(
-    amount.toFixed(tokenDecimals),
-    tokenDecimals
+    amount.toFixed(decimalsLpToken),
+    decimalsLpToken
   );
 
   // checks that enable succeeded
