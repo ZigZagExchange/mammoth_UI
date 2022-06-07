@@ -357,21 +357,20 @@ export const getBalance = async (
 }
 
 export const getPoolBalances = async (): Promise<any> => {
-  const balances = [tokens.length];
-  for (let i = 0; i < tokens.length; i++) {
-    balances[i] = await getBalance(i, poolAddress);
-  }
-  return balances;
+  const promise: Promise<any>[] = tokens.map(async(_, index) => {
+    return await getBalance(index, poolAddress);
+  });
+  return await Promise.all(promise);
 };
 
 export const getUserBalances = async (): Promise<any> => {
   const userWalletAddress = await walletAddress();
   if (!userWalletAddress) return [];
-  const balances = [];
-  for (let i = 0; i < tokens.length; i++) {
-    balances[i] = await getBalance(i, userWalletAddress);
-  }
-  return balances;
+
+  const promise: Promise<any>[] = tokens.map(async(_, index) => {
+    return await getBalance(index, userWalletAddress);
+  });
+  return await Promise.all(promise);
 };
 
 export const getLiquidityBalances = async (): Promise<any> => {
