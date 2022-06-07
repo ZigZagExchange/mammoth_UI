@@ -272,7 +272,7 @@ const Swap = () => {
           e.stopPropagation();
           setOpenDrop(!openDrop);
         } else {
-          coneectWallet();
+          connectWallet();
         }
       }}>
         <Box>{address ? truncateAddress(address) : "Connect Wallet"}</Box>
