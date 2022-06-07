@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { BigNumber } from "ethers";
 import Dialog from '@mui/material/Dialog';
 import { Box } from '@mui/material';
 import { tokens } from "../services/constants";
@@ -9,10 +8,7 @@ import {
   withdrawPool,
   getLiquidityBalances
 } from "../services/pool.service";
-import LoadingIndicator from "./Indicator";
 import { Button as CustomButton } from "./Button/Button";
-import { CustomInput, CustomSelect, StyledOption } from "./DepositComponent";
-import cx from "classnames";
 import SwapSwapInput from "./SwapComponent/SwapSwapInput";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";

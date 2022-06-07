@@ -1833,10 +1833,10 @@ get-intrinsic@^1.0.2, get-intrinsic@^1.1.0, get-intrinsic@^1.1.1:
     has "^1.0.3"
     has-symbols "^1.0.1"
 
-get-starknet@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/get-starknet/-/get-starknet-1.4.0.tgz#7f5c2d8a7823a3fc4f8e8f0f1060b3ddfd13d4e2"
-  integrity sha512-AQf8NxjqPSFDPPr6oi4kHv58OF30ntDAQZ+WDQBTwaAx8gjBYBkKQyvm8AjmdwXMvy8hHvAK7qSwJNFSxVHvZA==
+get-starknet@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/get-starknet/-/get-starknet-1.4.1.tgz#ea6f19bb2038878ab192822c9e59e1dca86c7b4d"
+  integrity sha512-HyYH4wngdOekeNFbtD4Qw+USQOfs1k9mWAHhhxiQyk2AKpdmLiIDz+A7lbA/X7OEi7U4Ypl0+Z4h7djq/ues9A==
   dependencies:
     bowser "^2.11.0"
 
