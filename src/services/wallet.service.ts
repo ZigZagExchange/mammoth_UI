@@ -1,4 +1,4 @@
-import { getStarknet } from "get-starknet";
+import { getStarknet, disconnect } from "get-starknet";
 import { Network } from "./token.service";
 
 export const isWalletConnected = (): boolean => !!getStarknet()?.isConnected;
@@ -25,6 +25,10 @@ export const networkId = (): Network | undefined => {
     }
   } catch {}
 };
+
+export const disconnectWallet = () => {
+  return disconnect();
+}
 
 export const addToken = async (address: string): Promise<void> => {
   const starknet = getStarknet();

@@ -9,8 +9,8 @@ import {
   getUserBalances,
   getLiquidityBalances
 } from "../../services/pool.service";
-import {truncateAddress} from "../../services/address.service"
-import {tokens } from "../../services/constants";
+import { truncateAddress } from "../../services/address.service"
+import { tokens } from "../../services/constants";
 import LoadingIndicator from "../../components/Indicator";
 import { Button } from "../../components/Button/Button";
 import cx from "classnames";
@@ -25,6 +25,8 @@ import Image from "next/image";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getStarknet } from "get-starknet";
+import styled from "@emotion/styled";
+import { connectWallet, disconnectWallet, getExplorerBaseUrl } from "../../services/wallet.service";
 
 const Swap = () => {
   const [isLoading, changeIsLoading] = useState(false);
@@ -34,7 +36,7 @@ const Swap = () => {
   const [isTokenApproved, changeTokenApproved] = useState(false);
   const [failMsg, changeFailMsg] = useState("");
   const [poolbalances, changeBalances] = useState(['0', '0', '0']);
-  const [userBalances, changeUserBalances] = useState(['0','0','0'])
+  const [userBalances, changeUserBalances] = useState(['0', '0', '0'])
   const [liquidityBalance, changeLiquidityBalance] = useState('0');
   const [tokenAllowance, setTokenAllowance] = useState("0");
 
@@ -52,24 +54,28 @@ const Swap = () => {
     symbol: tokens[1].symbol,
   }));
   const [address, setAddress] = useState("")
+  const [swapRate, setSwapRate] = useState(0);
+  const [openDrop, setOpenDrop] = useState(false);
 
   useEffect(() => {
     (async () => {
       const res: string[] = await getPoolBalances();
-      const _userBal : string[] = await getUserBalances();
+      const _userBal: string[] = await getUserBalances();
       changeBalances(res);
       changeUserBalances(_userBal)
     })();
-
-    (async () => {
-      const res: string = await getLiquidityBalances();
-      changeLiquidityBalance(res);
-      const wallet = getStarknet();
-      const [address] = await wallet.enable();
-      setAddress(address);
-      console.log(address)
-    })();
+    coneectWallet();
+    
   }, []);
+
+  const coneectWallet = async () => {
+    const res: string = await getLiquidityBalances();
+    changeLiquidityBalance(res);
+    const wallet = getStarknet();
+    const [address] = await wallet.enable();
+    setAddress(address);
+    console.log(address)
+  };
 
   const tokenApproval = useCallback(async () => {
     const result: string = await getTokenAllowance(getTokenIndex(fromDetails.symbol));
@@ -78,29 +84,40 @@ const Swap = () => {
 
   useEffect(() => {
     (async () => {
+      const res: string = await getSwapAmount(
+        getTokenIndex(fromDetails.symbol),
+        getTokenIndex(toDetails.symbol),
+        1
+      );
+      setSwapRate(Number(res));
+    })();
+  }, [fromDetails.symbol, toDetails.symbol])
+
+  useEffect(() => {
+    (async () => {
       await tokenApproval();
     })();
   });
 
-  useEffect(()=>{
-    (async() =>{
+  useEffect(() => {
+    (async () => {
       await predictSwapResult(getString2Number(fromDetails.amount));
     })();
   }, [toDetails.amount, fromDetails])
 
-  useEffect(()=>{
-    if(!txComplete) return;
+  useEffect(() => {
+    if (!txComplete) return;
     console.log("asdadfasdf", txMessage)
     openErrorWindow(txMessage, 1)
   }, [txComplete])
 
-  useEffect(()=>{
-    if(failMsg.length)
+  useEffect(() => {
+    if (failMsg.length)
       openErrorWindow(failMsg, 2)
-  },[failMsg])
+  }, [failMsg])
 
-  useEffect(()=>{
-    if(!isLoading) return;
+  useEffect(() => {
+    if (!isLoading) return;
     openErrorWindow(loadingMsg, 3)
   }, [isLoading])
 
@@ -113,7 +130,7 @@ const Swap = () => {
     // changeLPAmount(result);
     const detail2 = {
       ...toDetails,
-      ...{amount: `${result}`},
+      ...{ amount: `${result}` },
     };
     setToDetails(detail2);
   };
@@ -175,13 +192,13 @@ const Swap = () => {
 
   const switchTransferType = (e: any) => {
     setFromDetails(toDetails);
-    const value = {amount: ""};
-    setToDetails({...fromDetails, ...value})
-    console.log({...fromDetails, ...value})
+    const value = { amount: "" };
+    setToDetails({ ...fromDetails, ...value })
+    console.log({ ...fromDetails, ...value })
     // predictSwapResult(Number.isNaN(toDetails.amount) ? 0 : Number(toDetails.amount));
   }
 
-  const setSwapDetails = async (values: {amount: string, symbol: string}, from: boolean) => {
+  const setSwapDetails = async (values: { amount: string, symbol: string }, from: boolean) => {
 
     console.log("asdfadsfas", from, values)
 
@@ -191,7 +208,7 @@ const Swap = () => {
         ...values,
       };
       if (details.symbol === toDetails.symbol) {
-        setToDetails({...fromDetails, ...{amount: ''}});
+        setToDetails({ ...fromDetails, ...{ amount: '' } });
       }
       setFromDetails(details);
     } else {
@@ -200,7 +217,7 @@ const Swap = () => {
         ...values,
       };
       if (detail2.symbol === fromDetails.symbol) {
-        setFromDetails({...toDetails, ...{amount: ''}});
+        setFromDetails({ ...toDetails, ...{ amount: '' } });
       }
       setToDetails(detail2);
     }
@@ -209,7 +226,7 @@ const Swap = () => {
   }
 
   const openErrorWindow = (value: string, flag: number) => {
-    if(flag === 3)
+    if (flag === 3)
       toast.warn(
         value,
         {
@@ -217,7 +234,7 @@ const Swap = () => {
           autoClose: 15000,
         },
       );
-    if(flag ===2 )
+    if (flag === 2)
       toast.error(
         value,
         {
@@ -225,7 +242,7 @@ const Swap = () => {
           autoClose: 15000,
         },
       );
-    if(flag === 1) {
+    if (flag === 1) {
       toast.success(
         value,
         {
@@ -236,9 +253,32 @@ const Swap = () => {
     }
   }
 
+  const copyAddress = () => {
+    navigator.clipboard.writeText(address || "")
+  }
+  const disconnect = async () => {
+    disconnectWallet();
+    setAddress("");
+  }
+
   return (
-    <>
-      <Box py="10px" borderRadius={'8px'} px="30px" ml="20px" mt="20px" width="190px" border="1px solid rgba(255, 255, 255, 0.13)">{address && truncateAddress(address)}</Box>
+    <Box onClick={() => { setOpenDrop(false); }}>
+      {console.log(openDrop)}
+      <ConnectButton onClick={(e: any) => {
+        if(address) {
+          e.stopPropagation();
+          setOpenDrop(!openDrop);
+        } else {
+          coneectWallet();
+        }
+      }}>
+        <Box>{address ? truncateAddress(address) : "Connect Wallet"}</Box>
+        <Dropdown visible={openDrop} >
+          <DropdownItem onClick={copyAddress}><img src="/copy.svg" width="20px" style={{ marginRight: '10px' }} /> Copy Address</DropdownItem>
+          <DropdownItem href={`${getExplorerBaseUrl()}/contract/${address}`} target="_blank"><img src="/view.svg" width="20px" style={{ marginRight: '10px' }} /> View on Explorer</DropdownItem>
+          <DropdownItem onClick={() => { disconnect() }}><img src="/disconnect.svg" width="20px" style={{ marginRight: '10px' }} /> Disconnect</DropdownItem>
+        </Dropdown>
+      </ConnectButton>
       <Box display="flex" justifyContent={'center'} flexDirection="column" alignItems={'center'} pt="100px">
         <Box display="flex" width={'auto'} mb="50px" justifyContent={'center'} alignItems="center">
           <Box borderRadius={'8px'} border="1px solid rgba(255, 255, 255, 0.13)" width="100%" p="30px" display="flex" justifyContent={'space-between'}>
@@ -266,10 +306,10 @@ const Swap = () => {
           <div className="swap_box_top">
             <div className="swap_coin_title">
               <Box fontSize="16px" fontWeight="600">From</Box>
-              <Box fontSize="12px" fontWeight="400">Available Balance: 1.09393USDC</Box>
+              <Box fontSize="12px" fontWeight="400">Available Balance: {Number(userBalances[getTokenIndex(fromDetails.symbol)]).toFixed(4)} {fromDetails.symbol}</Box>
             </div>
             <SwapSwapInput
-              // balances={balances}
+              balances={userBalances}
               // currencies={currencies}
               from={true}
               value={fromDetails}
@@ -286,7 +326,7 @@ const Swap = () => {
 
             <div className="swap_coin_title" style={{ marginBottom: '10px' }}>
               <Box fontSize="16px" fontWeight="600">To</Box>
-              <Box fontSize="12px" fontWeight="400">1 USDC = 1.22 ZZUSDC</Box>
+              <Box fontSize="12px" fontWeight="400">1 {fromDetails.symbol} = {swapRate} {toDetails.symbol}</Box>
             </div>
             <SwapSwapInput
               // balances={balances}
@@ -296,17 +336,6 @@ const Swap = () => {
               onChange={setSwapDetails}
               readOnly={true}
             />
-            <Box mt="10px" color="rgba(255, 255, 255, 0.72)" fontSize="11px" justifyContent="flex-end" alignItems="center" display="flex">
-              {/* <Box mr="5px">Estimated value: ~$ 30.33</Box> */}
-              <Image
-                src="/Icon.svg"
-                width="20"
-                height="20"
-                alt="mammoth pool logo"
-              />
-            </Box>
-
-
             <div className="swap_button" style={{ marginTop: '30px' }}>
               {(!isTokenApproved) && (
                 <Button
@@ -318,7 +347,7 @@ const Swap = () => {
                   style={{ height: '40px', fontSize: '18px' }}
                   text="Approve"
                   // icon={<MdSwapCalls />}
-                  onClick={()=>handleApprove()}
+                  onClick={() => handleApprove()}
                 />
               )}
               {(isTokenApproved) && (
@@ -330,7 +359,7 @@ const Swap = () => {
                   })}
                   text="Swap"
                   // icon={<MdSwapCalls />}
-                  onClick={()=>handleSubmit()}
+                  onClick={() => handleSubmit()}
                 />
               )}
             </div>
@@ -351,8 +380,60 @@ const Swap = () => {
         onClose={() => { setMintModal(false) }}
       />
       <ToastContainer />
-    </>
+    </Box>
   );
 };
 
 export default Swap;
+
+const ConnectButton = styled('div')(
+  ({ theme }) =>
+    `
+    border-radius: 8px;
+    padding: 10px 30px;
+    margin-left: 20px;
+    margin-top: 20px;
+    width: 210px;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    cursor: pointer;
+    background: rgba(0,0,0,0.8);
+    position: relative;
+    display: flex;
+    transition: all 0.2s ease-out;
+    z-index: 10;
+
+    &:hover {
+      transition: all 0.2s ease-out;
+      background: rgba(0,0,0,0.1);
+    }
+  
+    &::after {
+      content: '▾';
+      margin-left: 10px;
+    }
+`
+);
+
+const Dropdown = styled.div<{ visible?: boolean }>`
+  visibility: ${p => p.visible ? "visible" : "hidden"};
+  opacity: ${p => p.visible ? 1 : 0};
+  height: ${p => p.visible ? '150px' : '120px'};
+  width: 250px;
+  background: white;
+  border-radius: 6px;
+  position: absolute;
+  top: 45px;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 15px 25px;
+  transition: all 0.2s ease-in;
+`
+
+const DropdownItem = styled.a`
+  display: flex;
+  align-items: center;
+  color: black;
+  height: 50px;
+  text-decoration: none;
+`
