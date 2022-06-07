@@ -62,11 +62,11 @@ const Swap = () => {
       changeBalances(res);
       changeUserBalances(_userBal)
     })();
-    coneectWallet();
+    connectWallet();
     
   }, []);
 
-  const coneectWallet = async () => {
+  const connectWallet = async () => {
     const res: string = await getLiquidityBalances();
     changeLiquidityBalance(res);
     const wallet = getStarknet();
