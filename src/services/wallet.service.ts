@@ -1,5 +1,4 @@
 import { getStarknet } from "get-starknet";
-import { Network } from "./token.service";
 
 export const isWalletConnected = (): boolean => !!getStarknet()?.isConnected;
 
@@ -13,7 +12,7 @@ export const walletAddress = async (): Promise<string | undefined> => {
   } catch {}
 };
 
-export const networkId = (): Network | undefined => {
+export const networkId = () => {
   try {
     const { baseUrl } = getStarknet().provider;
     if (baseUrl.includes("alpha-mainnet.starknet.io")) {

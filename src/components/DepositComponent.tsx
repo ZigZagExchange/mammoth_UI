@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { BigNumber } from "ethers";
 import Dialog from '@mui/material/Dialog';
 import { Box } from '@mui/material';
 import { tokens } from "../services/constants";
@@ -18,7 +17,6 @@ import {
   getTokenAllowance
 } from "../services/pool.service";
 import LoadingIndicator from "./Indicator";
-// import { waitForTransaction } from "../services/wallet.service";
 
 import { Button as CustomButton } from "./Button/Button";
 import SwapSwapInput from "./SwapComponent/SwapSwapInput";
