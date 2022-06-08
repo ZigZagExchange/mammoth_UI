@@ -90,13 +90,14 @@ export const getAllowances = async (tokenIndex: number) => {
 
 export const approveToken = async (
   tokenIndex: number,
-  amount: number = 100
+  amount: number = 100,
+  max = false
 ): Promise<any> => {
   const wallet = getStarknet();
   await wallet.enable();
   const tokenAddress = tokens[tokenIndex].address;
   const tokenDecimals = tokens[tokenIndex].decimals;
-  const amountBN = ethers.utils.parseUnits(
+  const amountBN = max ? ethers.constants.MaxUint256 : ethers.utils.parseUnits(
     amount.toFixed(tokenDecimals),
     tokenDecimals
   );

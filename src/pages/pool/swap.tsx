@@ -77,6 +77,7 @@ const Swap = () => {
   const tokenApproval = useCallback(async () => {
     const result: string = await getTokenAllowance(getTokenIndex(fromDetails.symbol));
     setTokenAllowance(result);
+    changeTokenApproved(Number(result) > Number(fromDetails.amount));
   }, [fromDetails.symbol]);
 
   useEffect(() => {
