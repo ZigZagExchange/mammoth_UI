@@ -241,28 +241,37 @@ export default function DepositComponent(props: DepositDialogProps) {
   }, [isLoading])
 
   const openErrorWindow = (value: string, flag: number) => {
-    if(flag === 3)
-      toast.warn(
+    if(toast.isActive(flag)) return;
+    if(flag === 3) {
+      toast.info(
         value,
         {
           closeOnClick: false,
           autoClose: 15000,
+          position: toast.POSITION.BOTTOM_RIGHT,
+          toastId: flag
         },
       );
-    if(flag ===2 )
+    }
+    if(flag === 2 ) {
       toast.error(
         value,
         {
           closeOnClick: false,
           autoClose: 15000,
+          position: toast.POSITION.BOTTOM_RIGHT,
+          toastId: flag
         },
       );
+    }
     if(flag === 1) {
       toast.success(
         value,
         {
           closeOnClick: false,
           autoClose: 15000,
+          position: toast.POSITION.BOTTOM_RIGHT,
+          toastId: flag
         },
       );
     }

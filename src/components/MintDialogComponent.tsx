@@ -82,11 +82,6 @@ export default function MintDialogComponent(props: DepositDialogProps) {
               ))
             }
           </Box>
-          <Box display="flex" width="100%">
-            <Box color="orangered" width="100%" height="100%">
-              <CustomButton className="bg_btn" style={{ background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }} text="Approve All" onClick={() => approveAll()} />
-            </Box>
-          </Box>
         </Box>
       </Dialog>
     </div>
