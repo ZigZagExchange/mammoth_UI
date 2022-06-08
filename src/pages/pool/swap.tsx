@@ -267,21 +267,23 @@ const Swap = () => {
   return (
     <Box onClick={() => { setOpenDrop(false); }}>
       {console.log(openDrop)}
-      <ConnectButton onClick={(e: any) => {
-        if(address) {
-          e.stopPropagation();
-          setOpenDrop(!openDrop);
-        } else {
-          connectWallet();
-        }
-      }}>
-        <Box>{address ? truncateAddress(address) : "Connect Wallet"}</Box>
-        <Dropdown visible={openDrop} >
-          <DropdownItem onClick={copyAddress}><img src="/copy.svg" width="20px" style={{ marginRight: '10px' }} /> Copy Address</DropdownItem>
-          <DropdownItem href={`${getExplorerBaseUrl()}/contract/${address}`} target="_blank"><img src="/view.svg" width="20px" style={{ marginRight: '10px' }} /> View on Explorer</DropdownItem>
-          <DropdownItem onClick={() => { disconnect() }}><img src="/disconnect.svg" width="20px" style={{ marginRight: '10px' }} /> Disconnect</DropdownItem>
-        </Dropdown>
-      </ConnectButton>
+      <Box display="flex" justifyContent={'end'} mr="50px">
+        <ConnectButton onClick={(e: any) => {
+          if(address) {
+            e.stopPropagation();
+            setOpenDrop(!openDrop);
+          } else {
+            connectWallet();
+          }
+        }}>
+          <Box>{address ? truncateAddress(address) : "Connect Wallet"}</Box>
+          <Dropdown visible={openDrop} >
+            <DropdownItem onClick={copyAddress}><img src="/copy.svg" width="20px" style={{ marginRight: '10px' }} /> Copy Address</DropdownItem>
+            <DropdownItem href={`${getExplorerBaseUrl()}/contract/${address}`} target="_blank"><img src="/view.svg" width="20px" style={{ marginRight: '10px' }} /> View on Explorer</DropdownItem>
+            <DropdownItem onClick={() => { disconnect() }}><img src="/disconnect.svg" width="20px" style={{ marginRight: '10px' }} /> Disconnect</DropdownItem>
+          </Dropdown>
+        </ConnectButton>
+      </Box>
       <Box display="flex" justifyContent={'center'} flexDirection="column" alignItems={'center'} pt="100px">
         <Box display="flex" width={'auto'} mb="50px" justifyContent={'center'} alignItems="center">
           <Box borderRadius={'8px'} border="1px solid rgba(255, 255, 255, 0.13)" width="100%" p="30px" display="flex" justifyContent={'space-between'}>
@@ -404,6 +406,7 @@ const ConnectButton = styled('div')(
     display: flex;
     transition: all 0.2s ease-out;
     z-index: 10;
+    justify-content: end;
 
     &:hover {
       transition: all 0.2s ease-out;
@@ -426,7 +429,7 @@ const Dropdown = styled.div<{ visible?: boolean }>`
   border-radius: 6px;
   position: absolute;
   top: 45px;
-  left: 0;
+  right: 0;
   display: flex;
   flex-direction: column;
   padding: 15px 25px;
