@@ -9,6 +9,7 @@ import { tokens } from "../services/constants";
 interface DepositDialogProps {
   open: boolean;
   onClose: () => void;
+  onEvent: ()=>void;
 }
 
 export default function MintDialogComponent(props: DepositDialogProps) {
@@ -24,7 +25,10 @@ export default function MintDialogComponent(props: DepositDialogProps) {
   };
 
   const handleMint = async (tokenIndex: number) => {
-    await mintToken(tokenIndex);
+    try{
+      await mintToken(tokenIndex);
+    } catch (e) {} 
+    finally {props.onEvent();}
   };
 
   const approveAll = async () => {

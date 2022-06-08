@@ -61,6 +61,25 @@ export const getTokenAllowance = async (tokenIndex: number) => {
   return decimalString;
 };
 
+export const getTokenBalance = async (tokenIndex: number) => {
+  const userWalletAddress = await walletAddress();
+  if (!userWalletAddress) return '0';
+  const tokenAddress = tokens[tokenIndex].address;
+  const tokenDecimals = tokens[tokenIndex].decimals;
+
+  const erc20 = new starknet.Contract(starknetERC20_ABI as starknet.Abi, tokenAddress);
+  const result = await erc20.balanceOf(
+    userWalletAddress
+  );
+  const balanceBN = starknet.uint256.uint256ToBN(result[0]);
+  if (balanceBN.lt(1 / tokenDecimals)) return '0';
+  const decimalString = ethers.utils.formatUnits(
+    balanceBN.toString(),
+    tokenDecimals
+  ).toString();
+  return decimalString;
+}
+
 export const getAllowances = async (tokenIndex: number) => {
   const allowances = [];
   for (let i = 0; i < tokens.length; i++) {

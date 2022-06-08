@@ -72,25 +72,12 @@ const Swap = () => {
     const wallet = getStarknet();
     const [address] = await wallet.enable();
     setAddress(address);
-    console.log(address)
   };
 
   const tokenApproval = useCallback(async () => {
     const result: string = await getTokenAllowance(getTokenIndex(fromDetails.symbol));
     setTokenAllowance(result);
   }, [fromDetails.symbol]);
-
-  useEffect(()=>{
-    (async () => {
-      const res: string = await getSwapAmount(
-        getTokenIndex(fromDetails.symbol),
-        getTokenIndex(toDetails.symbol),
-        1
-      );
-      console.log(res);
-      setSwapRate(Number(res));
-    })();
-  },[fromDetails.symbol, toDetails.symbol])
 
   useEffect(() => {
     (async () => {
@@ -100,6 +87,7 @@ const Swap = () => {
         1
       );
       setSwapRate(Number(res));
+      await tokenApproval();
     })();
   }, [fromDetails.symbol, toDetails.symbol])
 
@@ -164,6 +152,8 @@ const Swap = () => {
       console.log(e)
       success = false;
       changeFailMsg("Swap failed");
+    } finally {
+      onEvent();
     }
     changeIsLoading(false);
     if (success) {
@@ -189,6 +179,8 @@ const Swap = () => {
     } catch (e) {
       success = false;
       changeFailMsg("Approval failed");
+    } finally {
+      onEvent();
     }
     changeIsLoading(false);
     if (success) {
@@ -229,28 +221,37 @@ const Swap = () => {
   }
 
   const openErrorWindow = (value: string, flag: number) => {
-    if (flag === 3)
-      toast.warn(
+    if(toast.isActive(flag)) return;
+    if(flag === 3) {
+      toast.info(
         value,
         {
           closeOnClick: false,
           autoClose: 15000,
+          position: toast.POSITION.BOTTOM_RIGHT,
+          toastId: flag
         },
       );
-    if (flag === 2)
+    }
+    if(flag === 2 ) {
       toast.error(
         value,
         {
           closeOnClick: false,
           autoClose: 15000,
+          position: toast.POSITION.BOTTOM_RIGHT,
+          toastId: flag
         },
       );
-    if (flag === 1) {
+    }
+    if(flag === 1) {
       toast.success(
         value,
         {
           closeOnClick: false,
           autoClose: 15000,
+          position: toast.POSITION.BOTTOM_RIGHT,
+          toastId: flag
         },
       );
     }
@@ -262,6 +263,17 @@ const Swap = () => {
   const disconnect = async () => {
     disconnectWallet();
     setAddress("");
+  }
+
+  const onEvent = async () => {
+    console.log("onEvent")
+    const res: string[] = await getPoolBalances();
+    const _userBal: string[] = await getUserBalances();
+    changeBalances(res);
+    changeUserBalances(_userBal)
+    console.log(_userBal)
+    await predictSwapResult(getString2Number(fromDetails.amount));
+    await tokenApproval();
   }
 
   return (
@@ -375,14 +387,17 @@ const Swap = () => {
         open={modal}
         onClose={() => { setModal(false) }}
         balance={userBalances}
+        onEvent={onEvent}
       />
       <WithdrawComponent
         open={withdrawModal}
         onClose={() => { setWithdrawModal(false) }}
+        onEvent={onEvent}
       />
       <MintDialogComponent
         open={mintModal}
         onClose={() => { setMintModal(false) }}
+        onEvent={onEvent}
       />
       <ToastContainer />
     </Box>
