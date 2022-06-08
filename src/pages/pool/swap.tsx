@@ -8,8 +8,8 @@ import {
   getUserBalances,
   getLiquidityBalances
 } from "../../services/pool.service";
-import {truncateAddress} from "../../services/address.service"
-import {tokens } from "../../services/constants";
+import { truncateAddress } from "../../services/address.service"
+import { tokens } from "../../services/constants";
 import { Button } from "../../components/Button/Button";
 import cx from "classnames";
 import { SwapButton } from "../../components/SwapButton";
@@ -22,6 +22,8 @@ import DepositComponent from "../../components/DepositComponent";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getStarknet } from "get-starknet";
+import styled from "@emotion/styled";
+import { connectWallet, disconnectWallet, getExplorerBaseUrl } from "../../services/wallet.service";
 import { getTokenIndex } from "../../libs/utils";
 
 const Swap = () => {
@@ -32,7 +34,7 @@ const Swap = () => {
   const [isTokenApproved, changeTokenApproved] = useState(false);
   const [failMsg, changeFailMsg] = useState("");
   const [poolbalances, changeBalances] = useState(['0', '0', '0']);
-  const [userBalances, changeUserBalances] = useState(['0','0','0'])
+  const [userBalances, changeUserBalances] = useState(['0', '0', '0'])
   const [liquidityBalance, changeLiquidityBalance] = useState('0');
   const [tokenAllowance, setTokenAllowance] = useState("0");
 
@@ -51,24 +53,27 @@ const Swap = () => {
   }));
   const [address, setAddress] = useState("")
   const [swapRate, setSwapRate] = useState(0);
+  const [openDrop, setOpenDrop] = useState(false);
 
   useEffect(() => {
     (async () => {
       const res: string[] = await getPoolBalances();
-      const _userBal : string[] = await getUserBalances();
+      const _userBal: string[] = await getUserBalances();
       changeBalances(res);
       changeUserBalances(_userBal)
     })();
-
-    (async () => {
-      const res: string = await getLiquidityBalances();
-      changeLiquidityBalance(res);
-      const wallet = getStarknet();
-      const [address] = await wallet.enable();
-      setAddress(address);
-      console.log(address)
-    })();
+    connectWallet();
+    
   }, []);
+
+  const connectWallet = async () => {
+    const res: string = await getLiquidityBalances();
+    changeLiquidityBalance(res);
+    const wallet = getStarknet();
+    const [address] = await wallet.enable();
+    setAddress(address);
+    console.log(address)
+  };
 
   const tokenApproval = useCallback(async () => {
     const result: string = await getTokenAllowance(getTokenIndex(fromDetails.symbol));
@@ -89,29 +94,40 @@ const Swap = () => {
 
   useEffect(() => {
     (async () => {
+      const res: string = await getSwapAmount(
+        getTokenIndex(fromDetails.symbol),
+        getTokenIndex(toDetails.symbol),
+        1
+      );
+      setSwapRate(Number(res));
+    })();
+  }, [fromDetails.symbol, toDetails.symbol])
+
+  useEffect(() => {
+    (async () => {
       await tokenApproval();
     })();
   });
 
-  useEffect(()=>{
-    (async() =>{
+  useEffect(() => {
+    (async () => {
       await predictSwapResult(getString2Number(fromDetails.amount));
     })();
   }, [toDetails.amount, fromDetails])
 
-  useEffect(()=>{
-    if(!txComplete) return;
+  useEffect(() => {
+    if (!txComplete) return;
     console.log("asdadfasdf", txMessage)
     openErrorWindow(txMessage, 1)
   }, [txComplete])
 
-  useEffect(()=>{
-    if(failMsg.length)
+  useEffect(() => {
+    if (failMsg.length)
       openErrorWindow(failMsg, 2)
-  },[failMsg])
+  }, [failMsg])
 
-  useEffect(()=>{
-    if(!isLoading) return;
+  useEffect(() => {
+    if (!isLoading) return;
     openErrorWindow(loadingMsg, 3)
   }, [isLoading])
 
@@ -124,7 +140,7 @@ const Swap = () => {
     // changeLPAmount(result);
     const detail2 = {
       ...toDetails,
-      ...{amount: `${result}`},
+      ...{ amount: `${result}` },
     };
     setToDetails(detail2);
   };
@@ -182,9 +198,9 @@ const Swap = () => {
 
   const switchTransferType = (e: any) => {
     setFromDetails(toDetails);
-    const value = {amount: ""};
-    setToDetails({...fromDetails, ...value})
-    console.log({...fromDetails, ...value})
+    const value = { amount: "" };
+    setToDetails({ ...fromDetails, ...value })
+    console.log({ ...fromDetails, ...value })
     // predictSwapResult(Number.isNaN(toDetails.amount) ? 0 : Number(toDetails.amount));
   }
 
@@ -195,7 +211,7 @@ const Swap = () => {
         ...values,
       };
       if (details.symbol === toDetails.symbol) {
-        setToDetails({...fromDetails, ...{amount: ''}});
+        setToDetails({ ...fromDetails, ...{ amount: '' } });
       }
       setFromDetails(details);
     } else {
@@ -204,7 +220,7 @@ const Swap = () => {
         ...values,
       };
       if (detail2.symbol === fromDetails.symbol) {
-        setFromDetails({...toDetails, ...{amount: ''}});
+        setFromDetails({ ...toDetails, ...{ amount: '' } });
       }
       setToDetails(detail2);
     }
@@ -213,7 +229,7 @@ const Swap = () => {
   }
 
   const openErrorWindow = (value: string, flag: number) => {
-    if(flag === 3)
+    if (flag === 3)
       toast.warn(
         value,
         {
@@ -221,7 +237,7 @@ const Swap = () => {
           autoClose: 15000,
         },
       );
-    if(flag ===2 )
+    if (flag === 2)
       toast.error(
         value,
         {
@@ -229,7 +245,7 @@ const Swap = () => {
           autoClose: 15000,
         },
       );
-    if(flag === 1) {
+    if (flag === 1) {
       toast.success(
         value,
         {
@@ -240,9 +256,32 @@ const Swap = () => {
     }
   }
 
+  const copyAddress = () => {
+    navigator.clipboard.writeText(address || "")
+  }
+  const disconnect = async () => {
+    disconnectWallet();
+    setAddress("");
+  }
+
   return (
-    <>
-      <Box py="10px" borderRadius={'8px'} px="30px" ml="20px" mt="20px" width="190px" border="1px solid rgba(255, 255, 255, 0.13)">{address && truncateAddress(address)}</Box>
+    <Box onClick={() => { setOpenDrop(false); }}>
+      {console.log(openDrop)}
+      <ConnectButton onClick={(e: any) => {
+        if(address) {
+          e.stopPropagation();
+          setOpenDrop(!openDrop);
+        } else {
+          connectWallet();
+        }
+      }}>
+        <Box>{address ? truncateAddress(address) : "Connect Wallet"}</Box>
+        <Dropdown visible={openDrop} >
+          <DropdownItem onClick={copyAddress}><img src="/copy.svg" width="20px" style={{ marginRight: '10px' }} /> Copy Address</DropdownItem>
+          <DropdownItem href={`${getExplorerBaseUrl()}/contract/${address}`} target="_blank"><img src="/view.svg" width="20px" style={{ marginRight: '10px' }} /> View on Explorer</DropdownItem>
+          <DropdownItem onClick={() => { disconnect() }}><img src="/disconnect.svg" width="20px" style={{ marginRight: '10px' }} /> Disconnect</DropdownItem>
+        </Dropdown>
+      </ConnectButton>
       <Box display="flex" justifyContent={'center'} flexDirection="column" alignItems={'center'} pt="100px">
         <Box display="flex" width={'auto'} mb="50px" justifyContent={'center'} alignItems="center">
           <Box borderRadius={'8px'} border="1px solid rgba(255, 255, 255, 0.13)" width="100%" p="30px" display="flex" justifyContent={'space-between'}>
@@ -311,7 +350,7 @@ const Swap = () => {
                   style={{ height: '40px', fontSize: '18px' }}
                   text="Approve"
                   // icon={<MdSwapCalls />}
-                  onClick={()=>handleApprove()}
+                  onClick={() => handleApprove()}
                 />
               )}
               {(isTokenApproved) && (
@@ -323,7 +362,7 @@ const Swap = () => {
                   })}
                   text="Swap"
                   // icon={<MdSwapCalls />}
-                  onClick={()=>handleSubmit()}
+                  onClick={() => handleSubmit()}
                 />
               )}
             </div>
@@ -344,8 +383,60 @@ const Swap = () => {
         onClose={() => { setMintModal(false) }}
       />
       <ToastContainer />
-    </>
+    </Box>
   );
 };
 
 export default Swap;
+
+const ConnectButton = styled('div')(
+  ({ theme }) =>
+    `
+    border-radius: 8px;
+    padding: 10px 30px;
+    margin-left: 20px;
+    margin-top: 20px;
+    width: 210px;
+    border: 1px solid rgba(255, 255, 255, 0.13);
+    cursor: pointer;
+    background: rgba(0,0,0,0.8);
+    position: relative;
+    display: flex;
+    transition: all 0.2s ease-out;
+    z-index: 10;
+
+    &:hover {
+      transition: all 0.2s ease-out;
+      background: rgba(0,0,0,0.1);
+    }
+  
+    &::after {
+      content: '▾';
+      margin-left: 10px;
+    }
+`
+);
+
+const Dropdown = styled.div<{ visible?: boolean }>`
+  visibility: ${p => p.visible ? "visible" : "hidden"};
+  opacity: ${p => p.visible ? 1 : 0};
+  height: ${p => p.visible ? '150px' : '120px'};
+  width: 250px;
+  background: white;
+  border-radius: 6px;
+  position: absolute;
+  top: 45px;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 15px 25px;
+  transition: all 0.2s ease-in;
+`
+
+const DropdownItem = styled.a`
+  display: flex;
+  align-items: center;
+  color: black;
+  height: 50px;
+  text-decoration: none;
+`
