@@ -16,6 +16,7 @@ import "react-toastify/dist/ReactToastify.css";
 interface WithdrawDialogProps {
   open: boolean;
   onClose: () => void;
+  onEvent: () => void;
 }
 
 export default function WithdrawComponent(props: WithdrawDialogProps) {
@@ -62,28 +63,37 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
   }, [isLoading])
 
   const openErrorWindow = (value: string, flag: number) => {
-    if(flag === 3)
-      toast.warn(
+    if(toast.isActive(flag)) return;
+    if(flag === 3) {
+      toast.info(
         value,
         {
           closeOnClick: false,
           autoClose: 15000,
+          position: toast.POSITION.BOTTOM_RIGHT,
+          toastId: flag
         },
       );
-    if(flag ===2 )
+    }
+    if(flag === 2 ) {
       toast.error(
         value,
         {
           closeOnClick: false,
           autoClose: 15000,
+          position: toast.POSITION.BOTTOM_RIGHT,
+          toastId: flag
         },
       );
+    }
     if(flag === 1) {
       toast.success(
         value,
         {
           closeOnClick: false,
           autoClose: 15000,
+          position: toast.POSITION.BOTTOM_RIGHT,
+          toastId: flag
         },
       );
     }
@@ -100,6 +110,15 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
     } catch (e) {
       success = false;
       changeFailMsg("Withdraw failed");
+    } finally {
+      const val= await getLiquidityBalances()
+      changeLiquidityBalance(val);
+      let val2: any = swapDetails.amount as any;
+      if (typeof val2 === "string") {
+        val2 = parseFloat(val.replace(",", "."));
+      }
+      await predictWithdrawResult(val2);
+      props.onEvent();
     }
     changeIsLoading(false);
     if (success) {
