@@ -12,9 +12,11 @@ import { PopperUnstyled } from '@mui/base';
 
 import {
   approveToken,
+  // approveUnlimitToken,
   depositPool,
   getDepositERC20Amount,
-  getTokenAllowance
+  getTokenAllowance,
+  getTokenBalance
 } from "../services/pool.service";
 import LoadingIndicator from "./Indicator";
 
@@ -25,11 +27,13 @@ import cx from "classnames";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getTokenIndex } from "../libs/utils";
+import { ethers } from "ethers";
 
 interface DepositDialogProps {
   open: boolean;
   onClose: () => void;
   balance: string[];
+  onEvent: () => void;
 }
 
 
@@ -213,15 +217,26 @@ export default function DepositComponent(props: DepositDialogProps) {
     amount: "",
     symbol: tokens[0].symbol,
   }));
+  const [isUnLimitApprove, setUnlimitApprove] = useState(false);
+  const [userBalance, setUserBalance] = useState("0.00")
 
   const tokenApproval = useCallback(async () => {
     const result: string = await getTokenAllowance(tokenIndex);
     setTokenAllowance(result);
+    const decimalString = ethers.utils.formatUnits(
+      ethers.constants.MaxUint256,
+      tokens[tokenIndex].decimals
+    ).toString();
+    if(result === decimalString) {
+      setUnlimitApprove(true);
+    } else setUnlimitApprove(false);
+    setUserBalance(await getTokenBalance(tokenIndex));
   }, [tokenIndex]);
 
   useEffect(() => {
     (async () => {
       await tokenApproval();
+      
     })();
   });
 
@@ -296,6 +311,9 @@ export default function DepositComponent(props: DepositDialogProps) {
     } catch (e) {
       success = false;
       changeFailMsg("Deposit failed");
+    } finally {
+      setUserBalance(await getTokenBalance(tokenIndex));
+      props.onEvent();
     }
     changeIsLoading(false);
     if (success) {
@@ -303,7 +321,7 @@ export default function DepositComponent(props: DepositDialogProps) {
     }
   };
 
-  const handleApprove = async () => {
+  const handleApprove = (maxApprove = false) => async ()=> {
 
     changeLoadingMsg(`Approving ${tokens[tokenIndex].symbol}`);
     changeTxMsg(`${tokens[tokenIndex].symbol} approved`);
@@ -312,11 +330,23 @@ export default function DepositComponent(props: DepositDialogProps) {
     try {
       await approveToken(
         tokenIndex,
-        (depositAmount * 1.05)
+        (depositAmount * 1.05),
+        maxApprove
       );
     } catch (e) {
       success = false;
       changeFailMsg("Approval failed");
+    } finally {
+      const result: string = await getTokenAllowance(tokenIndex);
+      setTokenAllowance(result);
+      const decimalString = ethers.utils.formatUnits(
+        ethers.constants.MaxUint256,
+        tokens[tokenIndex].decimals
+      ).toString();
+      if(result === decimalString) {
+        setUnlimitApprove(true);
+      } else setUnlimitApprove(false);
+      props.onEvent();
     }
     changeIsLoading(false);
     if (success) {
@@ -331,7 +361,6 @@ export default function DepositComponent(props: DepositDialogProps) {
       ...values,
     };
     _setSwapDetails(details);
-    console.log("val=========",details)
 
     let val = details.amount;
 
@@ -340,7 +369,6 @@ export default function DepositComponent(props: DepositDialogProps) {
     }
     val = Number.isNaN(val) ? 0 : val;
     const index = _.findIndex(tokens, {symbol: details.symbol});
-    console.log("index", index);
     changeIndex(index);
     changeDepositAmount(val);
 
@@ -381,17 +409,24 @@ export default function DepositComponent(props: DepositDialogProps) {
             borderBox
             listWidth="505px"
           />
-          <Box textAlign={'right'} mt="20px" mb="42px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {Number(props.balance[getTokenIndex(swapDetails.symbol)]).toFixed(4)} {swapDetails.symbol}</Box>
+          <Box textAlign={'right'} mt="20px" mb="42px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {userBalance} {swapDetails.symbol}</Box>
           <Box display="flex" width="100%">
             <Box width="100%" height="100%" display="flex">
-               <CustomButton
+               {!isUnLimitApprove && <CustomButton
+                className={cx("bg_btn_deposit", {
+                })}
+                text="ApproveUnlimit"
+                onClick={handleApprove(true)}
+                style={{marginRight: '10px' }}
+              />}
+              {!isUnLimitApprove && <CustomButton
                 className={cx("bg_btn_deposit", {
                   zig_disabled: isTokenApproved,
                 })}
                 text="Approve"
-                onClick={()=>handleApprove()}
+                onClick={handleApprove()}
                 style={{marginRight: '10px' }}
-              />
+              />}
               <CustomButton
                 className={cx("bg_btn_deposit", {
                   zig_disabled: !isTokenApproved,
@@ -403,7 +438,7 @@ export default function DepositComponent(props: DepositDialogProps) {
           </Box>
         </Box>
       </Dialog>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
     </Box>
   );
 }
