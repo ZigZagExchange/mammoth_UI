@@ -5,6 +5,8 @@ import { Button as CustomButton } from "./Button/Button";
 import Image from "next/image";
 import { mintToken, approveAllTokens } from "../services/pool.service";
 import { tokens } from "../services/constants";
+import cx from "classnames";
+import { isLazy } from 'react-is';
 
 interface DepositDialogProps {
   open: boolean;
@@ -14,6 +16,7 @@ interface DepositDialogProps {
 
 export default function MintDialogComponent(props: DepositDialogProps) {
   const [open, setOpen] = React.useState(false);
+  const [isLoading, changeIsLoading] = React.useState(false);
 
   React.useEffect(() => {
     setOpen(props.open)
@@ -26,14 +29,13 @@ export default function MintDialogComponent(props: DepositDialogProps) {
 
   const handleMint = async (tokenIndex: number) => {
     try{
+      changeIsLoading(true);
       await mintToken(tokenIndex);
     } catch (e) {} 
-    finally {props.onEvent();}
-  };
-
-  const approveAll = async () => {
-    console.log('allow all')
-    await approveAllTokens();
+    finally {
+      props.onEvent();
+      changeIsLoading(false);
+    }
   };
 
   const handleCopy = (tokenIndex: number) => {
@@ -73,8 +75,8 @@ export default function MintDialogComponent(props: DepositDialogProps) {
                     <img src={c.logo} width="30px" alt="image" />
                     <Box ml="20px" color="white">{c.symbol}</Box>
                   </Box>
-                  <CustomButton className="bg_btn" style={{ width: '100px', marginRight: '10px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }} text="MINT" onClick={() => handleMint(key)} />
-                  <CustomButton className="bg_btn" style={{ width: '100px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }} onClick={() => handleCopy(key)}  >
+                  <CustomButton className={cx("bg_btn", {zig_disabled: isLoading})} style={{ width: '100px', marginRight: '10px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }} text="MINT" onClick={() => handleMint(key)} />
+                  <CustomButton className={"bg_btn"} style={{ width: '100px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }} onClick={() => handleCopy(key)}  >
                     <Image
                       src="/clipboard.svg"
                       width="20"
