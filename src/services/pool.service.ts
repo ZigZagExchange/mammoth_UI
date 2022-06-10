@@ -1,7 +1,7 @@
 import { getStarknet } from "get-starknet";
 import * as starknet from "starknet";
 import { ethers } from "ethers";
-import { walletAddress } from "./wallet.service";
+import { isWalletConnected, walletAddress } from "./wallet.service";
 import starknetERC20_ABI from "./ABI/starknetERC20_ABI.json";
 import starknetPool_ABI from "./ABI/starknetPool_ABI.json";
 import {
@@ -42,6 +42,7 @@ export const mintToken = async (
 };
 
 export const getTokenAllowance = async (tokenIndex: number) => {
+  if(!isWalletConnected()) return "";
   const userWalletAddress = await walletAddress();
   if (!userWalletAddress) return '0';
   const tokenAddress = tokens[tokenIndex].address;
@@ -62,6 +63,7 @@ export const getTokenAllowance = async (tokenIndex: number) => {
 };
 
 export const getTokenBalance = async (tokenIndex: number) => {
+  if(!isWalletConnected()) return "";
   const userWalletAddress = await walletAddress();
   if (!userWalletAddress) return '0';
   const tokenAddress = tokens[tokenIndex].address;
@@ -384,6 +386,7 @@ export const getPoolBalances = async (): Promise<any> => {
 };
 
 export const getUserBalances = async (): Promise<any> => {
+  if(!isWalletConnected()) return;
   const userWalletAddress = await walletAddress();
   if (!userWalletAddress) return [];
 
@@ -394,6 +397,7 @@ export const getUserBalances = async (): Promise<any> => {
 };
 
 export const getLiquidityBalances = async (): Promise<any> => {
+  if(!isWalletConnected()) return;
   const userWalletAddress = await walletAddress();
 
   const pool = new starknet.Contract(starknetPool_ABI as starknet.Abi, poolAddress);

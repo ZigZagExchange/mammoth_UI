@@ -3,7 +3,7 @@ import Dialog from '@mui/material/Dialog';
 import { Box } from '@mui/material';
 import { Button as CustomButton } from "./Button/Button";
 import Image from "next/image";
-import { mintToken, approveAllTokens } from "../services/pool.service";
+import { mintToken } from "../services/pool.service";
 import { tokens } from "../services/constants";
 import cx from "classnames";
 import { isLazy } from 'react-is';

@@ -10,7 +10,7 @@ import {
 } from "../services/pool.service";
 import { Button as CustomButton } from "./Button/Button";
 import SwapSwapInput from "./SwapComponent/SwapSwapInput";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 interface WithdrawDialogProps {
