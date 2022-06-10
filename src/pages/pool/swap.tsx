@@ -135,6 +135,7 @@ const Swap = () => {
   };
 
   const handleSubmit = async () => {
+    if(Number(toDetails.amount) === 0 || Number(fromDetails.amount) === 0 || isNaN(Number(toDetails.amount)) || isNaN(Number(fromDetails.amount))) return;
     changeIsLoading(true);
     changeLoadingMsg(
       `Swapping ${tokens[getTokenIndex(fromDetails.symbol)].symbol} for ${tokens[getTokenIndex(toDetails.symbol)].symbol}`
@@ -321,6 +322,7 @@ const Swap = () => {
           </Box>
         </Box>
         <div className="swap_box">
+          <Box px="30px" pt="20px" fontSize="22px" fontWeight="bold" color="white">Swap</Box>
           <div className="swap_box_top">
             <div className="swap_coin_title">
               <Box fontSize="16px" fontWeight="600">From</Box>
