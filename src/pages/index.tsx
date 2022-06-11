@@ -56,6 +56,9 @@ const Home: NextPage = () => {
   const [swapRate, setSwapRate] = useState(0);
   const [openDrop, setOpenDrop] = useState(false);
 
+  useEffect(() => {
+    setInterval(() => { onEvent(); }, 5000);
+  }, [])
 
   useEffect(() => {
     if(!isWalletConnected()) {
