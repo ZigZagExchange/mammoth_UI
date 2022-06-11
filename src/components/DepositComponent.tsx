@@ -14,7 +14,7 @@ import {
   approveToken,
   depositPool,
   getDepositERC20Amount,
-  getAllowances
+  getTokenAllowance
 } from "../services/pool.service";
 import LoadingIndicator from "./Indicator";
 
@@ -328,12 +328,12 @@ export default function DepositComponent(props: DepositDialogProps) {
       success = false;
       changeFailMsg("Approval failed");
     } finally {
-      props.allowance = await getAllowances();
+      const result: string = await getTokenAllowance(tokenIndex);
       const decimalString = ethers.utils.formatUnits(
         ethers.constants.MaxUint256,
         tokens[tokenIndex].decimals
       ).toString();
-      setUnlimitApprove(props.allowance[tokenIndex] === decimalString);
+      setUnlimitApprove(result === decimalString);
       props.onEvent();
     }
     changeIsLoading(false);
