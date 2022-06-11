@@ -74,20 +74,7 @@ const Home: NextPage = () => {
       changeTokenApproved(false);
       return;
     }
-    (async () => {
-      const [
-        _poolBalance,
-        _userBalance,
-        _tokenAlowance
-      ] = await Promise.all([
-        getPoolBalances(),
-        getUserBalances(),
-        getAllowances()
-      ]);
-      changePoolBalances(_poolBalance);
-      changeUserBalances(_userBalance);
-      changeTokenAllowances(_tokenAlowance);
-    })();
+    onEvent();    
   }, [address]);
 
   const connectWallet = async () => {
@@ -292,12 +279,19 @@ const Home: NextPage = () => {
 
   const onEvent = async () => {
     console.log("onEvent")
-
-    const res: string[] = await getPoolBalances();
-    const _userBal: string[] = await getUserBalances();
-    changePoolBalances(res);
-    changeUserBalances(_userBal)
-    console.log(_userBal)
+    
+    const [
+      _poolBalance,
+      _userBalance,
+      _tokenAlowance
+    ] = await Promise.all([
+      getPoolBalances(),
+      getUserBalances(),
+      getAllowances()
+    ]);
+    changePoolBalances(_poolBalance);
+    changeUserBalances(_userBalance);
+    changeTokenAllowances(_tokenAlowance);
     await predictSwapResult(getString2Number(fromDetails.amount));
     await tokenApproval();
   }
