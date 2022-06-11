@@ -41,6 +41,39 @@ export const mintToken = async (
   }
 };
 
+export const mintAllTokens = async (
+  amount: number[] = [50, 1750, 1]
+): Promise<any> => {
+  if (tokens.length !== amount.length) throw new Error('Amount array wrong lenght')
+  
+  const wallet = getStarknet();
+  await wallet.enable();
+  const calldata: starknet.Call[] = [];
+
+  for(let i = 0; i < tokens.length; i++) {
+    const tokenAddress = tokens[i].address;
+    const tokenDecimals = tokens[i].decimals;
+    const amountBN = ethers.utils.parseUnits(
+      amount[i].toFixed(tokenDecimals),
+      tokenDecimals
+    );
+
+    calldata.push({
+      contractAddress: tokenAddress,
+      entrypoint: 'mint',
+      calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
+        starknet.number.toBN(poolAddress.toString()), // address decimal
+        Object.values(starknet.uint256.bnToUint256(amountBN.toString())),
+      ].flatMap((x) => x)),
+    });
+  }
+
+  const { code, transaction_hash } = await wallet.account.execute(calldata);
+  if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
+  await starknet.defaultProvider.waitForTransaction(transaction_hash);
+  return transaction_hash
+};
+
 export const getTokenAllowance = async (tokenIndex: number) => {
   if(!isWalletConnected()) return "";
   const userWalletAddress = await walletAddress();
