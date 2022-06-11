@@ -7,6 +7,7 @@ import {
   getPoolBalances,
   getUserBalances,
   getLiquidityBalances,
+  getApproveTokenFee
 } from "../services/pool.service";
 import { truncateAddress } from "../services/address.service"
 import { tokens } from "../services/constants";
@@ -89,6 +90,9 @@ const Home: NextPage = () => {
     const [address] = await wallet.enable({showModal: true});
     setAddress(address);
     console.log("test2", isWalletConnected())
+
+    const fee = await getApproveTokenFee(0);
+    console.log(fee);
   };
 
   const tokenApproval = useCallback(async () => {
