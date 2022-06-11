@@ -12,11 +12,9 @@ import { PopperUnstyled } from '@mui/base';
 
 import {
   approveToken,
-  // approveUnlimitToken,
   depositPool,
   getDepositERC20Amount,
-  getTokenAllowance,
-  getTokenBalance
+  getAllowances
 } from "../services/pool.service";
 import LoadingIndicator from "./Indicator";
 
@@ -33,6 +31,7 @@ interface DepositDialogProps {
   open: boolean;
   onClose: () => void;
   balance: string[];
+  allowance: string[];
   onEvent: () => void;
 }
 
@@ -212,25 +211,18 @@ export default function DepositComponent(props: DepositDialogProps) {
   const [txMessage, changeTxMsg] = useState("Deposit Complete");
   const [failMsg, changeFailMsg] = useState("");
   const [isTokenApproved, changeTokenApproved] = useState(false);
-  const [tokenAllowance, setTokenAllowance] = useState("0");
   const [swapDetails, _setSwapDetails] = useState(() => ({
     amount: "",
     symbol: tokens[0].symbol,
   }));
   const [isUnLimitApprove, setUnlimitApprove] = useState(false);
-  const [userBalance, setUserBalance] = useState("0.00")
 
   const tokenApproval = useCallback(async () => {
-    const result: string = await getTokenAllowance(tokenIndex);
-    setTokenAllowance(result);
     const decimalString = ethers.utils.formatUnits(
       ethers.constants.MaxUint256,
       tokens[tokenIndex].decimals
     ).toString();
-    if(result === decimalString) {
-      setUnlimitApprove(true);
-    } else setUnlimitApprove(false);
-    setUserBalance(await getTokenBalance(tokenIndex));
+    setUnlimitApprove(props.allowance[tokenIndex] === decimalString);
   }, [tokenIndex]);
 
   useEffect(() => {
@@ -312,7 +304,6 @@ export default function DepositComponent(props: DepositDialogProps) {
       success = false;
       changeFailMsg("Deposit failed");
     } finally {
-      setUserBalance(await getTokenBalance(tokenIndex));
       props.onEvent();
     }
     changeIsLoading(false);
@@ -337,15 +328,12 @@ export default function DepositComponent(props: DepositDialogProps) {
       success = false;
       changeFailMsg("Approval failed");
     } finally {
-      const result: string = await getTokenAllowance(tokenIndex);
-      setTokenAllowance(result);
+      props.allowance = await getAllowances();
       const decimalString = ethers.utils.formatUnits(
         ethers.constants.MaxUint256,
         tokens[tokenIndex].decimals
       ).toString();
-      if(result === decimalString) {
-        setUnlimitApprove(true);
-      } else setUnlimitApprove(false);
+      setUnlimitApprove(props.allowance[tokenIndex] === decimalString);
       props.onEvent();
     }
     changeIsLoading(false);
@@ -372,7 +360,7 @@ export default function DepositComponent(props: DepositDialogProps) {
     changeIndex(index);
     changeDepositAmount(val);
 
-    changeTokenApproved(Number(tokenAllowance) > val);
+    changeTokenApproved(Number(props.allowance[tokenIndex]) > val);
     await predictDepositResult(val);
   }
 
@@ -409,7 +397,7 @@ export default function DepositComponent(props: DepositDialogProps) {
             borderBox
             listWidth="505px"
           />
-          <Box textAlign={'right'} mt="20px" mb="42px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {userBalance} {swapDetails.symbol}</Box>
+          <Box textAlign={'right'} mt="20px" mb="42px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {props.balance[tokenIndex]} {swapDetails.symbol}</Box>
           <Box display="flex" width="100%">
             <Box width="100%" height="100%" display="flex">
                {!isUnLimitApprove && <CustomButton
