@@ -115,7 +115,7 @@ export const getTokenBalance = async (tokenIndex: number) => {
   return decimalString;
 }
 
-export const getAllowances = async (tokenIndex: number) => {
+export const getAllowances = async () => {
   const allowances = [];
   for (let i = 0; i < tokens.length; i++) {
     allowances[i] = await getTokenAllowance(i);
@@ -419,9 +419,9 @@ export const getPoolBalances = async (): Promise<any> => {
 };
 
 export const getUserBalances = async (): Promise<any> => {
-  if(!isWalletConnected()) return;
+  if(!isWalletConnected()) return ['0', '0', '0'];
   const userWalletAddress = await walletAddress();
-  if (!userWalletAddress) return [];
+  if (!userWalletAddress) return ['0', '0', '0'];
 
   const promise: Promise<any>[] = tokens.map(async (_, index) => {
     return await getBalance(index, userWalletAddress);
