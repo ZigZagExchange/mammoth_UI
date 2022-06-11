@@ -12,11 +12,11 @@ import { PopperUnstyled } from '@mui/base';
 
 import {
   approveToken,
-  // approveUnlimitToken,
   depositPool,
   getDepositERC20Amount,
   getTokenAllowance,
-  getTokenBalance
+  getTokenBalance,
+  getDepositPoolFee
 } from "../services/pool.service";
 import LoadingIndicator from "./Indicator";
 
@@ -293,7 +293,11 @@ export default function DepositComponent(props: DepositDialogProps) {
   }
 
   const predictDepositResult = async (amount: number) => {
-    const result = await getDepositERC20Amount(tokenIndex, amount);
+    const [result, fee] = await Promise.all([
+      getDepositERC20Amount(tokenIndex, amount),
+      getDepositPoolFee(tokenIndex, amount)
+    ]);
+    console.log(fee);
     changeLPAmount(result);
   };
 
