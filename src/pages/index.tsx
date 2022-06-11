@@ -108,14 +108,6 @@ const Home: NextPage = () => {
   useEffect(() => {
     if(!isWalletConnected()) return;
     (async () => {
-      await tokenApproval();
-    })();
-    console.log("test3", isWalletConnected())
-  }, [address]);
-
-  useEffect(() => {
-    if(!isWalletConnected()) return;
-    (async () => {
       await predictSwapResult(getString2Number(fromDetails.amount));
     })();
   }, [toDetails.amount, fromDetails])
@@ -279,7 +271,7 @@ const Home: NextPage = () => {
 
   const onEvent = async () => {
     console.log("onEvent")
-    
+
     const [
       _poolBalance,
       _userBalance,
