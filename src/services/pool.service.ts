@@ -386,9 +386,9 @@ export const getPoolBalances = async (): Promise<any> => {
 };
 
 export const getUserBalances = async (): Promise<any> => {
-  if(!isWalletConnected()) return;
+  if(!isWalletConnected()) return ['0', '0', '0'];
   const userWalletAddress = await walletAddress();
-  if (!userWalletAddress) return [];
+  if (!userWalletAddress) return ['0', '0', '0'];
 
   const promise: Promise<any>[] = tokens.map(async (_, index) => {
     return await getBalance(index, userWalletAddress);

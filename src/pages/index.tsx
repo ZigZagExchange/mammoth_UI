@@ -57,6 +57,7 @@ const Home: NextPage = () => {
   const [openDrop, setOpenDrop] = useState(false);
 
   useEffect(() => {
+    onEvent();
     setInterval(() => { onEvent(); }, 5000);
   }, [])
 
