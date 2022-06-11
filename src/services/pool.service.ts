@@ -82,7 +82,7 @@ export const getTokenBalance = async (tokenIndex: number) => {
   return decimalString;
 }
 
-export const getAllowances = async (tokenIndex: number) => {
+export const getAllowances = async () => {
   const allowances = [];
   for (let i = 0; i < tokens.length; i++) {
     allowances[i] = await getTokenAllowance(i);
