@@ -12,6 +12,7 @@ import { Button as CustomButton } from "./Button/Button";
 import SwapSwapInput from "./SwapComponent/SwapSwapInput";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { formatPrice } from "../libs/utils";
 
 interface WithdrawDialogProps {
   open: boolean;
@@ -23,7 +24,9 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
   const [open, setOpen] = React.useState(false);
 
   const [withdrawAmount, changeWithdrawAmount] = useState(0);
-  const [LPAmount, changeLPAmount] = useState("0");
+  const [ERC20Amount, changeERC20Amount] = useState({
+    0: '0',
+  } as any);
   const [tokenIndex, changeIndex] = useState(0);
   const [isLoading, changeIsLoading] = useState(false);
   const [txComplete, changeTxComplete] = useState(false);
@@ -128,7 +131,9 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
   
   const predictWithdrawResult = async (amount: number) => {
     const result = await getWithdrawERC20Amount(tokenIndex, amount);
-    changeLPAmount(result);
+    const oldERC20: any = ERC20Amount;
+    oldERC20[amount] = result;
+    changeERC20Amount(oldERC20);
   };
 
   const setWithdrawDetails = async (values: any, from: boolean) => {
@@ -192,6 +197,7 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
             listWidth="505px"
           />
           <Box textAlign={'right'} mt="20px" mb="4px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {formatPrice(liquidityBalance)} LP tokens</Box>
+          <Box textAlign={'right'} mt="4px" mb="42px" color="rgb(256,256,256,0.5)" fontSize="14px">Estimated recived: {formatPrice(ERC20Amount[withdrawAmount])} LP tokens</Box>
           <Box display="flex" width="50%">
             <Box color="#09aaf5" width="100%" height="100%" mr="1vw">
               <CustomButton
