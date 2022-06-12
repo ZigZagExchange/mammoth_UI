@@ -82,11 +82,11 @@ const Home: NextPage = () => {
   }, [address]);
 
   const connectWallet = async () => {
-    const res: string = await getLiquidityBalances();
-    changeLiquidityBalance(res);
     const wallet = getStarknet();
     const [address] = await wallet.enable({showModal: true});
     setAddress(address);
+    const res: string = await getLiquidityBalances();
+    changeLiquidityBalance(res);
     console.log("test2", isWalletConnected())
   };
 
