@@ -34,10 +34,10 @@ const Home: NextPage = () => {
   const [txMessage, changeTxMsg] = useState("Swap Complete");
   const [isTokenApproved, changeTokenApproved] = useState(false);
   const [failMsg, changeFailMsg] = useState("");
-  const [poolbalances, changePoolBalances] = useState(['0', '0', '0']);
-  const [userBalances, changeUserBalances] = useState(['0', '0', '0']);
-  const [liquidityBalance, changeLiquidityBalance] = useState('0');
-  const [tokenAllowances, changeTokenAllowances] = useState(['0', '0', '0']);
+  const [poolbalances, changePoolBalances] = useState(['--', '--', '--']);
+  const [userBalances, changeUserBalances] = useState(['--', '--', '--']);
+  const [liquidityBalance, changeLiquidityBalance] = useState('--');
+  const [tokenAllowances, changeTokenAllowances] = useState(['--', '--', '--']);
 
 
   const [depositModal, setDepositModal] = useState(false);
@@ -72,9 +72,9 @@ const Home: NextPage = () => {
         amount: "",
         symbol: tokens[0].symbol,
       })
-      changeTokenAllowances(["0","0","0"]);
-      changePoolBalances(["0","0","0"]);
-      changeUserBalances(["0","0","0"]);
+      changeTokenAllowances(["--","--","--"]);
+      changePoolBalances(["--","--","--"]);
+      changeUserBalances(["--","--","--"]);
       changeTokenApproved(false);
       return;
     }
@@ -328,7 +328,7 @@ const Home: NextPage = () => {
               <Box>Detailed balance report</Box>
               {
                 _.map(poolbalances, (each: any, index) => {
-                  return <Box display={'flex'} key={index} justifyContent='space-between'>{tokens[index].name} :&nbsp; <b>{parseFloat(each).toFixed(4)}</b>{" "}</Box>
+                  return <Box display={'flex'} key={index} justifyContent='space-between'>{tokens[index].name} :&nbsp; <b>{each === '--' ? each : parseFloat(each).toFixed(4)}</b>{" "}</Box>
                 })
               }
             </Box>

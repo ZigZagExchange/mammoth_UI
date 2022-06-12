@@ -77,7 +77,7 @@ export const mintAllTokens = async (
 export const getTokenAllowance = async (tokenIndex: number) => {
   if(!isWalletConnected()) return "";
   const userWalletAddress = await walletAddress();
-  if (!userWalletAddress) return '0';
+  if (!userWalletAddress) return '--';
   const tokenAddress = tokens[tokenIndex].address;
   const tokenDecimals = tokens[tokenIndex].decimals;
 
@@ -87,7 +87,7 @@ export const getTokenAllowance = async (tokenIndex: number) => {
     poolAddress
   );
   const allowanceBN = starknet.uint256.uint256ToBN(result[0]);
-  if (allowanceBN.lt(1 / tokenDecimals)) return '0';
+  if (allowanceBN.lt(1 / tokenDecimals)) return '--';
   const decimalString = ethers.utils.formatUnits(
     allowanceBN.toString(),
     tokenDecimals
@@ -98,7 +98,7 @@ export const getTokenAllowance = async (tokenIndex: number) => {
 export const getTokenBalance = async (tokenIndex: number) => {
   if(!isWalletConnected()) return "";
   const userWalletAddress = await walletAddress();
-  if (!userWalletAddress) return '0';
+  if (!userWalletAddress) return '--';
   const tokenAddress = tokens[tokenIndex].address;
   const tokenDecimals = tokens[tokenIndex].decimals;
 
@@ -107,7 +107,7 @@ export const getTokenBalance = async (tokenIndex: number) => {
     userWalletAddress
   );
   const balanceBN = starknet.uint256.uint256ToBN(result[0]);
-  if (balanceBN.lt(1 / tokenDecimals)) return '0';
+  if (balanceBN.lt(1 / tokenDecimals)) return '--';
   const decimalString = ethers.utils.formatUnits(
     balanceBN.toString(),
     tokenDecimals
@@ -404,7 +404,7 @@ export const getBalance = async (
   const erc20 = new starknet.Contract(starknetERC20_ABI as starknet.Abi, tokenAddress);
   const result = await erc20.balanceOf(address);
   const balance: ethers.BigNumber = starknet.uint256.uint256ToBN(result[0]);
-  if (balance.lt(1 / tokenDecimals)) return '0';
+  if (balance.lt(1 / tokenDecimals)) return '--';
   return ethers.utils.formatUnits(
     balance.toString(),
     tokenDecimals
@@ -430,14 +430,14 @@ export const getUserBalances = async (): Promise<any> => {
 };
 
 export const getLiquidityBalances = async (): Promise<any> => {
-  if(!isWalletConnected()) return;
+  if(!isWalletConnected()) return '--';
   const userWalletAddress = await walletAddress();
 
   const pool = new starknet.Contract(starknetPool_ABI as starknet.Abi, poolAddress);
   const decimalsLpToken = Number(await pool.decimals());
   const result = await pool.balanceOf(userWalletAddress);
   const balance: ethers.BigNumber = starknet.uint256.uint256ToBN(result[0]);
-  if (balance.lt(1 / decimalsLpToken)) return '0';
+  if (balance.lt(1 / decimalsLpToken)) return '--';
   return ethers.utils.formatUnits(
     balance.toString(),
     decimalsLpToken
@@ -452,7 +452,7 @@ export const getSwapAmount = async (
   amountBuy: number
 ) => {
   console.log(`getSwapAmount: amountBuy ==> ${amountBuy}`)
-  if (!amountBuy) return '0';
+  if (!amountBuy) return '--';
   const buyTokenAddress = tokens[tokenIndexBuy].address;
   const buyTokenDecimals = tokens[tokenIndexBuy].decimals;
   const sellTokenAddress = tokens[tokenIndexSell].address;
@@ -470,7 +470,7 @@ export const getSwapAmount = async (
   );
   const amountSellBN: ethers.BigNumber = starknet.uint256.uint256ToBN(result[0]);
   console.log(amountSellBN.toString());
-  if (amountSellBN.lt(1 / sellTokenDecimals)) return '0';
+  if (amountSellBN.lt(1 / sellTokenDecimals)) return '--';
   const decimalString = ethers.utils.formatUnits(
     amountSellBN.toString(),
     sellTokenDecimals
@@ -485,7 +485,7 @@ export const getDepositERC20Amount = async (
   amountDeposit: number
 ) => {
   console.log(`getDepositERC20Amount: amountDeposit ==> ${amountDeposit}`)
-  if (!amountDeposit) return '0';
+  if (!amountDeposit) return '--';
 
   const depositTokenAddress = tokens[tokenIndexDeposit].address;
   const depositTokenDecimals = tokens[tokenIndexDeposit].decimals;
@@ -500,7 +500,7 @@ export const getDepositERC20Amount = async (
     depositTokenAddress
   );
   const depositReturnBN: ethers.BigNumber = starknet.uint256.uint256ToBN(result[0]);
-  if (depositReturnBN.lt(1 / decimalsLpToken)) return '0';
+  if (depositReturnBN.lt(1 / decimalsLpToken)) return '--';
   const decimalString = ethers.utils.formatUnits(
     depositReturnBN.toString(),
     decimalsLpToken
@@ -515,7 +515,7 @@ export const getWithdrawERC20Amount = async (
   amountLPWithdraw: number
 ) => {
   console.log(`getWithdrawERC20Amount: result ==> ${amountLPWithdraw}`)
-  if (!amountLPWithdraw) return '0';
+  if (!amountLPWithdraw) return '--';
 
   const withdrawTokenAddress = tokens[tokenIndexWithdraw].address;
   const withdrawTokenDecimals = tokens[tokenIndexWithdraw].decimals;
@@ -531,7 +531,7 @@ export const getWithdrawERC20Amount = async (
     withdrawTokenAddress
   );
   const withdrawAmountBN: ethers.BigNumber = starknet.uint256.uint256ToBN(result[0]);
-  if (withdrawAmountBN.lt(1 / withdrawTokenDecimals)) return '0';
+  if (withdrawAmountBN.lt(1 / withdrawTokenDecimals)) return '--';
   const decimalString = ethers.utils.formatUnits(
     withdrawAmountBN.toString(),
     withdrawTokenDecimals
