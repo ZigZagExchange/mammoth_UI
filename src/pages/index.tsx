@@ -58,7 +58,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     onEvent();
-    setInterval(() => { onEvent(); }, 5000);
+    setInterval(() => { onEvent(); }, 60000);
   }, [])
 
   useEffect(() => {
@@ -118,7 +118,6 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (!txComplete) return;
-    console.log("asdadfasdf", txMessage)
     openErrorWindow(txMessage, 1)
   }, [txComplete])
 
@@ -299,7 +298,6 @@ const Home: NextPage = () => {
 
   return (
     <Box onClick={() => { setOpenDrop(false); }}>
-      {console.log(openDrop, poolbalances)}
       <Box display="flex" justifyContent={'end'} mr="50px">
         <ConnectButton onClick={(e: any) => {
           if(address) {
