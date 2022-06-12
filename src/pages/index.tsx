@@ -73,7 +73,6 @@ const Home: NextPage = () => {
         symbol: tokens[0].symbol,
       })
       changeTokenAllowances(["--","--","--"]);
-      changePoolBalances(["--","--","--"]);
       changeUserBalances(["--","--","--"]);
       changeTokenApproved(false);
       return;
