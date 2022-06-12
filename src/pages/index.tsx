@@ -58,7 +58,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     onEvent();
-    setInterval(() => { onEvent(); }, 5000);
+    setInterval(() => { onEvent(); }, 30000);
   }, [])
 
   useEffect(() => {
