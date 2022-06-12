@@ -218,11 +218,17 @@ export default function DepositComponent(props: DepositDialogProps) {
   const [isUnLimitApprove, setUnlimitApprove] = useState(false);
 
   const tokenApproval = useCallback(async () => {
-    const decimalString = ethers.utils.formatUnits(
-      ethers.constants.MaxUint256,
+    const allowance = Number(props.allowance[tokenIndex]);
+    if (!allowance || Number.isNaN(allowance) || !Number.isFinite(allowance)) {
+      setUnlimitApprove(false);
+      return;
+    }
+    const minAllowance = (ethers.constants.MaxUint256).div(100);
+    const userAllownace = ethers.utils.parseUnits(
+      props.allowance[tokenIndex],
       tokens[tokenIndex].decimals
-    ).toString();
-    setUnlimitApprove(props.allowance[tokenIndex] === decimalString);
+    );
+    setUnlimitApprove(minAllowance.lt(userAllownace));
   }, [tokenIndex]);
 
   useEffect(() => {
