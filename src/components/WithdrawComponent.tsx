@@ -28,7 +28,7 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
   const [isLoading, changeIsLoading] = useState(false);
   const [txComplete, changeTxComplete] = useState(false);
   const [failMsg, changeFailMsg] = useState("");
-  const [swapDetails, _setSwapDetails] = useState(() => ({
+  const [withdrawDetails, _setWithdrawDetails] = useState(() => ({
     amount: "",
     symbol: tokens[0].symbol,
   }));
@@ -113,7 +113,7 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
     } finally {
       const val= await getLiquidityBalances()
       changeLiquidityBalance(val);
-      let val2: any = swapDetails.amount as any;
+      let val2: any = withdrawDetails.amount as any;
       if (typeof val2 === "string") {
         val2 = parseFloat(val.replace(",", "."));
       }
@@ -131,21 +131,21 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
     changeLPAmount(result);
   };
 
-  const setSwapDetails = async (values: any, from: boolean) => {
+  const setWithdrawDetails = async (values: any, from: boolean) => {
     let details
     if(!values.amount) {
       details = {
-        ...swapDetails,
+        ...withdrawDetails,
         ...{amount: liquidityBalance}
       }
     } else {
       details = {
-        ...swapDetails,
+        ...withdrawDetails,
         ...values,
       };
     }
     console.log(values)
-    _setSwapDetails(details);
+    _setWithdrawDetails(details);
     console.log("val=========",details)
 
     let val = details.amount;
@@ -186,12 +186,12 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
           <SwapSwapInput
             // currencies={currencies}
             from={true}
-            value={swapDetails}
-            onChange={setSwapDetails}
+            value={withdrawDetails}
+            onChange={setWithdrawDetails}
             borderBox
             listWidth="505px"
           />
-          <Box textAlign={'right'} mt="20px" mb="42px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {liquidityBalance} LP tokens</Box>
+          <Box textAlign={'right'} mt="20px" mb="4px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {formatPrice(liquidityBalance)} LP tokens</Box>
           <Box display="flex" width="50%">
             <Box color="#09aaf5" width="100%" height="100%" mr="1vw">
               <CustomButton
