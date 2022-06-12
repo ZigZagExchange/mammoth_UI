@@ -437,7 +437,7 @@ export const getLiquidityBalances = async (): Promise<any> => {
   const decimalsLpToken = Number(await pool.decimals());
   const result = await pool.balanceOf(userWalletAddress);
   const balance: ethers.BigNumber = starknet.uint256.uint256ToBN(result[0]);
-  if (balance.lt(1 / decimalsLpToken)) return '--';
+  if (balance.lt(1 / decimalsLpToken)) return '0';
   return ethers.utils.formatUnits(
     balance.toString(),
     decimalsLpToken
@@ -452,7 +452,7 @@ export const getSwapAmount = async (
   amountBuy: number
 ) => {
   console.log(`getSwapAmount: amountBuy ==> ${amountBuy}`)
-  if (!amountBuy) return '--';
+  if (!amountBuy) return '0';
   const buyTokenAddress = tokens[tokenIndexBuy].address;
   const buyTokenDecimals = tokens[tokenIndexBuy].decimals;
   const sellTokenAddress = tokens[tokenIndexSell].address;
@@ -470,7 +470,7 @@ export const getSwapAmount = async (
   );
   const amountSellBN: ethers.BigNumber = starknet.uint256.uint256ToBN(result[0]);
   console.log(amountSellBN.toString());
-  if (amountSellBN.lt(1 / sellTokenDecimals)) return '--';
+  if (amountSellBN.lt(1 / sellTokenDecimals)) return '0';
   const decimalString = ethers.utils.formatUnits(
     amountSellBN.toString(),
     sellTokenDecimals

@@ -24,10 +24,10 @@ export function getTokenIndex(symbol: string) {
 export function formatPrice(input: any) {
   const inputNumber = Number(input)
   if (
-    !inputNumber ||
     Number.isNaN(inputNumber) ||
     !Number.isFinite(inputNumber)
   ) { return '--'; }
+  if(inputNumber === 0) return input;
   
   let outputNumber;
   if (inputNumber > 99999) {
