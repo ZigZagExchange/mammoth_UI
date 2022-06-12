@@ -24,7 +24,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { getStarknet } from "get-starknet";
 import styled from "@emotion/styled";
 import { disconnectWallet, getExplorerBaseUrl, isWalletConnected } from "../services/wallet.service";
-import { getTokenIndex } from "../libs/utils";
+import { getTokenIndex, formatPrice} from "../libs/utils";
 import { NextPage } from "next/types";
 
 const Home: NextPage = () => {
@@ -322,7 +322,7 @@ const Home: NextPage = () => {
           <Box borderRadius={'8px'} border="1px solid rgba(255, 255, 255, 0.13)" width="100%" p="30px" display="flex" justifyContent={'space-between'}>
             <Box display='flex' flexDirection="column" mr="20px">
               <Box mb="30px">Total Token amount</Box>
-              <Box textAlign={'center'}>{liquidityBalance}</Box>
+              <Box textAlign={'center'}>{formatPrice(liquidityBalance)}</Box>
             </Box>
             <Box display="flex" flexDirection="column" >
               <Box>Detailed balance report</Box>
@@ -365,13 +365,13 @@ const Home: NextPage = () => {
 
             <div className="swap_coin_title" style={{ marginBottom: '10px' }}>
               <Box fontSize="16px" fontWeight="600">To</Box>
-              <Box fontSize="12px" fontWeight="400">1 {fromDetails.symbol} = {swapRate} {toDetails.symbol}</Box>
+              <Box fontSize="12px" fontWeight="400">1 {fromDetails.symbol} = {formatPrice(swapRate)} {toDetails.symbol}</Box>
             </div>
             <SwapSwapInput
               // balances={balances}
               // currencies={currencies}
               from={false}
-              value={toDetails}
+              value={{symbol: toDetails.symbol, amount: formatPrice(toDetails.amount)}} // format to details amount
               onChange={setSwapDetails}
               readOnly={true}
             />
