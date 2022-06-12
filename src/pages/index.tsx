@@ -99,6 +99,7 @@ const Home: NextPage = () => {
     if(!isWalletConnected()) return;
     (async () => {
       await predictSwapResult(getString2Number(fromDetails.amount));
+      await tokenApproval();
     })();
   }, [toDetails.amount, fromDetails])
 
@@ -195,7 +196,6 @@ const Home: NextPage = () => {
     const value = { amount: "" };
     setToDetails({ ...fromDetails, ...value })
     console.log({ ...fromDetails, ...value })
-    // predictSwapResult(Number.isNaN(toDetails.amount) ? 0 : Number(toDetails.amount));
   }
 
   const setSwapDetails = async (values: {amount: string, symbol: string}, from: boolean) => {
