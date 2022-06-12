@@ -98,19 +98,6 @@ const Home: NextPage = () => {
   useEffect(() => {
     if(!isWalletConnected()) return;
     (async () => {
-      const res: string = await getSwapAmount(
-        getTokenIndex(fromDetails.symbol),
-        getTokenIndex(toDetails.symbol),
-        1
-      );
-      setSwapRate(Number(res));
-      await tokenApproval();
-    })();
-  }, [fromDetails.symbol, toDetails.symbol])
-
-  useEffect(() => {
-    if(!isWalletConnected()) return;
-    (async () => {
       await predictSwapResult(getString2Number(fromDetails.amount));
     })();
   }, [toDetails.amount, fromDetails])
@@ -137,6 +124,8 @@ const Home: NextPage = () => {
       getTokenIndex(toDetails.symbol),
       amount
     );
+    const ratio = Number(amount / Number(result));
+    setSwapRate(ratio);
     // changeLPAmount(result);
     const detail2 = {
       ...toDetails,
