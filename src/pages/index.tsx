@@ -6,7 +6,7 @@ import {
   getAllowances,
   getPoolBalances,
   getUserBalances,
-  getLiquidityBalances,
+  getLiquidityBalances
 } from "../services/pool.service";
 import { truncateAddress } from "../services/address.service"
 import { tokens } from "../services/constants";
@@ -24,7 +24,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { getStarknet } from "get-starknet";
 import styled from "@emotion/styled";
 import { disconnectWallet, getExplorerBaseUrl, isWalletConnected } from "../services/wallet.service";
-import { getTokenIndex } from "../libs/utils";
+import { getTokenIndex, formatPrice} from "../libs/utils";
 import { NextPage } from "next/types";
 import { ethers } from "ethers";
 
@@ -35,10 +35,10 @@ const Home: NextPage = () => {
   const [txMessage, changeTxMsg] = useState("Swap Complete");
   const [isTokenApproved, changeTokenApproved] = useState(false);
   const [failMsg, changeFailMsg] = useState("");
-  const [poolbalances, changePoolBalances] = useState(['0', '0', '0']);
-  const [userBalances, changeUserBalances] = useState(['0', '0', '0']);
-  const [liquidityBalance, changeLiquidityBalance] = useState('0');
-  const [tokenAllowances, changeTokenAllowances] = useState(['0', '0', '0']);
+  const [poolbalances, changePoolBalances] = useState(['--', '--', '--']);
+  const [userBalances, changeUserBalances] = useState(['--', '--', '--']);
+  const [liquidityBalance, changeLiquidityBalance] = useState('--');
+  const [tokenAllowances, changeTokenAllowances] = useState(['--', '--', '--']);
 
 
   const [depositModal, setDepositModal] = useState(false);
@@ -54,7 +54,6 @@ const Home: NextPage = () => {
     symbol: tokens[1].symbol,
   }));
   const [address, setAddress] = useState("")
-  const [swapRate, setSwapRate] = useState(0);
   const [openDrop, setOpenDrop] = useState(false);
 
   useEffect(() => {
@@ -64,7 +63,6 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if(!isWalletConnected()) {
-      setSwapRate(0);
       setToDetails({
         amount: "",
         symbol: tokens[1].symbol,
@@ -73,9 +71,8 @@ const Home: NextPage = () => {
         amount: "",
         symbol: tokens[0].symbol,
       })
-      changeTokenAllowances(["0","0","0"]);
-      changePoolBalances(["0","0","0"]);
-      changeUserBalances(["0","0","0"]);
+      changeTokenAllowances(["--","--","--"]);
+      changeUserBalances(["--","--","--"]);
       changeTokenApproved(false);
       return;
     }
@@ -83,11 +80,12 @@ const Home: NextPage = () => {
   }, [address]);
 
   const connectWallet = async () => {
-    const res: string = await getLiquidityBalances();
-    changeLiquidityBalance(res);
     const wallet = getStarknet();
     const [address] = await wallet.enable({showModal: true});
     setAddress(address);
+    const res: string = await getLiquidityBalances();
+    changeLiquidityBalance(res);
+    console.log("test2", isWalletConnected())
   };
 
   const tokenApproval = useCallback(async () => {
@@ -111,20 +109,8 @@ const Home: NextPage = () => {
   useEffect(() => {
     if(!isWalletConnected()) return;
     (async () => {
-      const res: string = await getSwapAmount(
-        getTokenIndex(fromDetails.symbol),
-        getTokenIndex(toDetails.symbol),
-        1
-      );
-      setSwapRate(Number(Number(res).toFixed(4)));
-      await tokenApproval();
-    })();
-  }, [fromDetails.symbol, toDetails.symbol])
-
-  useEffect(() => {
-    if(!isWalletConnected()) return;
-    (async () => {
       await predictSwapResult(getString2Number(fromDetails.amount));
+      await tokenApproval();
     })();
   }, [toDetails.amount, fromDetails])
 
@@ -149,7 +135,6 @@ const Home: NextPage = () => {
       getTokenIndex(toDetails.symbol),
       amount
     );
-    // changeLPAmount(result);
     const detail2 = {
       ...toDetails,
       ...{ amount: `${result}` },
@@ -218,7 +203,6 @@ const Home: NextPage = () => {
     const value = { amount: "" };
     setToDetails({ ...fromDetails, ...value })
     console.log({ ...fromDetails, ...value })
-    // predictSwapResult(Number.isNaN(toDetails.amount) ? 0 : Number(toDetails.amount));
   }
 
   const setSwapDetails = async (values: {amount: string, symbol: string}, from: boolean) => {
@@ -332,13 +316,13 @@ const Home: NextPage = () => {
           <Box borderRadius={'8px'} border="1px solid rgba(255, 255, 255, 0.13)" width="100%" p="30px" display="flex" justifyContent={'space-between'}>
             <Box display='flex' flexDirection="column" mr="20px">
               <Box mb="30px">Total Token amount</Box>
-              <Box textAlign={'center'}>{liquidityBalance}</Box>
+              <Box textAlign={'center'}>{formatPrice(liquidityBalance)}</Box>
             </Box>
             <Box display="flex" flexDirection="column" >
               <Box>Detailed balance report</Box>
               {
                 _.map(poolbalances, (each: any, index) => {
-                  return <Box display={'flex'} key={index} justifyContent='space-between'>{tokens[index].name} :&nbsp; <b>{parseFloat(each).toFixed(4)}</b>{" "}</Box>
+                  return <Box display={'flex'} key={index} justifyContent='space-between'>{tokens[index].name} :&nbsp; <b>{each === '--' ? each : parseFloat(each).toFixed(4)}</b>{" "}</Box>
                 })
               }
             </Box>
@@ -375,13 +359,15 @@ const Home: NextPage = () => {
 
             <div className="swap_coin_title" style={{ marginBottom: '10px' }}>
               <Box fontSize="16px" fontWeight="600">To</Box>
-              <Box fontSize="12px" fontWeight="400">1 {fromDetails.symbol} = {swapRate} {toDetails.symbol}</Box>
+              <Box fontSize="12px" fontWeight="400">1 {fromDetails.symbol} = {
+                (fromDetails.amount && toDetails.amount) ? formatPrice(Number(fromDetails.amount) / Number(toDetails.amount)) : 0
+              } {toDetails.symbol}</Box>
             </div>
             <SwapSwapInput
               // balances={balances}
               // currencies={currencies}
               from={false}
-              value={toDetails}
+              value={{symbol: toDetails.symbol, amount: formatPrice(toDetails.amount)}} // format to details amount
               onChange={setSwapDetails}
               readOnly={true}
             />
