@@ -6,7 +6,7 @@ import {
   getAllowances,
   getPoolBalances,
   getUserBalances,
-  getLiquidityBalances,
+  getLiquidityBalances
 } from "../services/pool.service";
 import { truncateAddress } from "../services/address.service"
 import { tokens } from "../services/constants";

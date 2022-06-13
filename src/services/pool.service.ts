@@ -229,8 +229,8 @@ export const depositPool = async (
 };
 
 export const getDepositPoolFee = async (
-  amount: number,
-  tokenIndex: number
+  tokenIndex: number,
+  amount: number
 ): Promise<any> => {
   const wallet = getStarknet();
   const [address] = await wallet.enable();
