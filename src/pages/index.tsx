@@ -26,6 +26,7 @@ import styled from "@emotion/styled";
 import { disconnectWallet, getExplorerBaseUrl, isWalletConnected } from "../services/wallet.service";
 import { getTokenIndex } from "../libs/utils";
 import { NextPage } from "next/types";
+import { ethers } from "ethers";
 
 const Home: NextPage = () => {
   const [isLoading, changeIsLoading] = useState(false);
@@ -92,7 +93,19 @@ const Home: NextPage = () => {
   const tokenApproval = useCallback(async () => {
     if(!isWalletConnected()) return;
     const i = getTokenIndex(fromDetails.symbol);
-    changeTokenApproved(Number(tokenAllowances[i]) > Number(fromDetails.amount));
+    const allowanceString = tokenAllowances[i];
+    if (allowanceString === '--') {
+      changeTokenApproved(false);
+      return;
+    }
+    const allowanceBN = ethers.BigNumber.from(allowanceString.split('.')[0]); // full number part
+    const maxInt = ethers.BigNumber.from(Number.MAX_SAFE_INTEGER - 1); // MAX_SAFE_INTEGER - 1 because we use floor for allowanceBN
+    // allowance might be grater the the MAX_SAFE_INTEGER range
+    if (allowanceBN.gt(maxInt)) {
+      changeTokenApproved(true);
+      return;
+    }
+    changeTokenApproved(Number(allowanceString) > Number(fromDetails.amount));
   }, [fromDetails.symbol]);
 
   useEffect(() => {

@@ -219,18 +219,29 @@ export default function DepositComponent(props: DepositDialogProps) {
   }));
   const [isUnLimitApprove, setUnlimitApprove] = useState(false);
 
-  const tokenApproval = useCallback(async () => {
-    const allowance = Number(props.allowance[tokenIndex]);
-    if (!allowance || Number.isNaN(allowance) || !Number.isFinite(allowance)) {
+  const tokenApproval = useCallback(async (amount = 0) => {
+    const allowanceString = props.allowance[tokenIndex];
+    if (allowanceString === '--') {      
+      changeTokenApproved(false);
       setUnlimitApprove(false);
       return;
     }
+    const userAllownace = ethers.BigNumber.from(allowanceString.split('.')[0]); // full number part
+    const maxInt = ethers.BigNumber.from(Number.MAX_SAFE_INTEGER - 1); // MAX_SAFE_INTEGER - 1 because we use floor for userAllownace
+    // userAllownace might be grater the the MAX_SAFE_INTEGER range
+    if (userAllownace.gt(maxInt)) {
+      setUnlimitApprove(true);
+      changeTokenApproved(true);
+      return;
+    }
+
     const minAllowance = (ethers.constants.MaxUint256).div(100);
-    const userAllownace = ethers.utils.parseUnits(
-      props.allowance[tokenIndex],
-      tokens[tokenIndex].decimals
-    );
     setUnlimitApprove(minAllowance.lt(userAllownace));
+
+    if (amount) {
+      ethers.BigNumber.from(amount)
+      changeTokenApproved(amount.lt(userAllownace));
+    }
   }, [tokenIndex]);
 
   useEffect(() => {
@@ -370,7 +381,7 @@ export default function DepositComponent(props: DepositDialogProps) {
     changeIndex(index);
     changeDepositAmount(val);
 
-    changeTokenApproved(Number(props.allowance[tokenIndex]) > val);
+    await tokenApproval(val);
     await predictDepositResult(val);
   }
 
