@@ -153,7 +153,7 @@ const Home: NextPage = () => {
     const detail2 = {
       ...toDetails,
       ...{ amount: `${result}` },
-    };    
+    };
     setToDetails(detail2);
   };
 
