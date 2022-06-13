@@ -126,7 +126,7 @@ const Home: NextPage = () => {
     (async () => {
       await predictSwapResult(getString2Number(fromDetails.amount));
     })();
-  }, [toDetails.amount, fromDetails])
+  }, [toDetails.symbol, fromDetails])
 
   useEffect(() => {
     if (!txComplete) return;
@@ -153,7 +153,7 @@ const Home: NextPage = () => {
     const detail2 = {
       ...toDetails,
       ...{ amount: `${result}` },
-    };
+    };    
     setToDetails(detail2);
   };
 
