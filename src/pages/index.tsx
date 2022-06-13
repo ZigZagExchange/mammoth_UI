@@ -377,8 +377,8 @@ const Home: NextPage = () => {
                 <Button
                   loading={isLoading}
                   className={cx("bg_btn", {
-                    // zig_disabled:
-                    // !hasAllowance || fromDetails.amount.length === 0,
+                    zig_disabled:
+                    !fromDetails.amount,
                   })}
                   style={{ height: '40px', fontSize: '18px' }}
                   text="Approve"
@@ -390,8 +390,8 @@ const Home: NextPage = () => {
                 <Button
                   loading={isLoading}
                   className={cx("bg_btn", {
-                    // zig_disabled:
-                    // !hasAllowance || fromDetails.amount.length === 0,
+                    zig_disabled:
+                    !fromDetails.amount,
                   })}
                   text="Swap"
                   // icon={<MdSwapCalls />}
