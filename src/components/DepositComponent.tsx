@@ -16,13 +16,13 @@ import {
   getDepositERC20Amount,
   getTokenAllowance
 } from "../services/pool.service";
-import LoadingIndicator from "./Indicator";
+
 
 import { Button as CustomButton } from "./Button/Button";
 import SwapSwapInput from "./SwapComponent/SwapSwapInput";
 import _ from "lodash";
 import cx from "classnames";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { formatPrice } from "../libs/utils";
 import { ethers } from "ethers";

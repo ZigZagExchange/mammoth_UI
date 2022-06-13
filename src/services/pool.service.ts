@@ -14,7 +14,6 @@ export const mintToken = async (
   tokenIndex: number,
   amount: number = 25
 ): Promise<any> => {
-  try {
     const wallet = getStarknet();
     const [address] = await wallet.enable();
     const tokenAddress = tokens[tokenIndex].address;
@@ -36,9 +35,6 @@ export const mintToken = async (
     if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
     await starknet.defaultProvider.waitForTransaction(transaction_hash);
     return transaction_hash
-  } catch (e) {
-    console.log(e)
-  }
 };
 
 export const mintAllTokens = async (
