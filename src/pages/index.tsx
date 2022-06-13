@@ -87,7 +87,6 @@ const Home: NextPage = () => {
     const wallet = getStarknet();
     const [address] = await wallet.enable({showModal: true});
     setAddress(address);
-    console.log("test2", isWalletConnected())
   };
 
   const tokenApproval = useCallback(async () => {
@@ -104,7 +103,7 @@ const Home: NextPage = () => {
         getTokenIndex(toDetails.symbol),
         1
       );
-      setSwapRate(Number(res));
+      setSwapRate(Number(Number(res).toFixed(4)));
       await tokenApproval();
     })();
   }, [fromDetails.symbol, toDetails.symbol])
@@ -182,7 +181,7 @@ const Home: NextPage = () => {
 
     changeIsLoading(true);
     changeLoadingMsg(`Approving ${tokens[getTokenIndex(fromDetails.symbol)].symbol}`);
-    changeTxMsg(`${tokens[getTokenIndex(toDetails.symbol)].symbol} approved`);
+    changeTxMsg(`${tokens[getTokenIndex(fromDetails.symbol)].symbol} approved`);
     let success = true;
     try {
       await approveToken(
@@ -343,7 +342,7 @@ const Home: NextPage = () => {
           <div className="swap_box_top">
             <div className="swap_coin_title">
               <Box fontSize="16px" fontWeight="600">From</Box>
-              {/* <Box fontSize="12px" fontWeight="400">Available Balance: {Number(userBalances[getTokenIndex(fromDetails.symbol)]).toFixed(4)} {fromDetails.symbol}</Box> */}
+              <Box fontSize="12px" fontWeight="400">Available Balance: {Number(userBalances[getTokenIndex(fromDetails.symbol)]).toFixed(4)} {fromDetails.symbol}</Box>
             </div>
             <SwapSwapInput
               balances={userBalances}
@@ -374,7 +373,7 @@ const Home: NextPage = () => {
               readOnly={true}
             />
             <div className="swap_button" style={{ marginTop: '30px' }}>
-              {(!isTokenApproved) && (
+              {(!isTokenApproved) && isWalletConnected() && (
                 <Button
                   loading={isLoading}
                   className={cx("bg_btn", {
@@ -387,7 +386,7 @@ const Home: NextPage = () => {
                   onClick={() => handleApprove()}
                 />
               )}
-              {(isTokenApproved) && (
+              {(isTokenApproved) && isWalletConnected() && (
                 <Button
                   loading={isLoading}
                   className={cx("bg_btn", {
@@ -397,6 +396,18 @@ const Home: NextPage = () => {
                   text="Swap"
                   // icon={<MdSwapCalls />}
                   onClick={() => handleSubmit()}
+                />
+              )}
+              {!isWalletConnected() && (
+                <Button
+                  loading={isLoading}
+                  className={cx("bg_btn", {
+                    // zig_disabled:
+                    // !hasAllowance || fromDetails.amount.length === 0,
+                  })}
+                  text="Connect Wallet"
+                  // icon={<MdSwapCalls />}
+                  onClick={() => connectWallet()}
                 />
               )}
             </div>
