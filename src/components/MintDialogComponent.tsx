@@ -16,7 +16,7 @@ interface DepositDialogProps {
 
 export default function MintDialogComponent(props: DepositDialogProps) {
   const [open, setOpen] = React.useState(false);
-  const [isLoading, changeIsLoading] = React.useState(false);
+  const [isLoading, changeIsLoading] = React.useState([false, false, false]);
 
   React.useEffect(() => {
     setOpen(props.open)
@@ -28,13 +28,16 @@ export default function MintDialogComponent(props: DepositDialogProps) {
   };
 
   const handleMint = async (tokenIndex: number) => {
+    const loadingStatus = isLoading;
     try{
-      changeIsLoading(true);
+      loadingStatus[tokenIndex] = true;
+      changeIsLoading(loadingStatus);
       await mintToken(tokenIndex);
     } catch (e) {} 
     finally {
       props.onEvent();
-      changeIsLoading(false);
+      loadingStatus[tokenIndex] = false;
+      changeIsLoading(loadingStatus);
     }
   };
 
@@ -75,7 +78,7 @@ export default function MintDialogComponent(props: DepositDialogProps) {
                     <img src={c.logo} width="30px" alt="image" />
                     <Box ml="20px" color="white">{c.symbol}</Box>
                   </Box>
-                  <CustomButton className={cx("bg_btn", {zig_disabled: isLoading})} style={{ width: '100px', marginRight: '10px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }} text="MINT" onClick={() => handleMint(key)} />
+                  <CustomButton className={cx("bg_btn", {zig_disabled: isLoading[key]})} style={{ width: '100px', marginRight: '10px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }} text="MINT" onClick={() => handleMint(key)} />
                   <CustomButton className={"bg_btn"} style={{ width: '100px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }} onClick={() => handleCopy(key)}  >
                     <Image
                       src="/clipboard.svg"
