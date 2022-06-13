@@ -14,17 +14,19 @@ import {
   approveToken,
   depositPool,
   getDepositERC20Amount,
-  getTokenAllowance
+  getTokenAllowance,
+  getTokenBalance,
+  getDepositPoolFee
 } from "../services/pool.service";
-import LoadingIndicator from "./Indicator";
+
 
 import { Button as CustomButton } from "./Button/Button";
 import SwapSwapInput from "./SwapComponent/SwapSwapInput";
 import _ from "lodash";
 import cx from "classnames";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getTokenIndex } from "../libs/utils";
+import { formatPrice } from "../libs/utils";
 import { ethers } from "ethers";
 
 interface DepositDialogProps {
@@ -203,7 +205,9 @@ export default function DepositComponent(props: DepositDialogProps) {
 
   const [depositAmount, changeDepositAmount] = useState(0);
 
-  const [LPAmount, changeLPAmount] = useState("0");
+  const [LPAmount, changeLPAmount] = useState({
+    0: '0',
+  } as any);
   const [tokenIndex, changeIndex] = useState(0);
   const [isLoading, changeIsLoading] = useState(false);
   const [loadingMsg, changeLoadingMsg] = useState("Awaiting Deposit");
@@ -211,18 +215,24 @@ export default function DepositComponent(props: DepositDialogProps) {
   const [txMessage, changeTxMsg] = useState("Deposit Complete");
   const [failMsg, changeFailMsg] = useState("");
   const [isTokenApproved, changeTokenApproved] = useState(false);
-  const [swapDetails, _setSwapDetails] = useState(() => ({
+  const [depositDetails, _setDepositDetails] = useState(() => ({
     amount: "",
     symbol: tokens[0].symbol,
   }));
   const [isUnLimitApprove, setUnlimitApprove] = useState(false);
 
   const tokenApproval = useCallback(async () => {
-    const decimalString = ethers.utils.formatUnits(
-      ethers.constants.MaxUint256,
+    const allowance = Number(props.allowance[tokenIndex]);
+    if (!allowance || Number.isNaN(allowance) || !Number.isFinite(allowance)) {
+      setUnlimitApprove(false);
+      return;
+    }
+    const minAllowance = (ethers.constants.MaxUint256).div(100);
+    const userAllownace = ethers.utils.parseUnits(
+      props.allowance[tokenIndex],
       tokens[tokenIndex].decimals
-    ).toString();
-    setUnlimitApprove(props.allowance[tokenIndex] === decimalString);
+    );
+    setUnlimitApprove(minAllowance.lt(userAllownace));
   }, [tokenIndex]);
 
   useEffect(() => {
@@ -285,7 +295,11 @@ export default function DepositComponent(props: DepositDialogProps) {
   }
 
   const predictDepositResult = async (amount: number) => {
-    const result = await getDepositERC20Amount(tokenIndex, amount);
+    const [result, fee] = await Promise.all([
+      getDepositERC20Amount(tokenIndex, amount),
+      getDepositPoolFee(tokenIndex, amount)
+    ]);
+    console.log(fee);
     changeLPAmount(result);
   };
 
@@ -343,12 +357,12 @@ export default function DepositComponent(props: DepositDialogProps) {
     }
   };
 
-  const setSwapDetails = async (values: any, from: boolean) => {
+  const setDepositDetails = async (values: any, from: boolean) => {
     const details = {
-      ...swapDetails,
+      ...depositDetails,
       ...values,
     };
-    _setSwapDetails(details);
+    _setDepositDetails(details);
 
     let val = details.amount;
 
@@ -392,12 +406,13 @@ export default function DepositComponent(props: DepositDialogProps) {
             balances={props.balance}
             // currencies={currencies}
             from={true}
-            value={swapDetails}
-            onChange={setSwapDetails}
+            value={depositDetails}
+            onChange={setDepositDetails}
             borderBox
             listWidth="505px"
           />
-          <Box textAlign={'right'} mt="20px" mb="42px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {props.balance[tokenIndex]} {swapDetails.symbol}</Box>
+          <Box textAlign={'right'} mt="20px" mb="4px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {formatPrice(props.balance[tokenIndex])} {depositDetails.symbol}</Box>
+          <Box textAlign={'right'} mt="4px" mb="42px" color="rgb(256,256,256,0.5)" fontSize="14px">Estimated amount: {formatPrice(LPAmount[depositAmount])} MLP</Box>
           <Box display="flex" width="100%">
             <Box width="100%" height="100%" display="flex">
                {!isUnLimitApprove && <CustomButton

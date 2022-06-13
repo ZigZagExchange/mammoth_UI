@@ -6,7 +6,7 @@ import {
   getAllowances,
   getPoolBalances,
   getUserBalances,
-  getLiquidityBalances,
+  getLiquidityBalances
 } from "../services/pool.service";
 import { truncateAddress } from "../services/address.service"
 import { tokens } from "../services/constants";
@@ -58,7 +58,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     onEvent();
-    setInterval(() => { onEvent(); }, 30000);
+    setInterval(() => { onEvent(); }, 60000);
   }, [])
 
   useEffect(() => {
@@ -105,7 +105,6 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (!txComplete) return;
-    console.log("asdadfasdf", txMessage)
     openErrorWindow(txMessage, 1)
   }, [txComplete])
 
@@ -172,7 +171,7 @@ const Home: NextPage = () => {
 
     changeIsLoading(true);
     changeLoadingMsg(`Approving ${tokens[getTokenIndex(fromDetails.symbol)].symbol}`);
-    changeTxMsg(`${tokens[getTokenIndex(toDetails.symbol)].symbol} approved`);
+    changeTxMsg(`${tokens[getTokenIndex(fromDetails.symbol)].symbol} approved`);
     let success = true;
     try {
       await approveToken(
@@ -287,7 +286,6 @@ const Home: NextPage = () => {
 
   return (
     <Box onClick={() => { setOpenDrop(false); }}>
-      {console.log(openDrop, poolbalances)}
       <Box display="flex" justifyContent={'end'} mr="50px">
         <ConnectButton onClick={(e: any) => {
           if(address) {
@@ -333,7 +331,7 @@ const Home: NextPage = () => {
           <div className="swap_box_top">
             <div className="swap_coin_title">
               <Box fontSize="16px" fontWeight="600">From</Box>
-              {/* <Box fontSize="12px" fontWeight="400">Available Balance: {Number(userBalances[getTokenIndex(fromDetails.symbol)]).toFixed(4)} {fromDetails.symbol}</Box> */}
+              <Box fontSize="12px" fontWeight="400">Available Balance: {Number(userBalances[getTokenIndex(fromDetails.symbol)]).toFixed(4)} {fromDetails.symbol}</Box>
             </div>
             <SwapSwapInput
               balances={userBalances}
@@ -364,12 +362,12 @@ const Home: NextPage = () => {
               readOnly={true}
             />
             <div className="swap_button" style={{ marginTop: '30px' }}>
-              {(!isTokenApproved) && (
+              {(!isTokenApproved) && isWalletConnected() && (
                 <Button
                   loading={isLoading}
                   className={cx("bg_btn", {
-                    // zig_disabled:
-                    // !hasAllowance || fromDetails.amount.length === 0,
+                    zig_disabled:
+                    !fromDetails.amount,
                   })}
                   style={{ height: '40px', fontSize: '18px' }}
                   text="Approve"
@@ -377,16 +375,28 @@ const Home: NextPage = () => {
                   onClick={() => handleApprove()}
                 />
               )}
-              {(isTokenApproved) && (
+              {(isTokenApproved) && isWalletConnected() && (
+                <Button
+                  loading={isLoading}
+                  className={cx("bg_btn", {
+                    zig_disabled:
+                    !fromDetails.amount,
+                  })}
+                  text="Swap"
+                  // icon={<MdSwapCalls />}
+                  onClick={() => handleSubmit()}
+                />
+              )}
+              {!isWalletConnected() && (
                 <Button
                   loading={isLoading}
                   className={cx("bg_btn", {
                     // zig_disabled:
                     // !hasAllowance || fromDetails.amount.length === 0,
                   })}
-                  text="Swap"
+                  text="Connect Wallet"
                   // icon={<MdSwapCalls />}
-                  onClick={() => handleSubmit()}
+                  onClick={() => connectWallet()}
                 />
               )}
             </div>
