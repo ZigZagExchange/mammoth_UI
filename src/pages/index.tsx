@@ -53,7 +53,6 @@ const Home: NextPage = () => {
     symbol: tokens[1].symbol,
   }));
   const [address, setAddress] = useState("")
-  const [swapRate, setSwapRate] = useState(0);
   const [openDrop, setOpenDrop] = useState(false);
 
   useEffect(() => {
@@ -63,7 +62,6 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if(!isWalletConnected()) {
-      setSwapRate(0);
       setToDetails({
         amount: "",
         symbol: tokens[1].symbol,
@@ -124,9 +122,6 @@ const Home: NextPage = () => {
       getTokenIndex(toDetails.symbol),
       amount
     );
-    const ratio = Number(amount / Number(result));
-    setSwapRate(ratio);
-    // changeLPAmount(result);
     const detail2 = {
       ...toDetails,
       ...{ amount: `${result}` },
@@ -351,7 +346,9 @@ const Home: NextPage = () => {
 
             <div className="swap_coin_title" style={{ marginBottom: '10px' }}>
               <Box fontSize="16px" fontWeight="600">To</Box>
-              <Box fontSize="12px" fontWeight="400">1 {fromDetails.symbol} = {formatPrice(swapRate)} {toDetails.symbol}</Box>
+              <Box fontSize="12px" fontWeight="400">1 {fromDetails.symbol} = {
+                (fromDetails.amount && toDetails.amount) ? formatPrice(Number(fromDetails.amount) / Number(toDetails.amount)) : 0
+              } {toDetails.symbol}</Box>
             </div>
             <SwapSwapInput
               // balances={balances}
