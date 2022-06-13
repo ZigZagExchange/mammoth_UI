@@ -49,7 +49,7 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
 
   React.useEffect(()=>{
     if(!txComplete) return;
-    openErrorWindow("Awaiting Withdraw", 1)
+    openErrorWindow("Withdraw Completed", 1)
   }, [txComplete])
 
   React.useEffect(()=>{
@@ -59,7 +59,8 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
 
   React.useEffect(()=>{
     if(!isLoading) return;
-    openErrorWindow("Withdraw Complete", 3)
+    openErrorWindow("Withdrawing...", 3)
+    
   }, [isLoading])
 
   const openErrorWindow = (value: string, flag: number) => {
@@ -100,6 +101,7 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
   }
 
   const handleWithdraw = async () => {
+    if(!withdrawAmount) return;
     changeIsLoading(true);
     let success = true;
     try {
