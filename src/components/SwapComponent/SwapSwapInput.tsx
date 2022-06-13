@@ -118,7 +118,7 @@ const SwapSwapInput = ({
       </div>
       <input
         onChange={setAmount}
-        value={value.amount}
+        value={from ? value.amount : Number(value.amount).toFixed(4)}
         className={className}
         placeholder="0.00"
         type="text"

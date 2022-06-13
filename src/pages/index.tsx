@@ -3,7 +3,7 @@ import {
   approveToken,
   swapPool,
   getSwapAmount,
-  getTokenAllowance,
+  getAllowances,
   getPoolBalances,
   getUserBalances,
   getLiquidityBalances
@@ -34,13 +34,13 @@ const Home: NextPage = () => {
   const [txMessage, changeTxMsg] = useState("Swap Complete");
   const [isTokenApproved, changeTokenApproved] = useState(false);
   const [failMsg, changeFailMsg] = useState("");
-  const [poolbalances, changeBalances] = useState(['0', '0', '0']);
-  const [userBalances, changeUserBalances] = useState(['0', '0', '0'])
+  const [poolbalances, changePoolBalances] = useState(['0', '0', '0']);
+  const [userBalances, changeUserBalances] = useState(['0', '0', '0']);
   const [liquidityBalance, changeLiquidityBalance] = useState('0');
-  const [tokenAllowance, setTokenAllowance] = useState("0");
+  const [tokenAllowances, changeTokenAllowances] = useState(['0', '0', '0']);
 
 
-  const [modal, setModal] = useState(false);
+  const [depositModal, setDepositModal] = useState(false);
   const [withdrawModal, setWithdrawModal] = useState(false);
   const [mintModal, setMintModal] = useState(false);
   const [fromDetails, setFromDetails] = useState(() => ({
@@ -56,6 +56,10 @@ const Home: NextPage = () => {
   const [swapRate, setSwapRate] = useState(0);
   const [openDrop, setOpenDrop] = useState(false);
 
+  useEffect(() => {
+    onEvent();
+    setInterval(() => { onEvent(); }, 60000);
+  }, [])
 
   useEffect(() => {
     if(!isWalletConnected()) {
@@ -68,18 +72,13 @@ const Home: NextPage = () => {
         amount: "",
         symbol: tokens[0].symbol,
       })
-      setTokenAllowance("0")
-      changeBalances(["0","0","0"])
-      changeUserBalances(["0","0","0"])
-      changeTokenApproved(false)
+      changeTokenAllowances(["0","0","0"]);
+      changePoolBalances(["0","0","0"]);
+      changeUserBalances(["0","0","0"]);
+      changeTokenApproved(false);
       return;
     }
-    (async () => {
-      const res: string[] = await getPoolBalances();
-      const _userBal: string[] = await getUserBalances();
-      changeBalances(res);
-      changeUserBalances(_userBal)
-    })();
+    onEvent();    
   }, [address]);
 
   const connectWallet = async () => {
@@ -88,14 +87,12 @@ const Home: NextPage = () => {
     const wallet = getStarknet();
     const [address] = await wallet.enable({showModal: true});
     setAddress(address);
-    console.log("test2", isWalletConnected())
   };
 
   const tokenApproval = useCallback(async () => {
     if(!isWalletConnected()) return;
-    const result: string = await getTokenAllowance(getTokenIndex(fromDetails.symbol));
-    setTokenAllowance(result);
-    changeTokenApproved(Number(result) > Number(fromDetails.amount));
+    const i = getTokenIndex(fromDetails.symbol);
+    changeTokenApproved(Number(tokenAllowances[i]) > Number(fromDetails.amount));
   }, [fromDetails.symbol]);
 
   useEffect(() => {
@@ -106,18 +103,10 @@ const Home: NextPage = () => {
         getTokenIndex(toDetails.symbol),
         1
       );
-      setSwapRate(Number(res));
+      setSwapRate(Number(Number(res).toFixed(4)));
       await tokenApproval();
     })();
   }, [fromDetails.symbol, toDetails.symbol])
-
-  useEffect(() => {
-    if(!isWalletConnected()) return;
-    (async () => {
-      await tokenApproval();
-    })();
-    console.log("test3", isWalletConnected())
-  }, [address]);
 
   useEffect(() => {
     if(!isWalletConnected()) return;
@@ -128,7 +117,6 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     if (!txComplete) return;
-    console.log("asdadfasdf", txMessage)
     openErrorWindow(txMessage, 1)
   }, [txComplete])
 
@@ -193,7 +181,7 @@ const Home: NextPage = () => {
 
     changeIsLoading(true);
     changeLoadingMsg(`Approving ${tokens[getTokenIndex(fromDetails.symbol)].symbol}`);
-    changeTxMsg(`${tokens[getTokenIndex(toDetails.symbol)].symbol} approved`);
+    changeTxMsg(`${tokens[getTokenIndex(fromDetails.symbol)].symbol} approved`);
     let success = true;
     try {
       await approveToken(
@@ -240,8 +228,6 @@ const Home: NextPage = () => {
       }
       setToDetails(detail2);
     }
-
-    changeTokenApproved(Number(tokenAllowance) > Number(fromDetails.amount));
   }
 
   const openErrorWindow = (value: string, flag: number) => {
@@ -288,11 +274,18 @@ const Home: NextPage = () => {
   const onEvent = async () => {
     console.log("onEvent")
 
-    const res: string[] = await getPoolBalances();
-    const _userBal: string[] = await getUserBalances();
-    changeBalances(res);
-    changeUserBalances(_userBal)
-    console.log(_userBal)
+    const [
+      _poolBalance,
+      _userBalance,
+      _tokenAlowance
+    ] = await Promise.all([
+      getPoolBalances(),
+      getUserBalances(),
+      getAllowances()
+    ]);
+    changePoolBalances(_poolBalance);
+    changeUserBalances(_userBalance);
+    changeTokenAllowances(_tokenAlowance);
     await predictSwapResult(getString2Number(fromDetails.amount));
     await tokenApproval();
   }
@@ -304,7 +297,6 @@ const Home: NextPage = () => {
 
   return (
     <Box onClick={() => { setOpenDrop(false); }}>
-      {console.log(openDrop, poolbalances)}
       <Box display="flex" justifyContent={'end'} mr="50px">
         <ConnectButton onClick={(e: any) => {
           if(address) {
@@ -341,7 +333,7 @@ const Home: NextPage = () => {
           </Box>
           <Box ml="35px" width="25%" height="100%" display="flex" flexDirection="column" alignItems="center" justifyContent={'space-between'}>
             <Button className="bg_btn" style={{ borderRadius: '5px' }} text="MINT" onClick={() => { setMintModal(true) }} />
-            <Button className="bg_btn" style={{ borderRadius: '5px' }} text="Deposit" onClick={() => { setModal(true) }} />
+            <Button className="bg_btn" style={{ borderRadius: '5px' }} text="Deposit" onClick={() => { setDepositModal(true) }} />
             <Button className="bg_btn" style={{ borderRadius: '5px' }} text="Withdraw" onClick={() => { setWithdrawModal(true) }} />
           </Box>
         </Box>
@@ -350,7 +342,7 @@ const Home: NextPage = () => {
           <div className="swap_box_top">
             <div className="swap_coin_title">
               <Box fontSize="16px" fontWeight="600">From</Box>
-              {/* <Box fontSize="12px" fontWeight="400">Available Balance: {Number(userBalances[getTokenIndex(fromDetails.symbol)]).toFixed(4)} {fromDetails.symbol}</Box> */}
+              <Box fontSize="12px" fontWeight="400">Available Balance: {Number(userBalances[getTokenIndex(fromDetails.symbol)]).toFixed(4)} {fromDetails.symbol}</Box>
             </div>
             <SwapSwapInput
               balances={userBalances}
@@ -381,12 +373,12 @@ const Home: NextPage = () => {
               readOnly={true}
             />
             <div className="swap_button" style={{ marginTop: '30px' }}>
-              {(!isTokenApproved) && (
+              {(!isTokenApproved) && isWalletConnected() && (
                 <Button
                   loading={isLoading}
                   className={cx("bg_btn", {
-                    // zig_disabled:
-                    // !hasAllowance || fromDetails.amount.length === 0,
+                    zig_disabled:
+                    !fromDetails.amount,
                   })}
                   style={{ height: '40px', fontSize: '18px' }}
                   text="Approve"
@@ -394,16 +386,28 @@ const Home: NextPage = () => {
                   onClick={() => handleApprove()}
                 />
               )}
-              {(isTokenApproved) && (
+              {(isTokenApproved) && isWalletConnected() && (
+                <Button
+                  loading={isLoading}
+                  className={cx("bg_btn", {
+                    zig_disabled:
+                    !fromDetails.amount,
+                  })}
+                  text="Swap"
+                  // icon={<MdSwapCalls />}
+                  onClick={() => handleSubmit()}
+                />
+              )}
+              {!isWalletConnected() && (
                 <Button
                   loading={isLoading}
                   className={cx("bg_btn", {
                     // zig_disabled:
                     // !hasAllowance || fromDetails.amount.length === 0,
                   })}
-                  text="Swap"
+                  text="Connect Wallet"
                   // icon={<MdSwapCalls />}
-                  onClick={() => handleSubmit()}
+                  onClick={() => connectWallet()}
                 />
               )}
             </div>
@@ -411,9 +415,10 @@ const Home: NextPage = () => {
         </div>
       </Box>
       <DepositComponent
-        open={modal}
-        onClose={() => { setModal(false) }}
+        open={depositModal}
+        onClose={() => { setDepositModal(false) }}
         balance={userBalances}
+        allowance={tokenAllowances}
         onEvent={onEvent}
       />
       <WithdrawComponent
