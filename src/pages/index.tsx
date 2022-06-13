@@ -106,7 +106,7 @@ const Home: NextPage = () => {
       return;
     }
     changeTokenApproved(Number(allowanceString) > Number(fromDetails.amount));
-  }, [fromDetails.symbol]);
+  }, [fromDetails]);
 
   useEffect(() => {
     if(!isWalletConnected()) return;
