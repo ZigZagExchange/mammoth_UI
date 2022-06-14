@@ -39,7 +39,7 @@ export default function MintDialogComponent(props: DepositDialogProps) {
   }, [txComplete])
 
   React.useEffect(()=>{
-    if(!isLoading || !loadingMsg) return;
+    if((!isMintingAll && !isLoading[0] && !isLoading[1] && !isLoading[2]) || !loadingMsg) return;
     openErrorWindow(loadingMsg, 3)
     changeLoadingMsg("")
   }, [loadingMsg])
