@@ -244,7 +244,7 @@ export const getDepositPoolFee = async (
   // checks that enable succeeded
   if (wallet.isConnected === false) throw Error("starknet wallet not connected");
 
-  const { amount: fee } = await wallet.account.estimateFee({
+  const res = await wallet.account.estimateFee({
     contractAddress: routerAddress,
     entrypoint: 'mammoth_deposit',
     calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
@@ -254,8 +254,9 @@ export const getDepositPoolFee = async (
       starknet.number.toBN(tokenAddress.toString())
     ].flatMap((x) => x)),
   });
+  if(!res.amount) return '0';
 
-  return ethers.utils.parseEther(fee).toString();
+  return ethers.utils.parseEther(res.amount).toString();
 };
 
 export const withdrawPool = async (
