@@ -239,8 +239,8 @@ export default function DepositComponent(props: DepositDialogProps) {
     setUnlimitApprove(minAllowance.lt(userAllownace));
 
     if (amount) {
-      ethers.BigNumber.from(amount)
-      changeTokenApproved(amount.lt(userAllownace));
+      const amountBN = ethers.BigNumber.from(amount);
+      changeTokenApproved(amountBN.lt(userAllownace));
     }
   }, [tokenIndex]);
 
