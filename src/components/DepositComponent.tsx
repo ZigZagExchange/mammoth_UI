@@ -14,9 +14,7 @@ import {
   approveToken,
   depositPool,
   getDepositERC20Amount,
-  getTokenAllowance,
-  getTokenBalance,
-  getDepositPoolFee
+  getTokenAllowance
 } from "../services/pool.service";
 
 
@@ -306,12 +304,10 @@ export default function DepositComponent(props: DepositDialogProps) {
   }
 
   const predictDepositResult = async (amount: number) => {
-    const [result, fee] = await Promise.all([
-      getDepositERC20Amount(tokenIndex, amount),
-      getDepositPoolFee(tokenIndex, amount)
-    ]);
-    console.log(fee);
-    changeLPAmount(result);
+    const result = await getDepositERC20Amount(tokenIndex, amount);
+    const oldLp: any = LPAmount;
+    oldLp[amount] = result;
+    changeLPAmount(oldLp);
   };
 
   const handleSubmit = async () => {
