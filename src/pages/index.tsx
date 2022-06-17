@@ -104,7 +104,7 @@ const Home: NextPage = () => {
       return;
     }
     changeTokenApproved(Number(allowanceString) > Number(fromDetails.amount));
-  }, [fromDetails.symbol]);
+  }, [fromDetails]);
 
   useEffect(() => {
     if(!isWalletConnected()) return;
@@ -112,7 +112,7 @@ const Home: NextPage = () => {
       await predictSwapResult(getString2Number(fromDetails.amount));
       await tokenApproval();
     })();
-  }, [toDetails.amount, fromDetails])
+  }, [toDetails.symbol, fromDetails])
 
   useEffect(() => {
     if (!txComplete) return;
