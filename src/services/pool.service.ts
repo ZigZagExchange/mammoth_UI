@@ -246,7 +246,7 @@ export const getDepositPoolFee = async (
 
   const res = await wallet.account.estimateFee({
     contractAddress: routerAddress,
-    entrypoint: 'mammoth_deposit',
+    entrypoint: 'mammoth_deposit_single_asset',
     calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
       Object.values(starknet.uint256.bnToUint256(amountBN.toString())),
       starknet.number.toBN(address.toString()),
@@ -310,7 +310,7 @@ export const getWithdrawPoolFee = async (
 
   const { amount: fee } = await wallet.account.estimateFee({
     contractAddress: routerAddress,
-    entrypoint: 'mammoth_withdraw',
+    entrypoint: 'mammoth_withdraw_single_asset',
     calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
       Object.values(starknet.uint256.bnToUint256(amountBN.toString())),
       starknet.number.toBN(address.toString()),
