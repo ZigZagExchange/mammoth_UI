@@ -80,7 +80,7 @@ export const getTokenAllowance = async (tokenIndex: number) => {
   const erc20 = new starknet.Contract(starknetERC20_ABI as starknet.Abi, tokenAddress);
   const result = await erc20.allowance(
     userWalletAddress,
-    routerAddress
+    poolAddress
   );
   const allowanceBN = starknet.uint256.uint256ToBN(result[0]);
   if (allowanceBN.lt(1 / tokenDecimals)) return '--';
@@ -164,7 +164,7 @@ export const getApproveTokenFee = async (
     contractAddress: tokenAddress,
     entrypoint: 'approve',
     calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
-      starknet.number.toBN(routerAddress.toString()), // address decimal
+      starknet.number.toBN(poolAddress.toString()), // address decimal
       Object.values(starknet.uint256.bnToUint256(amountBN.toString())),
     ].flatMap((x) => x)),
   });
@@ -185,7 +185,7 @@ export const approveAllTokens = async (): Promise<any> => {
       contractAddress: tokenAddress,
       entrypoint: 'approve',
       calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
-        starknet.number.toBN(routerAddress.toString()), // address decimal
+        starknet.number.toBN(poolAddress.toString()), // address decimal
         Object.values(starknet.uint256.bnToUint256(amountBN.toString())),
       ].flatMap((x) => x)),
     });
@@ -215,7 +215,7 @@ export const depositPool = async (
 
   const { code, transaction_hash } = await wallet.account.execute({
     contractAddress: routerAddress,
-    entrypoint: 'mammoth_deposit',
+    entrypoint: 'mammoth_deposit_single_asset',
     calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
       Object.values(starknet.uint256.bnToUint256(amountBN.toString())),
       starknet.number.toBN(address),
@@ -246,7 +246,7 @@ export const getDepositPoolFee = async (
 
   const res = await wallet.account.estimateFee({
     contractAddress: routerAddress,
-    entrypoint: 'mammoth_deposit',
+    entrypoint: 'mammoth_deposit_single_asset',
     calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
       Object.values(starknet.uint256.bnToUint256(amountBN.toString())),
       starknet.number.toBN(address.toString()),
@@ -279,7 +279,7 @@ export const withdrawPool = async (
 
   const { code, transaction_hash } = await wallet.account.execute({
     contractAddress: routerAddress,
-    entrypoint: 'mammoth_withdraw',
+    entrypoint: 'mammoth_withdraw_single_asset',
     calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
       Object.values(starknet.uint256.bnToUint256(amountBN.toString())),
       starknet.number.toBN(address.toString()),
@@ -310,7 +310,7 @@ export const getWithdrawPoolFee = async (
 
   const { amount: fee } = await wallet.account.estimateFee({
     contractAddress: routerAddress,
-    entrypoint: 'mammoth_withdraw',
+    entrypoint: 'mammoth_withdraw_single_asset',
     calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
       Object.values(starknet.uint256.bnToUint256(amountBN.toString())),
       starknet.number.toBN(address.toString()),
