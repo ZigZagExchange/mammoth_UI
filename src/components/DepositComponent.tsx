@@ -420,7 +420,7 @@ export default function DepositComponent(props: DepositDialogProps) {
           />
           <Box textAlign={'right'} mt="20px" mb="4px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {formatPrice(props.balance[tokenIndex])} {depositDetails.symbol}</Box>
           <Box textAlign={'right'} mt="4px" mb="42px" color="rgb(256,256,256,0.5)" fontSize="14px">Estimated amount: {
-            LPAmount[depositAmount] ? formatPrice(LPAmount[depositAmount]) : '--'
+            LPAmount[depositAmount] ? LPAmount[depositAmount] : '--'
           } MLP</Box>
           <Box display="flex" width="100%">
             <Box width="100%" height="100%" display="flex">
