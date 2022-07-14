@@ -215,7 +215,7 @@ export const depositPool = async (
 
   const { code, transaction_hash } = await wallet.account.execute({
     contractAddress: routerAddress,
-    entrypoint: 'mammoth_deposit',
+    entrypoint: 'mammoth_deposit_single_asset',
     calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
       Object.values(starknet.uint256.bnToUint256(amountBN.toString())),
       starknet.number.toBN(address),
@@ -279,7 +279,7 @@ export const withdrawPool = async (
 
   const { code, transaction_hash } = await wallet.account.execute({
     contractAddress: routerAddress,
-    entrypoint: 'mammoth_withdraw',
+    entrypoint: 'mammoth_withdraw_single_asset',
     calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
       Object.values(starknet.uint256.bnToUint256(amountBN.toString())),
       starknet.number.toBN(address.toString()),
