@@ -1,31 +1,31 @@
 
 
 const tokenOne = {
-  address: "0x04dfb7a11a8e68adbd0d67e31a5e2d23a2bcc60d6a97a915f0c7eb8aad21abc7",
-  name: "FantieCoin",
-  symbol: "FC",
+  address: "0x03008e23fbd60ef95d467ff586fd497d39d5fae39d193bfec30dd01874b6b1fc",
+  name: "testETH",
+  symbol: "tETH",
   decimals: 18,
   logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/9078.png"
 };
 
 const tokenTwo = {
-  address: "0x00e84923223c2946469d247e10a26711af93ec6393e5f31cb4144225b5895cae",
-  name: "testUSDC",
-  symbol: "TUSDC",
+  address: "0x046133e26e5d7409404fbe1246bede767706affcbad1a48120750183db5b6539",
+  name: "testBTC",
+  symbol: "tZWBTC",
   decimals: 18,
   logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"
 };
 
 const tokenThree = {
-  address: "0x01519c5764d311328928a4c2ca8458bb09a4aa234094113b5d68df76aeed6260",
-  name: "testETH",
-  symbol: "TEETH",
+  address: "0x03d0a5e7b72503d83d69c2059fd33bbf6979fffde0724b609362e2993771f368",
+  name: "testUSDC",
+  symbol: "tUSDC",
   decimals: 18,
   logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png"
 };
 
 export const tokens = [tokenOne, tokenTwo, tokenThree];
 
-export const routerAddress = "0x012c1334c771d0723b3a38019a7c338bead81e07a306ceaaa4525ef0458094f8";
+export const routerAddress = "0x0362d67e579d5c2799c6c4811a1077dc4a51d630d5f4f1070398d6cb8ff87c10";
 
-export const poolAddress = "0x0333a5737d1ab4e185dcaef6e6e3ebef9c59b43a0499da011ac79f9f18e54275";
+export const poolAddress = "0x6055071a68242c3ad1a326e005e03386e7d762dbd12a8970d857a7af05d5f13";
