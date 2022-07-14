@@ -137,7 +137,7 @@ export const approveToken = async (
     contractAddress: tokenAddress,
     entrypoint: 'approve',
     calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
-      starknet.number.toBN(routerAddress.toString()), // address decimal
+      starknet.number.toBN(poolAddress.toString()), // address decimal
       Object.values(starknet.uint256.bnToUint256(amountBN.toString())),
     ].flatMap((x) => x)),
   });
