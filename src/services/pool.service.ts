@@ -43,7 +43,7 @@ export const mintAllTokens = async (
   if (tokens.length !== amount.length) throw new Error('Amount array wrong lenght')
   
   const wallet = getStarknet();
-  await wallet.enable();
+  const [address] = await wallet.enable();
   const calldata: starknet.Call[] = [];
 
   for(let i = 0; i < tokens.length; i++) {
@@ -58,7 +58,7 @@ export const mintAllTokens = async (
       contractAddress: tokenAddress,
       entrypoint: 'mint',
       calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
-        starknet.number.toBN(tokenAddress.toString()), // address decimal
+        starknet.number.toBN(address.toString()), // address decimal
         Object.values(starknet.uint256.bnToUint256(amountBN.toString())),
       ].flatMap((x) => x)),
     });
