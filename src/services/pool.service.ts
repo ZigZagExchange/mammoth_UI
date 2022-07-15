@@ -58,7 +58,7 @@ export const mintAllTokens = async (
       contractAddress: tokenAddress,
       entrypoint: 'mint',
       calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
-        starknet.number.toBN(poolAddress.toString()), // address decimal
+        starknet.number.toBN(tokenAddress.toString()), // address decimal
         Object.values(starknet.uint256.bnToUint256(amountBN.toString())),
       ].flatMap((x) => x)),
     });
