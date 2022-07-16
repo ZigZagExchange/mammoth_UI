@@ -444,8 +444,8 @@ export const getLiquidityBalances = async (): Promise<any> => {
 // ERC 20 Swap amount
 
 export const getSwapAmount = async (
-  tokenIndexBuy: number,
   tokenIndexSell: number,
+  tokenIndexBuy: number,
   amountBuy: number
 ) => {
   console.log(`getSwapAmount: amountBuy ==> ${amountBuy}`)
