@@ -154,7 +154,7 @@ const Home: NextPage = () => {
     let success = true;
     try {
       await swapPool(
-        getString2Number(toDetails.amount),
+        getString2Number(fromDetails.amount),
         getTokenIndex(fromDetails.symbol),
         getTokenIndex(toDetails.symbol)
       );
