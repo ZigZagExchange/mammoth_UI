@@ -93,8 +93,8 @@ export default function MintDialogComponent(props: DepositDialogProps) {
       changeLoadingMsg(`Minting ${tokens[tokenIndex].symbol} !`);
       loadingStatus[tokenIndex] = true;
       changeIsLoading(loadingStatus);
-      await mintToken(tokenIndex);
-      changeTxMsg(`25 ${tokens[tokenIndex].symbol} minted`)
+      const amount = await mintToken(tokenIndex);
+      changeTxMsg(`${amount} ${tokens[tokenIndex].symbol} minted`)
       changeTxComplete(true);
     } catch (e) {
       changeFailMsg("Minting Failed!")
