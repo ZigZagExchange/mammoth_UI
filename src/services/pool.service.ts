@@ -350,8 +350,8 @@ export const swapPool = async (
       Object.values(starknet.uint256.bnToUint256(sellAmountBN.toString())),
       starknet.number.toBN(address.toString()),
       starknet.number.toBN(poolAddress.toString()),
-      starknet.number.toBN(buyTokenAddress.toString()),
-      starknet.number.toBN(sellTokenAddress.toString())
+      starknet.number.toBN(sellTokenAddress.toString()),
+      starknet.number.toBN(buyTokenAddress.toString())
     ].flatMap((x) => x)),
   });
   if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
@@ -462,8 +462,8 @@ export const getSwapAmount = async (
   const pool = new starknet.Contract(starknetPool_ABI as starknet.Abi, poolAddress);
   const result = await pool.view_out_given_in(
     Object.values(starknet.uint256.bnToUint256(buyAmountBN.toString())),
-    buyTokenAddress,
-    sellTokenAddress
+    sellTokenAddress,
+    buyTokenAddress
   );
   const amountSellBN: ethers.BigNumber = starknet.uint256.uint256ToBN(result[0]);
   console.log(amountSellBN.toString());
