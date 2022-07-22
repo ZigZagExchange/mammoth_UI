@@ -155,8 +155,8 @@ const Home: NextPage = () => {
     try {
       await swapPool(
         getString2Number(fromDetails.amount),
-        getTokenIndex(fromDetails.symbol),
-        getTokenIndex(toDetails.symbol)
+        getTokenIndex(toDetails.symbol),
+        getTokenIndex(fromDetails.symbol)
       );
     } catch (e) {
       console.log(e)
