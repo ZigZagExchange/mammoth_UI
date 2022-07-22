@@ -139,18 +139,10 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
   };
 
   const setWithdrawDetails = async (values: any, from: boolean) => {
-    let details
-    if(!values.amount) {
-      details = {
-        ...withdrawDetails,
-        ...{amount: liquidityBalance}
-      }
-    } else {
-      details = {
-        ...withdrawDetails,
-        ...values,
-      };
-    }
+    const details = {
+      ...withdrawDetails,
+      ...values,
+    };
     console.log(values)
     _setWithdrawDetails(details);
     console.log("val=========",details)
