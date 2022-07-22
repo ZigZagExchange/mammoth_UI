@@ -1,7 +1,7 @@
 
 
 const tokenOne = {
-  address: "0x04dfb7a11a8e68adbd0d67e31a5e2d23a2bcc60d6a97a915f0c7eb8aad21abc7",
+  address: "0x06b90243d3e73da878727d8456af8d623c4b5a176d8292b7a41d33e4ddb962b1",
   name: "FantieCoin",
   symbol: "FC",
   decimals: 18,
@@ -9,7 +9,7 @@ const tokenOne = {
 };
 
 const tokenTwo = {
-  address: "0x00e84923223c2946469d247e10a26711af93ec6393e5f31cb4144225b5895cae",
+  address: "0x032b944f02d67fbfd15f74830135116661798b25cad39d8912cb0dd75b1e93bd",
   name: "testUSDC",
   symbol: "TUSDC",
   decimals: 18,
@@ -17,7 +17,7 @@ const tokenTwo = {
 };
 
 const tokenThree = {
-  address: "0x01519c5764d311328928a4c2ca8458bb09a4aa234094113b5d68df76aeed6260",
+  address: "0x028465d1158a3e3102052d14a44fbbe366a1b2e40fbb3c6d9701533b2a74e3b7",
   name: "testETH",
   symbol: "TEETH",
   decimals: 18,
@@ -26,6 +26,6 @@ const tokenThree = {
 
 export const tokens = [tokenOne, tokenTwo, tokenThree];
 
-export const routerAddress = "0x012c1334c771d0723b3a38019a7c338bead81e07a306ceaaa4525ef0458094f8";
+export const routerAddress = "0x043e455d7aa89579e58147464ae06e69914ed14330048ec269014de11692eda0";
 
-export const poolAddress = "0x0333a5737d1ab4e185dcaef6e6e3ebef9c59b43a0499da011ac79f9f18e54275";
+export const poolAddress = "0x44fdf484dcffbd49a74fbe939f1b779cedbceaa2c7bc704163eddf3d38cfffb";
