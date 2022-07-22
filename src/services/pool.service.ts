@@ -11,13 +11,20 @@ import {
 } from "./constants";
 
 export const mintToken = async (
-  tokenIndex: number,
-  amount: number = 25
+  tokenIndex: number
 ): Promise<any> => {
     const wallet = getStarknet();
     const [address] = await wallet.enable();
     const tokenAddress = tokens[tokenIndex].address;
     const tokenDecimals = tokens[tokenIndex].decimals;
+    let amount = 0;
+    if (tokenIndex === 2) {
+      amount = 1000;
+    } else if(tokenIndex === 1) {
+      amount = 0.043;
+    } else {
+      amount = 0.625;
+    }
     const amountBN = ethers.utils.parseUnits(
       amount.toFixed(tokenDecimals),
       tokenDecimals
@@ -38,7 +45,7 @@ export const mintToken = async (
 };
 
 export const mintAllTokens = async (
-  amount: number[] = [50, 1750, 1]
+  amount: number[] = [0.625, 0.043, 1000]
 ): Promise<any> => {
   if (tokens.length !== amount.length) throw new Error('Amount array wrong lenght')
   
