@@ -5,7 +5,7 @@ const tokenOne = {
   name: "testETH",
   symbol: "tETH",
   decimals: 18,
-  logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/9078.png"
+  logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png"
 };
 
 const tokenTwo = {
@@ -13,7 +13,7 @@ const tokenTwo = {
   name: "testBTC",
   symbol: "tZWBTC",
   decimals: 18,
-  logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"
+  logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/9078.png"
 };
 
 const tokenThree = {
@@ -21,7 +21,7 @@ const tokenThree = {
   name: "testUSDC",
   symbol: "tUSDC",
   decimals: 18,
-  logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png"
+  logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/3408.png"
 };
 
 export const tokens = [tokenOne, tokenTwo, tokenThree];

@@ -11,13 +11,20 @@ import {
 } from "./constants";
 
 export const mintToken = async (
-  tokenIndex: number,
-  amount: number = 25
+  tokenIndex: number
 ): Promise<any> => {
     const wallet = getStarknet();
     const [address] = await wallet.enable();
     const tokenAddress = tokens[tokenIndex].address;
     const tokenDecimals = tokens[tokenIndex].decimals;
+    let amount = 0;
+    if (tokenIndex === 2) {
+      amount = 1000;
+    } else if(tokenIndex === 1) {
+      amount = 0.043;
+    } else {
+      amount = 0.625;
+    }
     const amountBN = ethers.utils.parseUnits(
       amount.toFixed(tokenDecimals),
       tokenDecimals
@@ -38,7 +45,7 @@ export const mintToken = async (
 };
 
 export const mintAllTokens = async (
-  amount: number[] = [50, 1750, 1]
+  amount: number[] = [0.625, 0.043, 1000]
 ): Promise<any> => {
   if (tokens.length !== amount.length) throw new Error('Amount array wrong lenght')
   
@@ -350,8 +357,8 @@ export const swapPool = async (
       Object.values(starknet.uint256.bnToUint256(sellAmountBN.toString())),
       starknet.number.toBN(address.toString()),
       starknet.number.toBN(poolAddress.toString()),
-      starknet.number.toBN(buyTokenAddress.toString()),
-      starknet.number.toBN(sellTokenAddress.toString())
+      starknet.number.toBN(sellTokenAddress.toString()),
+      starknet.number.toBN(buyTokenAddress.toString())
     ].flatMap((x) => x)),
   });
   if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
@@ -462,8 +469,8 @@ export const getSwapAmount = async (
   const pool = new starknet.Contract(starknetPool_ABI as starknet.Abi, poolAddress);
   const result = await pool.view_out_given_in(
     Object.values(starknet.uint256.bnToUint256(buyAmountBN.toString())),
-    buyTokenAddress,
-    sellTokenAddress
+    sellTokenAddress,
+    buyTokenAddress
   );
   const amountSellBN: ethers.BigNumber = starknet.uint256.uint256ToBN(result[0]);
   console.log(amountSellBN.toString());
