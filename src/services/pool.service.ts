@@ -41,7 +41,7 @@ export const mintToken = async (
 
     if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
     await starknet.defaultProvider.waitForTransaction(transaction_hash);
-    return transaction_hash
+    return amount
 };
 
 export const mintAllTokens = async (
