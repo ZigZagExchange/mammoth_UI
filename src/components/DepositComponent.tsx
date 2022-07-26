@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Dialog from '@mui/material/Dialog';
 import { Box } from '@mui/material';
 import { tokens } from "../services/constants";
@@ -11,12 +11,13 @@ import { styled } from '@mui/system';
 import { PopperUnstyled } from '@mui/base';
 
 import {
-  approveToken,
   depositPool,
+  approveMultibleTokens,
   getDepositERC20Amount,
-  getTokenAllowance
+  getProportinalDepositERC20Amount,
+  proportinalDepositERC20Amount,
 } from "../services/pool.service";
-
+import ToggleButton from "./Toggle/ToggleButton";
 
 import { Button as CustomButton } from "./Button/Button";
 import SwapSwapInput from "./SwapComponent/SwapSwapInput";
@@ -34,7 +35,6 @@ interface DepositDialogProps {
   allowance: string[];
   onEvent: () => void;
 }
-
 
 const blue = {
   100: '#DAECFF',
@@ -201,55 +201,70 @@ export default function DepositComponent(props: DepositDialogProps) {
     setOpen(false);
   };
 
-  const [depositAmount, changeDepositAmount] = useState(0);
+  const [isTokenApproved, setTokenApproved] = useState([
+    false,
+    false,
+    false
+  ]);
 
-  const [LPAmount, changeLPAmount] = useState({
-    0: '0',
-  } as any);
-  const [tokenIndex, changeIndex] = useState(0);
+  const [isUnLimitApprove, setUnlimitApprove] = useState([
+    false,
+    false,
+    false
+  ]);
+
+  const [tokenDetails, setTokenDetails] = useState(() => ([{
+    amount: "",
+    symbol: tokens[0].symbol,
+  },
+  {
+    amount: "",
+    symbol: tokens[1].symbol,
+  },
+  {
+    amount: "",
+    symbol: tokens[2].symbol,
+  }]));
+
+  const [LPAmount, setLPAmount] = useState(0);
+
+  const [proportionalMode , setProportionalMode] = useState(false);
+
   const [isLoading, changeIsLoading] = useState(false);
   const [loadingMsg, changeLoadingMsg] = useState("Awaiting Deposit");
   const [txComplete, changeTxComplete] = useState(false);
   const [txMessage, changeTxMsg] = useState("Deposit Complete");
   const [failMsg, changeFailMsg] = useState("");
-  const [isTokenApproved, changeTokenApproved] = useState(false);
-  const [depositDetails, _setDepositDetails] = useState(() => ({
-    amount: "",
-    symbol: tokens[0].symbol,
-  }));
-  const [isUnLimitApprove, setUnlimitApprove] = useState(false);
-
-  const tokenApproval = useCallback(async (amount = 0) => {
-    const allowanceString = props.allowance[tokenIndex];
-    if (allowanceString === '--') {      
-      changeTokenApproved(false);
-      setUnlimitApprove(false);
-      return;
-    }
-    const userAllownace = ethers.BigNumber.from(allowanceString.split('.')[0]); // full number part
-    const maxInt = ethers.BigNumber.from(Number.MAX_SAFE_INTEGER - 1); // MAX_SAFE_INTEGER - 1 because we use floor for userAllownace
-    // userAllownace might be grater the the MAX_SAFE_INTEGER range
-    if (userAllownace.gt(maxInt)) {
-      setUnlimitApprove(true);
-      changeTokenApproved(true);
-      return;
-    }
-
-    const minAllowance = (ethers.constants.MaxUint256).div(100);
-    setUnlimitApprove(minAllowance.lt(userAllownace));
-
-    if (amount) {
-      const amountBN = ethers.BigNumber.from(amount);
-      changeTokenApproved(amountBN.lt(userAllownace));
-    }
-  }, [tokenIndex]);
 
   useEffect(() => {
-    (async () => {
-      await tokenApproval();
-      
-    })();
-  });
+    const newTokenApprove = [false, false, false];
+    const newTokenUnlimitApprove = [false, false, false];
+
+    for(let i = 0; i <= 2; i++) {
+      const allowanceString = props.allowance[i];
+      const amount = tokenDetails[i].amount;
+      if (allowanceString === '--' || allowanceString === '') continue;
+
+      const userAllownace = ethers.BigNumber.from(allowanceString.split('.')[0]); // full number part
+      const maxInt = ethers.BigNumber.from(Number.MAX_SAFE_INTEGER - 1); // MAX_SAFE_INTEGER - 1 because we use floor for userAllownace
+      // userAllownace might be grater the the MAX_SAFE_INTEGER range
+      if (userAllownace.gt(maxInt)) {
+        newTokenApprove[i] = true;
+        newTokenUnlimitApprove[i] = true;
+        continue;
+      }
+  
+      const minAllowance = (ethers.constants.MaxUint256).div(100);
+      newTokenUnlimitApprove[i] = (minAllowance.lt(userAllownace));
+  
+      if (amount) {
+        const amountBN = ethers.BigNumber.from(amount);
+        newTokenApprove[i]  = amountBN.lt(userAllownace);
+      }
+    }
+    setTokenApproved(newTokenApprove);
+    setUnlimitApprove(newTokenUnlimitApprove);
+  }, [tokenDetails, props.allowance]);
 
   useEffect(()=>{
     if(!txComplete) return;
@@ -303,23 +318,60 @@ export default function DepositComponent(props: DepositDialogProps) {
     }
   }
 
-  const predictDepositResult = async (amount: number) => {
-    const result = await getDepositERC20Amount(tokenIndex, amount);
-    const oldLp: any = LPAmount;
-    oldLp[amount] = result;
-    changeLPAmount(oldLp);
-  };
+  const updateNormalMode = async () => {
+    if (proportionalMode) return;
+    const result: Promise<any>[] = tokens.map(async (_, index) => {
+      const amount = Number(tokenDetails[index].amount);
+      return await getDepositERC20Amount(index, amount);
+    });
+    const lpAmounts: number[] = await Promise.all(result);
+    const sum = lpAmounts.reduce((pv, cv) => pv + Number(cv), 0);
+    setLPAmount(sum);
+  }
 
-  const handleSubmit = async () => {
+  useEffect(() => {
+    if (proportionalMode) return;
+    updateNormalMode();    
+  }, [proportionalMode, tokenDetails]);
+
+  const updateProportionalMode = async () => {
+    if (!proportionalMode) return;
+    console.log(`LPAmount ==> ${Number(LPAmount)}`)
+    const result = await getProportinalDepositERC20Amount(Number(LPAmount));
+    console.log(`result ==> ${result}`)
+
+    const newTokenDetails = tokenDetails.map((details, index) => {
+      details.amount = formatPrice(result[index]);
+      return details;
+    })
+    setTokenDetails(newTokenDetails);
+  }
+
+  useEffect(() => {
+    if (!proportionalMode) return;
+    updateProportionalMode();
+  }, [proportionalMode, LPAmount]);
+
+  const handleSubmitNormal = async () => {
+    if (proportionalMode) return;
+    const depositTokensDetails = [];
+    const tokenSymbols = [];
+    for(let i = 0; i < 3; i++) {
+      const amount = Number(tokenDetails[i].amount);
+      if (amount > 0) {
+        depositTokensDetails.push([i, amount]);
+        tokenSymbols.push(tokens[i].symbol);
+      }
+    }
+    if (depositTokensDetails.length === 0) return;
 
     changeIsLoading(true);
-    changeLoadingMsg(`Depositing ${tokens[tokenIndex].symbol}`);
-    changeTxMsg(`Deposit ${tokens[tokenIndex].symbol} success`);
+    changeLoadingMsg(`Depositing ${tokenSymbols}`);
+    changeTxMsg(`Deposit ${tokenSymbols} success`);
     let success = true;
     try {
       await depositPool(
-        depositAmount,
-        tokenIndex
+        depositTokensDetails
       );
     } catch (e) {
       success = false;
@@ -333,28 +385,55 @@ export default function DepositComponent(props: DepositDialogProps) {
     }
   };
 
-  const handleApprove = (maxApprove = false) => async ()=> {
+  const handleSubmitProportional = async () => {
+    if (!proportionalMode) return;
+    const tokenSymbols = [];
+    for(let i = 0; i < 3; i++) {
+      tokenSymbols.push(tokens[i].symbol);
+    }
 
-    changeLoadingMsg(`Approving ${tokens[tokenIndex].symbol}`);
-    changeTxMsg(`${tokens[tokenIndex].symbol} approved`);
+    changeIsLoading(true);
+    changeLoadingMsg(`Depositing ${tokenSymbols}`);
+    changeTxMsg(`Deposit ${tokenSymbols} success`);
+    let success = true;
+    try {
+      await proportinalDepositERC20Amount(
+        Number(LPAmount)
+      );
+    } catch (e) {
+      console.log(e)
+      success = false;
+      changeFailMsg("Deposit failed");
+    } finally {
+      props.onEvent();
+    }
+    changeIsLoading(false);
+    if (success) {
+      changeTxComplete(true);
+    }
+  };
+
+  const handleApprove = async (maxApprove = false) => {
+    const approveTokens = [];
+    const tokenSymbols = [];
+    for(let i = 0; i < 3; i++) {
+      if (!isTokenApproved[i]) {
+        approveTokens.push(tokens[i].address);
+        tokenSymbols.push(tokens[i].symbol);
+      }
+    }
+    if (approveTokens.length === 0) return;
+
+    changeLoadingMsg(`Approving ${tokenSymbols}`);
+    changeTxMsg(`${tokenSymbols} approved`);
     changeIsLoading(true);
     let success = true;
     try {
-      await approveToken(
-        tokenIndex,
-        (depositAmount * 1.05),
-        maxApprove
-      );
+      await approveMultibleTokens (approveTokens);
     } catch (e) {
       success = false;
       changeFailMsg("Approval failed");
     } finally {
-      const result: string = await getTokenAllowance(tokenIndex);
-      const decimalString = ethers.utils.formatUnits(
-        ethers.constants.MaxUint256,
-        tokens[tokenIndex].decimals
-      ).toString();
-      setUnlimitApprove(result === decimalString);
       props.onEvent();
     }
     changeIsLoading(false);
@@ -363,28 +442,35 @@ export default function DepositComponent(props: DepositDialogProps) {
       changeTxComplete(true);
     }
   };
+  
 
-  const setDepositDetails = async (values: any, from: boolean) => {
+  const setDepositDetailsOne = (values: any, from: boolean) => {
     const details = {
-      ...depositDetails,
+      ...tokenDetails[0],
       ...values,
     };
-    _setDepositDetails(details);
-
-    let val = details.amount;
-
-    if (typeof val === "string") {
-      val = parseFloat(val.replace(",", "."));
-    }
-    val = Number.isNaN(val) ? 0 : val;
-    const index = _.findIndex(tokens, {symbol: details.symbol});
-    changeIndex(index);
-    changeDepositAmount(val);
-
-    await tokenApproval(val);
-    await predictDepositResult(val);
+    setTokenDetails([details, tokenDetails[1], tokenDetails[2]]);
   }
 
+  const setDepositDetailsOTwo = (values: any, from: boolean) => {
+    const details = {
+      ...tokenDetails[1],
+      ...values,
+    };
+    setTokenDetails([tokenDetails[0], details, tokenDetails[2]]);
+  }
+
+  const setDepositDetailsThree = (values: any, from: boolean) => {
+    const details = {
+      ...tokenDetails[2],
+      ...values,
+    };
+    setTokenDetails([tokenDetails[0], tokenDetails[1], details]);
+  }
+
+  const changeLpAmount = (values: any, from: boolean) => {
+    setLPAmount(values.amount);
+  }
 
   return (
     <Box>
@@ -409,26 +495,69 @@ export default function DepositComponent(props: DepositDialogProps) {
           <Box bgcolor="#181B25" color="#636EA8" mt="33px" mb="23px" p="11px 13px" fontFamily="Inter" fontWeight={700} fontSize="13px">
             Tip: When you add liquidity, you will receive pool tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and can be redeemed at any time.
           </Box>
+          <Box textAlign={'right'} mt="20px" mb="4px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {formatPrice(props.balance[0])} {tokenDetails[0].symbol}</Box>
           <SwapSwapInput
             balances={props.balance}
-            // currencies={currencies}
             from={true}
-            value={depositDetails}
-            onChange={setDepositDetails}
+            value={tokenDetails[0]}
+            onChange={setDepositDetailsOne}
             borderBox
             listWidth="505px"
+            readOnly={proportionalMode}
           />
-          <Box textAlign={'right'} mt="20px" mb="4px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {formatPrice(props.balance[tokenIndex])} {depositDetails.symbol}</Box>
-          <Box textAlign={'right'} mt="4px" mb="42px" color="rgb(256,256,256,0.5)" fontSize="14px">Estimated amount: {
-            LPAmount[depositAmount] ? LPAmount[depositAmount] : '--'
-          } MLP</Box>
+          <Box textAlign={'right'} mt="20px" mb="4px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {formatPrice(props.balance[1])} {tokenDetails[1].symbol}</Box>
+          <SwapSwapInput
+            balances={props.balance}
+            from={true}
+            value={tokenDetails[1]}
+            onChange={setDepositDetailsOTwo}
+            borderBox
+            listWidth="505px"
+            readOnly={proportionalMode}
+          />
+          <Box textAlign={'right'} mt="20px" mb="4px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {formatPrice(props.balance[2])} {tokenDetails[2].symbol}</Box>
+          <SwapSwapInput
+            balances={props.balance}
+            from={true}
+            value={tokenDetails[2]}
+            onChange={setDepositDetailsThree}
+            borderBox
+            listWidth="505px"
+            readOnly={proportionalMode}
+          />
+          {proportionalMode && (
+            <div>
+              <SwapSwapInput
+                balances={props.balance}
+                from={true}
+                value={{amount: LPAmount, symbol: 'MLP'}}
+                onChange={changeLpAmount}
+                borderBox
+                listWidth="505px"
+              />
+            </div>
+          )}
+          {!proportionalMode && (
+            <Box textAlign={'right'} mt="4px" mb="42px" color="rgb(256,256,256,0.5)" fontSize="14px">Estimated amount: {
+              LPAmount ? LPAmount : '--'
+            } MLP</Box>
+          )}
+            <ToggleButton
+              type="option"
+              size="sm"
+              leftLabel="Single Mode"
+              rightLabel="Proportional Mode"
+              width="160"
+              leftSelected={!proportionalMode}
+              toggleClick={() => setProportionalMode(!proportionalMode)}
+            />
           <Box display="flex" width="100%">
             <Box width="100%" height="100%" display="flex">
                {!isUnLimitApprove && <CustomButton
                 className={cx("bg_btn_deposit", {
                 })}
                 text="ApproveUnlimit"
-                onClick={handleApprove(true)}
+                onClick={() => handleApprove(true)}
                 style={{marginRight: '10px' }}
               />}
               {!isUnLimitApprove && <CustomButton
@@ -436,7 +565,7 @@ export default function DepositComponent(props: DepositDialogProps) {
                   zig_disabled: isTokenApproved,
                 })}
                 text="Approve"
-                onClick={handleApprove()}
+                onClick={() => handleApprove()}
                 style={{marginRight: '10px' }}
               />}
               <CustomButton
@@ -444,7 +573,7 @@ export default function DepositComponent(props: DepositDialogProps) {
                   zig_disabled: !isTokenApproved,
                 })}
                 text="Supply"
-                onClick={()=>handleSubmit()}
+                onClick={()=>proportionalMode ? handleSubmitProportional() : handleSubmitNormal()}
               />
             </Box>
           </Box>

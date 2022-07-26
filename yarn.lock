@@ -1096,6 +1096,36 @@
     "@typescript-eslint/types" "5.26.0"
     eslint-visitor-keys "^3.3.0"
 
+"@xstyled/core@^3.6.0":
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/@xstyled/core/-/core-3.6.0.tgz#035114646ce126fca052e731bf825c9a12361a50"
+  integrity sha512-QctV7zYmGaQLw9hvATaJEF2aO0gNALJyw8+JBPPDTKZMQNvyfqCRjzb8V0Q20qL1S+PnvxU8i/MeW4lKabA6mw==
+  dependencies:
+    "@xstyled/system" "^3.6.0"
+    "@xstyled/util" "^3.5.1"
+
+"@xstyled/styled-components@^3.6.0":
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/@xstyled/styled-components/-/styled-components-3.6.0.tgz#a1a1d49f3b1ada05abee6c00e06cefa452a21c57"
+  integrity sha512-ZoNl6bfztNOq8D5lSEeLeKHRCi1ozMG7yezKjg5mZ1+f9b0SUyj4Fp+1IY8V36YX2h7WTRTQFLFUd0j09mt6aA==
+  dependencies:
+    "@xstyled/core" "^3.6.0"
+    "@xstyled/system" "^3.6.0"
+    "@xstyled/util" "^3.5.1"
+
+"@xstyled/system@^3.6.0":
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/@xstyled/system/-/system-3.6.0.tgz#a61cd542d39c02dad9932d97075e7a15d82036d4"
+  integrity sha512-JnEck581S/HqpgGgPBb7ZMSe0UzGvsAl8Lqcr8pTTqChUG/rK4/BNXk4wlxwJraV76Wo/tXjpUDepuNMlhj+cQ==
+  dependencies:
+    "@xstyled/util" "^3.5.1"
+    csstype "^3.0.8"
+
+"@xstyled/util@^3.5.1":
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/@xstyled/util/-/util-3.5.1.tgz#ab8118652b28bb86bbdaf14fa04b4e61905ff86b"
+  integrity sha512-Pf3/t+Xkp+2kKN+vfzBEeyIlO2M1HSOGgb47apgntcqTxYiVms/GrXR4ROKUoMtcLscY9+6xduA+7febPehY1g==
+
 acorn-jsx@^5.3.2:
   version "5.3.2"
   resolved "https://registry.yarnpkg.com/acorn-jsx/-/acorn-jsx-5.3.2.tgz#7ed5bb55908b3b2f1bc55c6af1653bada7f07937"
@@ -1427,7 +1457,7 @@ css-to-react-native@^3.0.0:
     css-color-keywords "^1.0.0"
     postcss-value-parser "^4.0.2"
 
-csstype@^3.0.11, csstype@^3.0.2, csstype@^3.1.0:
+csstype@^3.0.11, csstype@^3.0.2, csstype@^3.0.8, csstype@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/csstype/-/csstype-3.1.0.tgz#4ddcac3718d787cf9df0d1b7d15033925c8f29f2"
   integrity sha512-uX1KG+x9h5hIJsaKR9xHUeUraxf8IODOwq9JLNPq6BwB04a/xgpq3rcx47l5BZu5zBPlgD342tdke3Hom/nJRA==

@@ -92,7 +92,7 @@ const Home: NextPage = () => {
     if(!isWalletConnected()) return;
     const i = getTokenIndex(fromDetails.symbol);
     const allowanceString = tokenAllowances[i];
-    if (allowanceString === '--') {
+    if (allowanceString === '--' || allowanceString === '') {
       changeTokenApproved(false);
       return;
     }
