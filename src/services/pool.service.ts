@@ -539,13 +539,14 @@ export const getProportinalDepositERC20Amount = async (
   const amounts = ["", "", ""]
   for(let i = 0; i < 3; i++) {
     const tokenAddress = '0x0' + (result[i].erc_address).toString('hex');
-    const index = tokens.findIndex(t => t.address === tokenAddress);
     const tokenAmountBN: ethers.BigNumber = starknet.uint256.uint256ToBN(result[i].amount);
+    
+    const index = tokens.findIndex(t => t.address === tokenAddress);
     const amount = ethers.utils.formatUnits(
       tokenAmountBN.toString(),
       tokens[index].decimals
     ).toString();
-    amounts[i] = amount;
+    amounts[index] = amount;
   }
   console.log(`getProportinalDepositERC20Amount: amounts ==> ${amounts}`)
   return amounts;
