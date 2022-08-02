@@ -9,6 +9,7 @@ import SelectUnstyled, {
 } from '@mui/base/SelectUnstyled';
 import { PopperUnstyled } from '@mui/base';
 import { StyledOption } from "../DepositComponent";
+import { Box } from "@mui/material";
 
 const StyledButton = styled('button')(
   ({ theme }) => `
@@ -133,6 +134,8 @@ export const CustomSelect = React.forwardRef(function CustomSelect(
     ...props.components,
   };
 
+  console.log(props)
+
   return <SelectUnstyled {...props} ref={ref} components={components} />;
 });
 
@@ -184,13 +187,9 @@ const SwapCurrencySelector = ({
     return null;
   }
 
-  // const symbol = api.getCurrencyInfo(value);
-  const symbol = {};
-  // const image = getCurrencyLogo(value);
 
   const handleTokenSelect = async (e: any) => {
     // e.preventDefault();
-    console.log("a=================",e)
     const val = e;
     //await tokenApproval();
     changeIndex(parseInt(val));
@@ -200,16 +199,21 @@ const SwapCurrencySelector = ({
   return (
     <CustomSelect onChange={handleTokenSelect} value={tokenIndex} borderBox={borderBox} width={listWidth}>
       {tokens.map((c: any, index: number) => (
-        <StyledOption key={c.symbol} value={index}>
-          <img
-            loading="lazy"
-            width="30"
-            src={c.logo}
-            srcSet={c.logo}
-            alt={`coin`}
-          />
-          {c.symbol}
-        </StyledOption>
+        <Box display="flex" justifyContent="space-between" alignItems="center" px="10px" >
+          <StyledOption key={c.symbol} value={index} >
+            <Box display="flex" alignItems={"center"}>
+              <img
+                loading="lazy"
+                width="30"
+                src={c.logo}
+                srcSet={c.logo}
+                alt={`coin`}
+              />
+              {c.symbol}
+            </Box>
+          </StyledOption>
+          <Box>{Number(balances[index]).toFixed(4)}</Box>
+        </Box>
       ))}
     </CustomSelect>
     
