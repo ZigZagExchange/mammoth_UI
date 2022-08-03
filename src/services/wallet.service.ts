@@ -26,8 +26,8 @@ export const networkId = () => {
 };
 
 export const disconnectWallet = () => {
-  return disconnect({clearLastWallet: true});
-}
+  return disconnect({ clearLastWallet: true });
+};
 
 export const addToken = async (address: string): Promise<void> => {
   const starknet = getStarknet();
