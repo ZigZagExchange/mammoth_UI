@@ -31,7 +31,7 @@ import { ethers } from "ethers";
 const Home: NextPage = () => {
   const [isLoading, changeIsLoading] = useState(false);
   const [loadingMsg, changeLoadingMsg] = useState("Awaiting Swap");
-  const [txComplete, changeTxComplete] = useState(false);
+  const [txComplete, changeTxComplete] = useState({status:false, tx: ""});
   const [txMessage, changeTxMsg] = useState("Swap Complete");
   const [isTokenApproved, changeTokenApproved] = useState(false);
   const [failMsg, changeFailMsg] = useState("");
@@ -58,7 +58,7 @@ const Home: NextPage = () => {
 
   useEffect(() => {
     onEvent();
-    setInterval(() => { onEvent(); }, 60000);
+    // setInterval(() => { onEvent(); }, 60000);
   }, [])
 
   useEffect(() => {
@@ -115,8 +115,8 @@ const Home: NextPage = () => {
   }, [toDetails.symbol, fromDetails])
 
   useEffect(() => {
-    if (!txComplete) return;
-    openErrorWindow(txMessage, 1)
+    if (!txComplete.status) return;
+    openErrorWindow(txMessage, 1, txComplete.tx)
   }, [txComplete])
 
   useEffect(() => {
@@ -152,8 +152,9 @@ const Home: NextPage = () => {
       `Swap ${tokens[getTokenIndex(fromDetails.symbol)].symbol} for ${tokens[getTokenIndex(toDetails.symbol)].symbol} success`
     );
     let success = true;
+    let tx = ""
     try {
-      await swapPool(
+      tx = await swapPool(
         getString2Number(fromDetails.amount),
         getTokenIndex(toDetails.symbol),
         getTokenIndex(fromDetails.symbol)
@@ -167,7 +168,7 @@ const Home: NextPage = () => {
     }
     changeIsLoading(false);
     if (success) {
-      changeTxComplete(true);
+      changeTxComplete({status: true, tx : tx});
     }
   };
 
@@ -179,10 +180,11 @@ const Home: NextPage = () => {
 
     changeIsLoading(true);
     changeLoadingMsg(`Approving ${tokens[getTokenIndex(fromDetails.symbol)].symbol}`);
-    changeTxMsg(`${tokens[getTokenIndex(fromDetails.symbol)].symbol} approved`);
+    
     let success = true;
+    let tx = "";
     try {
-      await approveToken(
+      tx = await approveToken(
         getTokenIndex(fromDetails.symbol),
         Number(fromDetails.amount) * 1.05
       );
@@ -194,15 +196,17 @@ const Home: NextPage = () => {
     }
     changeIsLoading(false);
     if (success) {
-      changeTxComplete(true);
+      changeTxMsg(`${tokens[getTokenIndex(fromDetails.symbol)].symbol} approved`);
+      changeTxComplete({status: true, tx : tx});
     }
   };
 
   const switchTransferType = (e: any) => {
-    setFromDetails(toDetails);
+    const tmp = {...toDetails}
+    tmp.amount = Number(tmp.amount).toFixed(4)
+    setFromDetails(tmp);
     const value = { amount: "" };
     setToDetails({ ...fromDetails, ...value })
-    console.log({ ...fromDetails, ...value })
   }
 
   const setSwapDetails = async (values: {amount: string, symbol: string}, from: boolean) => {
@@ -227,7 +231,7 @@ const Home: NextPage = () => {
     }
   }
 
-  const openErrorWindow = (value: string, flag: number) => {
+  const openErrorWindow = (value: string, flag: number, tx = "") => {
     if(toast.isActive(flag)) return;
     if(flag === 3) {
       toast.info(
@@ -253,7 +257,10 @@ const Home: NextPage = () => {
     }
     if(flag === 1) {
       toast.success(
-        value,
+        <Box display="flex" p="20px" flexDirection="column">
+          <Box mb="5px">{value}</Box>
+          <Box component="a" href={`https://goerli.voyager.online/tx/${tx}`} target="_blank" fontSize="12px" width="100%" textAlign="right">view TX</Box>
+        </Box>,
         {
           closeOnClick: false,
           autoClose: 15000,
@@ -362,9 +369,11 @@ const Home: NextPage = () => {
               <Box fontSize="12px" fontWeight="400">1 {fromDetails.symbol} = {
                 (fromDetails.amount && toDetails.amount) ? formatPrice(Number(fromDetails.amount) / Number(toDetails.amount)) : 0
               } {toDetails.symbol}</Box>
+              <Box fontSize="12px" fontWeight="400">Available Balance: {Number(userBalances[getTokenIndex(toDetails.symbol)]).toFixed(4)} {toDetails.symbol}</Box>
+
             </div>
             <SwapSwapInput
-              // balances={balances}
+              balances={userBalances}
               // currencies={currencies}
               from={false}
               value={{symbol: toDetails.symbol, amount: formatPrice(toDetails.amount)}} // format to details amount
