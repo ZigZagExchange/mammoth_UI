@@ -9,7 +9,7 @@
         "export": "next export",
         "lint": "next lint",
         "prepare": "husky install",
-        "test": "CI=true next lint"
+        "test": "CI=true next lint --fix"
     },
     "dependencies": {
         "@babel/core": "^7.0.0",
