@@ -1,4 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { Fragment, useCallback, useEffect, useState } from "react";
+
 import {
   approveToken,
   swapPool,
@@ -19,6 +20,7 @@ import MintDialogComponent from "../components/MintDialogComponent";
 import _ from "lodash";
 import WithdrawComponent from "../components/WithdrawComponent";
 import DepositComponent from "../components/DepositComponent";
+import NetworkSelection from "../components/NetworkSelection";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { getStarknet } from "get-starknet";
@@ -304,6 +306,7 @@ const Home: NextPage = () => {
       }}
     >
       <Box display="flex" justifyContent={"end"} mr="50px">
+        <NetworkSelection />
         <ConnectButton
           onClick={(e: any) => {
             if (address) {
@@ -561,18 +564,19 @@ const ConnectButton = styled("div")(
   ({ theme }) =>
     `
     border-radius: 8px;
-    padding: 10px 30px;
+    height: 42px;
     margin-left: 20px;
-    margin-top: 20px;
+    margin-top: 23px;
     width: 210px;
     border: 1px solid rgba(255, 255, 255, 0.13);
     cursor: pointer;
     background: rgba(0,0,0,0.8);
     position: relative;
     display: flex;
+    justify-content: center;
+    align-items: center;
     transition: all 0.2s ease-out;
     z-index: 10;
-    justify-content: end;
 
     &:hover {
       transition: all 0.2s ease-out;
