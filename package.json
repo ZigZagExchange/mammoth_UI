@@ -1,48 +1,67 @@
 {
-  "name": "@argent-x/playground",
-  "version": "3.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "export": "next export",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "@babel/core": "^7.0.0",
-    "@emotion/react": "^11.9.0",
-    "@emotion/styled": "^11.8.1",
-    "@mui/base": "^5.0.0-alpha.83",
-    "@mui/icons-material": "^5.8.0",
-    "@mui/material": "^5.8.1",
-    "@mui/styled-engine-sc": "^5.8.0",
-    "@mui/system": "^5.8.2",
-    "@types/lodash": "^4.14.182",
-    "@xstyled/styled-components": "^3.6.0",
-    "classnames": "^2.3.1",
-    "ethers": "^5.5.1",
-    "get-starknet": "^1.4.1",
-    "next": "^12.1.6",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "react-icons": "^4.3.1",
-    "react-is": "^18.1.0",
-    "react-loader-spinner": "^6.0.0-0",
-    "react-toastify": "^9.0.3",
-    "starknet": "^3.10.2",
-    "styled-components": "^5.3.5"
-  },
-  "devDependencies": {
-    "@types/node": "17.0.15",
-    "@types/react": "17.0.39",
-    "@types/react-dom": "17.0.15",
-    "eslint": "8",
-    "eslint-config-next": "12.0.10",
-    "typescript": "4.5.5"
-  },
-  "resolutions": {
-    "@types/react": "<18.0.0",
-    "@types/react-dom": "<18.0.0"
-  }
+    "name": "@argent-x/playground",
+    "version": "3.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "next dev",
+        "build": "next build",
+        "start": "next start",
+        "export": "next export",
+        "lint": "next lint",
+        "prepare": "husky install"
+    },
+    "dependencies": {
+        "@babel/core": "^7.0.0",
+        "@emotion/react": "^11.9.0",
+        "@emotion/styled": "^11.8.1",
+        "@mui/base": "^5.0.0-alpha.83",
+        "@mui/icons-material": "^5.8.0",
+        "@mui/material": "^5.8.1",
+        "@mui/styled-engine-sc": "^5.8.0",
+        "@mui/system": "^5.8.2",
+        "@types/lodash": "^4.14.182",
+        "@xstyled/styled-components": "^3.6.0",
+        "classnames": "^2.3.1",
+        "ethers": "^5.5.1",
+        "get-starknet": "^1.4.1",
+        "next": "^12.1.6",
+        "react": "17.0.2",
+        "react-dom": "17.0.2",
+        "react-icons": "^4.3.1",
+        "react-is": "^18.1.0",
+        "react-loader-spinner": "^6.0.0-0",
+        "react-toastify": "^9.0.3",
+        "starknet": "^3.10.2",
+        "styled-components": "^5.3.5"
+    },
+    "devDependencies": {
+        "@types/node": "17.0.15",
+        "@types/react": "^18.0.15",
+        "@types/react-dom": "^18.0.6",
+        "@typescript-eslint/eslint-plugin": "^5.32.0",
+        "@typescript-eslint/parser": "^5.32.0",
+        "eslint": "^8.21.0",
+        "eslint-config-next": "12.0.10",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-jsx-a11y": "^6.6.1",
+        "eslint-plugin-prettier": "^4.2.1",
+        "eslint-plugin-react": "^7.30.1",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "husky": "^8.0.0",
+        "lint-staged": "^13.0.3",
+        "prettier": "^2.7.1",
+        "typescript": "^4.7.4"
+    },
+    "lint-staged": {
+        "*.{js,ts,tsx}": [
+            "eslint --quiet --cache --fix"
+        ],
+        "*.{json,js,ts,jsx,tsx,html}": [
+            "prettier --write"
+        ]
+    },
+    "resolutions": {
+        "@types/react": "<18.0.0",
+        "@types/react-dom": "<18.0.0"
+    }
 }
