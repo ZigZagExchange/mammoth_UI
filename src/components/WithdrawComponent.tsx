@@ -138,14 +138,12 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
     changeERC20Amount(oldERC20);
   };
 
-  const setWithdrawDetails = async (values: any, from: boolean) => {
+  const setWithdrawDetails = async (values: any) => {
     const details = {
       ...withdrawDetails,
       ...values,
     };
-    console.log(values)
     _setWithdrawDetails(details);
-    console.log("val=========",details)
 
     let val = details.amount;
 
@@ -154,7 +152,6 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
     }
     val = Number.isNaN(val) ? 0 : val;
     const index = _.findIndex(tokens, {symbol: details.symbol});
-    console.log("index", index);
     changeIndex(index);
     changeWithdrawAmount(val);
     await predictWithdrawResult(val);
@@ -184,11 +181,10 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
           </Box>
           <SwapSwapInput
             // currencies={currencies}
-            from={true}
             value={withdrawDetails}
             onChange={setWithdrawDetails}
             borderBox
-            listWidth="505px"
+            listWidth={505}
           />
           <Box textAlign={'right'} mt="20px" mb="4px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {formatPrice(liquidityBalance)} LP tokens</Box>
           <Box textAlign={'right'} mt="4px" mb="42px" color="rgb(256,256,256,0.5)" fontSize="14px">Estimated recived: {formatPrice(ERC20Amount[withdrawAmount])} LP tokens</Box>

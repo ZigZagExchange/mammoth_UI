@@ -125,34 +125,35 @@ export const StyledOption = styled(OptionUnstyled)(
     cursor: default;
     display: flex;
     align-items: center;
+    width: 100%;
   
     &:last-of-type {
       border-bottom: none;
     }
   
-    &.${optionUnstyledClasses.selected} {
-      background-color: '#3C435A';
-      color: ${theme.palette.mode === 'dark' ? blue[100] : blue[900]};
-    }
+    // &.${optionUnstyledClasses.selected} {
+    //   background-color: '#3C435A';
+    //   color: ${theme.palette.mode === 'dark' ? blue[100] : blue[900]};
+    // }
   
-    &.${optionUnstyledClasses.highlighted} {
-      background-color: #3C435A;
-      color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
-    }
+    // &.${optionUnstyledClasses.highlighted} {
+    //   background-color: #3C435A;
+    //   color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
+    // }
   
-    &.${optionUnstyledClasses.highlighted}.${optionUnstyledClasses.selected} {
-      background-color: #3C435A;
-      color: #E0E3E7;
-    }
+    // &.${optionUnstyledClasses.highlighted}.${optionUnstyledClasses.selected} {
+    //   background-color: #3C435A;
+    //   color: #E0E3E7;
+    // }
   
-    &.${optionUnstyledClasses.disabled} {
-      color: ${theme.palette.mode === 'dark' ? grey[700] : grey[400]};
-    }
+    // &.${optionUnstyledClasses.disabled} {
+    //   color: ${theme.palette.mode === 'dark' ? grey[700] : grey[400]};
+    // }
   
-    &:hover:not(.${optionUnstyledClasses.disabled}) {
-      background-color: #3C435A;
-      color: #E0E3E7;
-    }
+    // &:hover:not(.${optionUnstyledClasses.disabled}) {
+    //   background-color: #3C435A;
+    //   color: #E0E3E7;
+    // }
   
     & img {
       margin-right: 10px;
@@ -336,9 +337,7 @@ export default function DepositComponent(props: DepositDialogProps) {
 
   const updateProportionalMode = async () => {
     if (!proportionalMode) return;
-    console.log(`LPAmount ==> ${Number(LPAmount)}`)
     const result = await getProportinalDepositERC20Amount(Number(LPAmount));
-    console.log(`result ==> ${result}`)
 
     const newTokenDetails = tokenDetails.map((details, index) => {
       details.amount = formatPrice(result[index]);
@@ -401,7 +400,6 @@ export default function DepositComponent(props: DepositDialogProps) {
         Number(LPAmount)
       );
     } catch (e) {
-      console.log(e)
       success = false;
       changeFailMsg("Deposit failed");
     } finally {
@@ -438,13 +436,12 @@ export default function DepositComponent(props: DepositDialogProps) {
     }
     changeIsLoading(false);
     if (success) {
-      console.log("success");
       changeTxComplete(true);
     }
   };
   
 
-  const setDepositDetailsOne = (values: any, from: boolean) => {
+  const setDepositDetailsOne = (values: any) => {
     const details = {
       ...tokenDetails[0],
       ...values,
@@ -452,7 +449,7 @@ export default function DepositComponent(props: DepositDialogProps) {
     setTokenDetails([details, tokenDetails[1], tokenDetails[2]]);
   }
 
-  const setDepositDetailsOTwo = (values: any, from: boolean) => {
+  const setDepositDetailsOTwo = (values: any) => {
     const details = {
       ...tokenDetails[1],
       ...values,
@@ -460,7 +457,7 @@ export default function DepositComponent(props: DepositDialogProps) {
     setTokenDetails([tokenDetails[0], details, tokenDetails[2]]);
   }
 
-  const setDepositDetailsThree = (values: any, from: boolean) => {
+  const setDepositDetailsThree = (values: any) => {
     const details = {
       ...tokenDetails[2],
       ...values,
@@ -468,7 +465,7 @@ export default function DepositComponent(props: DepositDialogProps) {
     setTokenDetails([tokenDetails[0], tokenDetails[1], details]);
   }
 
-  const changeLpAmount = (values: any, from: boolean) => {
+  const changeLpAmount = (values: any) => {
     setLPAmount(values.amount);
   }
 
@@ -498,42 +495,38 @@ export default function DepositComponent(props: DepositDialogProps) {
           <Box textAlign={'right'} mt="20px" mb="4px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {formatPrice(props.balance[0])} {tokenDetails[0].symbol}</Box>
           <SwapSwapInput
             balances={props.balance}
-            from={true}
             value={tokenDetails[0]}
             onChange={setDepositDetailsOne}
             borderBox
-            listWidth="505px"
+            listWidth={505}
             readOnly={proportionalMode}
           />
           <Box textAlign={'right'} mt="20px" mb="4px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {formatPrice(props.balance[1])} {tokenDetails[1].symbol}</Box>
           <SwapSwapInput
             balances={props.balance}
-            from={true}
             value={tokenDetails[1]}
             onChange={setDepositDetailsOTwo}
             borderBox
-            listWidth="505px"
+            listWidth={505}
             readOnly={proportionalMode}
           />
           <Box textAlign={'right'} mt="20px" mb="4px" color="rgb(256,256,256,0.5)" fontSize="14px">Balance: {formatPrice(props.balance[2])} {tokenDetails[2].symbol}</Box>
           <SwapSwapInput
             balances={props.balance}
-            from={true}
             value={tokenDetails[2]}
             onChange={setDepositDetailsThree}
             borderBox
-            listWidth="505px"
+            listWidth={505}
             readOnly={proportionalMode}
           />
           {proportionalMode && (
             <div>
               <SwapSwapInput
                 balances={props.balance}
-                from={true}
                 value={{amount: LPAmount, symbol: 'MLP'}}
                 onChange={changeLpAmount}
                 borderBox
-                listWidth="505px"
+                listWidth={505}
               />
             </div>
           )}
@@ -545,8 +538,8 @@ export default function DepositComponent(props: DepositDialogProps) {
             <ToggleButton
               type="option"
               size="sm"
-              leftLabel="Single Mode"
-              rightLabel="Proportional Mode"
+              leftLabel="Single"
+              rightLabel="Proportional"
               width="160"
               leftSelected={!proportionalMode}
               toggleClick={() => setProportionalMode(!proportionalMode)}
