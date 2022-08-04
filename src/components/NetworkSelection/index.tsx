@@ -1,3 +1,3 @@
-import NetworkSelection from "./NetworkSelection";
+import NetworkSelection from './NetworkSelection';
 
 export default NetworkSelection;
