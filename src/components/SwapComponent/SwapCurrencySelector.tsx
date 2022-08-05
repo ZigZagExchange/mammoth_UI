@@ -197,7 +197,7 @@ const SwapCurrencySelector = ({
   return (
     <CustomSelect onChange={handleTokenSelect} value={tokenIndex} borderBox={borderBox} width={listWidth}>
       {tokens.map((c: any, index: number) => (
-        <BoxWraper >
+        <BoxWraper key={index} >
           <StyledOption key={c.symbol} value={index} >
             <Box display="flex" alignItems={"center"}>
               <img

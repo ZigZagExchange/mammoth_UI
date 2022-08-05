@@ -95,18 +95,21 @@ const SwapSwapInput = ({
 
   useEffect(()=>{
     if(!ref?.current) return;
-    console.log("adsasfdasdf",ref.current.offsetWidth)
-    SetWidth(ref.current.offsetWidth)
+    console.log("adsasfdasdf",ref?.current.offsetWidth)
+    SetWidth(ref?.current.offsetWidth)
   },[windowWidth])
 
-  const setCurrency = useCallback(
-    (symbol) => onChange({ symbol, amount: "" }),
-    [onChange]
-  );
-  const setAmount = useCallback(
-    (e) => onChange({ amount: e.target.value.replace(/[^0-9.]/g, "") }),
-    [onChange]
-  );
+  // const setCurrency = useCallback(
+  //   (symbol) => onChange({ symbol, amount: "" }),
+  //   [onChange]
+  // );
+  // const setAmount = useCallback(
+  //   (e) => onChange({ amount: e.target.value.replace(/[^0-9.]/g, "") }),
+  //   [onChange]
+  // );
+
+  const setCurrency = (symbol: any) => onChange({ symbol, amount: "" });
+  const setAmount = (e: any) => onChange({ amount: e.target.value.replace(/[^0-9.]/g, "") });
 
   const setMax = () => {
     if(isWithdraw) onChange(null);

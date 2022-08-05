@@ -55,6 +55,7 @@ const Home: NextPage = () => {
   const [address, setAddress] = useState("")
   const [openDrop, setOpenDrop] = useState(false);
   const [isMobile, setMobile] = useState("lg")
+  const [rate, setRate] = useState(0)
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -149,12 +150,26 @@ const Home: NextPage = () => {
     tmp.amount = "";
     console.log("toDetail changes===========",tmp)
     setToDetails(tmp)
+    getSwapAmount(
+      getTokenIndex(fromDetails.symbol),
+      getTokenIndex(toDetails.symbol),
+      1
+    ).then(data=>{
+      setRate(data)
+    });
   }, [toDetails.symbol])
 
   useEffect(()=>{
     const tmp = {...fromDetails}
     tmp.amount = "";
     setFromDetails(tmp)
+    getSwapAmount(
+      getTokenIndex(fromDetails.symbol),
+      getTokenIndex(toDetails.symbol),
+      1
+    ).then(data=>{
+      setRate(data)
+    });
   }, [fromDetails.symbol])
 
   useEffect(() => {
@@ -438,7 +453,7 @@ console.log(isMobile)
               <Box fontSize="16px" fontWeight="600" mr = "30px">To</Box>
               <Box display="flex" width={isMobile === "sm" ? "auto" : "100%"} justifyContent="space-between" flexDirection={isMobile === "sm" ? "column" : "row"}>
                 <Box fontSize="12px" fontWeight="400">1 {fromDetails.symbol} = {
-                  (fromDetails.amount && toDetails.amount) ? formatPrice(Number(fromDetails.amount) / Number(toDetails.amount)) : 0
+                  rate
                 } {toDetails.symbol}</Box>
                 <Box fontSize="12px" fontWeight="400">Balance: {Number(userBalances[getTokenIndex(toDetails.symbol)]) ? Number(userBalances[getTokenIndex(toDetails.symbol)]).toFixed(4) : userBalances[getTokenIndex(toDetails.symbol)]} {toDetails.symbol}</Box>
               </Box>

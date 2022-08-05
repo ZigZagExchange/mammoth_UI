@@ -459,7 +459,7 @@ export const getSwapAmount = async (
   amountBuy: number,
   out = false
 ) => {
-  if (!amountBuy) return '0';
+  if (!amountBuy) return 0;
   const buyTokenAddress = tokens[tokenIndexBuy].address;
   const buyTokenDecimals = tokens[tokenIndexBuy].decimals;
   const sellTokenAddress = tokens[tokenIndexSell].address;
@@ -485,7 +485,7 @@ export const getSwapAmount = async (
   }
 
   const amountSellBN: ethers.BigNumber = starknet.uint256.uint256ToBN(result[0]);
-  if (amountSellBN.lt(1 / sellTokenDecimals)) return '0';
+  if (amountSellBN.lt(1 / sellTokenDecimals)) return 0;
   const decimalString = ethers.utils.formatUnits(
     amountSellBN.toString(),
     sellTokenDecimals
