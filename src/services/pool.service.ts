@@ -339,7 +339,6 @@ export const swapPool = async (
   tokenIndexSell: number
 ): Promise<any> => {
   if (!amount) return;
-  console.log(`swapPool: amount: ${amount}`)
 
   const wallet = getStarknet();
   const [address] = await wallet.enable();
@@ -457,34 +456,42 @@ export const getLiquidityBalances = async (): Promise<any> => {
 export const getSwapAmount = async (
   tokenIndexSell: number,
   tokenIndexBuy: number,
-  amountBuy: number
+  amountBuy: number,
+  out = false
 ) => {
-  console.log(`getSwapAmount: amountBuy ==> ${amountBuy}`)
   if (!amountBuy) return '0';
   const buyTokenAddress = tokens[tokenIndexBuy].address;
   const buyTokenDecimals = tokens[tokenIndexBuy].decimals;
   const sellTokenAddress = tokens[tokenIndexSell].address;
   const sellTokenDecimals = tokens[tokenIndexSell].decimals;
+  const pool = new starknet.Contract(starknetPool_ABI as starknet.Abi, poolAddress);
+  let result
   const buyAmountBN = ethers.utils.parseUnits(
     amountBuy.toFixed(buyTokenDecimals),
     buyTokenDecimals
   );
+  if(out === false) {
+    result = await pool.view_out_given_in(
+      Object.values(starknet.uint256.bnToUint256(buyAmountBN.toString())),
+      sellTokenAddress,
+      buyTokenAddress
+    );
+  } else {
+    result = await pool.view_in_given_out(
+      Object.values(starknet.uint256.bnToUint256(buyAmountBN.toString())),
+      sellTokenAddress,
+      buyTokenAddress
+    );
+  }
 
-  const pool = new starknet.Contract(starknetPool_ABI as starknet.Abi, poolAddress);
-  const result = await pool.view_out_given_in(
-    Object.values(starknet.uint256.bnToUint256(buyAmountBN.toString())),
-    sellTokenAddress,
-    buyTokenAddress
-  );
   const amountSellBN: ethers.BigNumber = starknet.uint256.uint256ToBN(result[0]);
-  console.log(amountSellBN.toString());
   if (amountSellBN.lt(1 / sellTokenDecimals)) return '0';
   const decimalString = ethers.utils.formatUnits(
     amountSellBN.toString(),
     sellTokenDecimals
   ).toString();
-  console.log(`getSwapAmount: return ==> ${decimalString}`)
-  return decimalString;
+  return Math.round(Number(decimalString) * 10000) / 10000;
+  
 };
 
 // ERC 20 deposit to lp amount
@@ -492,7 +499,6 @@ export const getDepositERC20Amount = async (
   tokenIndexDeposit: number,
   amountDeposit: number
 ) => {
-  console.log(`getDepositERC20Amount: amountDeposit ==> ${amountDeposit}`)
   if (!amountDeposit) return '--';
 
   const depositTokenAddress = tokens[tokenIndexDeposit].address;
@@ -513,7 +519,6 @@ export const getDepositERC20Amount = async (
     depositReturnBN.toString(),
     decimalsLpToken
   ).toString();
-  console.log(`getDepositERC20Amount: result ==> ${decimalString}`)
   return decimalString;
 };
 
@@ -521,7 +526,6 @@ export const getDepositERC20Amount = async (
 export const getProportinalDepositERC20Amount = async (
   amountLpToken: number
 ) => {
-  console.log(`getProportinalDepositERC20Amount: amountLpToken ==> ${amountLpToken}`)
   if (!amountLpToken) return '--';
 
   const pool = new starknet.Contract(starknetPool_ABI as starknet.Abi, poolAddress);
@@ -548,7 +552,6 @@ export const getProportinalDepositERC20Amount = async (
     ).toString();
     amounts[index] = amount;
   }
-  console.log(`getProportinalDepositERC20Amount: amounts ==> ${amounts}`)
   return amounts;
 };
 
@@ -556,7 +559,6 @@ export const getProportinalDepositERC20Amount = async (
 export const proportinalDepositERC20Amount = async (
   amountLpToken: number
 ) => {
-  console.log(`proportinalDepositERC20Amount: amountLpToken ==> ${amountLpToken}`)
   if (!amountLpToken) return;
   const pool = new starknet.Contract(starknetPool_ABI as starknet.Abi, poolAddress);
   const decimalsLpToken = Number(await pool.decimals());
@@ -590,7 +592,6 @@ export const getWithdrawERC20Amount = async (
   tokenIndexWithdraw: number,
   amountLPWithdraw: number
 ) => {
-  console.log(`getWithdrawERC20Amount: result ==> ${amountLPWithdraw}`)
   if (!amountLPWithdraw) return '--';
 
   const withdrawTokenAddress = tokens[tokenIndexWithdraw].address;
@@ -612,7 +613,6 @@ export const getWithdrawERC20Amount = async (
     withdrawAmountBN.toString(),
     withdrawTokenDecimals
   ).toString();
-  console.log(`getWithdrawERC20Amount: result ==> ${decimalString}`)
   return decimalString;
 };
 

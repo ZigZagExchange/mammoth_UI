@@ -7,6 +7,7 @@ import { mintToken, mintAllTokens } from "../services/pool.service";
 import { tokens } from "../services/constants";
 import cx from "classnames";
 import { toast } from "react-toastify";
+import useMobile from '../libs/useMobile';
 
 interface DepositDialogProps {
   open: boolean;
@@ -22,6 +23,7 @@ export default function MintDialogComponent(props: DepositDialogProps) {
   const [txComplete, changeTxComplete] = React.useState(false);
   const [failMsg, changeFailMsg] = React.useState("");
   const [isLoading, changeIsLoading] = React.useState([false, false, false]);
+  const { windowWidth } = useMobile();
 
   React.useEffect(() => {
     setOpen(props.open)
@@ -151,21 +153,21 @@ export default function MintDialogComponent(props: DepositDialogProps) {
           },
         }}
       >
-        <Box fontSize="1vw" color="white" fontWeight="500" py="1vw" px="1.5vw">{'Mint'}</Box>
-        <Box display="flex" flexDirection="column" px="2vw" pb="2vw" bgcolor={'#191A33'}>
-          <Box display="flex" alignItems="flex-start" flexDirection="column" width="400px">
+        <Box fontSize="16px" color="white" fontWeight="500" py="15px" px="20px">{'Mint'}</Box>
+        <Box display="flex" flexDirection="column" px="40px" py="50px" bgcolor={'#191A33'}>
+          <Box display="flex" alignItems="flex-start" flexDirection="column" maxWidth="400px">
             <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" my="30px" width="100%">
-              <Box fontSize="24px" mb="30px" fontWeight="500" color="white" display="flex" alignItems="center" justifyContent="center" width="100%">L2 Goerli ETH 
-                <Box fontSize="14px" color="#b3b3b3" ml="30px">(to pay transaction fees)</Box>
-              </Box>
-              <Box display="flex" alignItems="center" width="80%" mb="10px" p="20px" justifyContent='space-between'>
+              <Box fontSize="24px" mb="10px" fontWeight="500" color="white" display="flex" alignItems="center" justifyContent="center" width="100%">L2 Goerli ETH </Box>
+              <Box fontSize="14px" color="#b3b3b3">(to pay transaction fees)</Box>
+              
+              <Box display="flex" alignItems="center" width="100%" py="20px" px={windowWidth > 400 ? "30px" : "0"} justifyContent='space-between'>
                   <Box width="50%" display="flex" alignItems="center">
                     <img src={"https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png"} width="30px" alt="image" />
                     <Box ml="20px" color="white">ETH</Box>
                   </Box>
                   <CustomButton 
                     className={cx("bg_btn")} 
-                    style={{ width: '100px', marginRight: '10px'}} 
+                    style={{ width: '100px'}} 
                     text="Faucet" 
                     onClick={() => {window.open("https://faucet.goerli.starknet.io/","_blank")}}
                   />
@@ -174,17 +176,17 @@ export default function MintDialogComponent(props: DepositDialogProps) {
             <Box fontSize="22px" color="white" fontWeight={400}>Pool tokens</Box>
             {
               tokens.map((c, key: number) => (
-                <Box display="flex" alignItems="center" width="100%" mb="10px" p="20px" key={key} justifyContent='space-between'>
+                <Box display="flex" alignItems="center" width="100%" mb="10px" py="20px" px={windowWidth > 400 ? "20px" : ""} key={key} justifyContent='space-between'>
                   <Box width="50%" display="flex" alignItems="center">
                     <img src={c.logo} width="30px" alt="image" />
                     <Box ml="20px" color="white">{c.symbol}</Box>
                   </Box>
-                  <CustomButton className={cx("bg_btn", {zig_disabled: isLoading[key] || isMintingAll})} style={{ width: '100px', marginRight: '10px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }} text="Mint" onClick={() => handleMint(key)} />
-                  <CustomButton className={"bg_btn"} style={{ width: '100px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }} onClick={() => handleCopy(key)}  >
+                  <CustomButton className={cx("bg_btn", {zig_disabled: isLoading[key] || isMintingAll})} style={{ width: '50px', marginRight: '10px', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }} text="Mint" onClick={() => handleMint(key)} />
+                  <CustomButton className={"bg_btn"} style={{ width: '50px',padding:'0', background: 'linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%)' }} onClick={() => handleCopy(key)}  >
                     <Image
                       src="/clipboard.svg"
-                      width="20"
-                      height="20"
+                      width="10"
+                      height="10"
                       alt="copy the first token address"
                     />
                   </CustomButton>

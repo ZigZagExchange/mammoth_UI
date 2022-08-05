@@ -40,7 +40,6 @@ const Home: NextPage = () => {
   const [liquidityBalance, changeLiquidityBalance] = useState('--');
   const [tokenAllowances, changeTokenAllowances] = useState(['--', '--', '--']);
 
-
   const [depositModal, setDepositModal] = useState(false);
   const [withdrawModal, setWithdrawModal] = useState(false);
   const [mintModal, setMintModal] = useState(false);
@@ -55,10 +54,16 @@ const Home: NextPage = () => {
   }));
   const [address, setAddress] = useState("")
   const [openDrop, setOpenDrop] = useState(false);
+  const [isMobile, setMobile] = useState("lg")
 
   useEffect(() => {
-    onEvent();
-    // setInterval(() => { onEvent(); }, 60000);
+    if (typeof window !== 'undefined') {
+      let width;
+      if(window && window.innerWidth < 480) width= "sm"
+      else if(window && window.innerWidth < 660) width = "md"
+      else width = "lg"
+      setMobile(width);
+    }
   }, [])
 
   useEffect(() => {
@@ -85,7 +90,6 @@ const Home: NextPage = () => {
     setAddress(address);
     const res: string = await getLiquidityBalances();
     changeLiquidityBalance(res);
-    console.log("test2", isWalletConnected())
   };
 
   const tokenApproval = useCallback(async () => {
@@ -106,13 +110,52 @@ const Home: NextPage = () => {
     changeTokenApproved(Number(allowanceString) > Number(fromDetails.amount));
   }, [fromDetails]);
 
+  const tokenApprovalTo = useCallback(async () => {
+    if(!isWalletConnected()) return;
+    const i = getTokenIndex(toDetails.symbol);
+    const allowanceString = tokenAllowances[i];
+    if (allowanceString === '--' || allowanceString === '') {
+      changeTokenApproved(false);
+      return;
+    }
+    const allowanceBN = ethers.BigNumber.from(allowanceString.split('.')[0]); // full number part
+    const maxInt = ethers.BigNumber.from(Number.MAX_SAFE_INTEGER - 1); // MAX_SAFE_INTEGER - 1 because we use floor for allowanceBN
+    // allowance might be grater the the MAX_SAFE_INTEGER range
+    if (allowanceBN.gt(maxInt)) {
+      changeTokenApproved(true);
+      return;
+    }
+    changeTokenApproved(Number(allowanceString) > Number(toDetails.amount));
+  }, [toDetails]);
+
   useEffect(() => {
     if(!isWalletConnected()) return;
     (async () => {
-      await predictSwapResult(getString2Number(fromDetails.amount));
       await tokenApproval();
+      await tokenApprovalTo();
     })();
-  }, [toDetails.symbol, fromDetails])
+  }, [fromDetails.amount])
+
+  useEffect(() => {
+    if(!isWalletConnected()) return;
+    (async () => {
+      await tokenApproval();
+      await tokenApprovalTo();
+    })();
+  }, [toDetails.amount])
+
+  useEffect(()=>{
+    const tmp = {...toDetails}
+    tmp.amount = "";
+    console.log("toDetail changes===========",tmp)
+    setToDetails(tmp)
+  }, [toDetails.symbol])
+
+  useEffect(()=>{
+    const tmp = {...fromDetails}
+    tmp.amount = "";
+    setFromDetails(tmp)
+  }, [fromDetails.symbol])
 
   useEffect(() => {
     if (!txComplete.status) return;
@@ -140,6 +183,20 @@ const Home: NextPage = () => {
       ...{ amount: `${result}` },
     };
     setToDetails(detail2);
+  };
+
+  const predictSwapResultTo = async (amount: number) => {
+    const result = await getSwapAmount(
+      getTokenIndex(fromDetails.symbol),
+      getTokenIndex(toDetails.symbol),
+      amount,
+      true
+    );
+    const detail2 = {
+      ...fromDetails,
+      ...{ amount: `${result}` },
+    };
+    setFromDetails(detail2);
   };
 
   const handleSubmit = async () => {
@@ -209,25 +266,37 @@ const Home: NextPage = () => {
     setToDetails({ ...fromDetails, ...value })
   }
 
-  const setSwapDetails = async (values: {amount: string, symbol: string}, from: boolean) => {
-    if (from) {
-      const details = {
-        ...fromDetails,
-        ...values,
-      };
-      if (details.symbol === toDetails.symbol) {
-        setToDetails({ ...fromDetails, ...{ amount: '' } });
-      }
-      setFromDetails(details);
+  const setSwapDetailsFrom = async (values: {amount: string, symbol: string}) => {
+    const details = {
+      ...fromDetails,
+      ...values,
+    };
+    if(!values.symbol) {
+      predictSwapResult(getString2Number(details.amount));
     } else {
-      const detail2 = {
-        ...toDetails,
-        ...values,
-      };
-      if (detail2.symbol === fromDetails.symbol) {
-        setFromDetails({ ...toDetails, ...{ amount: '' } });
-      }
-      setToDetails(detail2);
+      await predictSwapResult(0)
+    }
+    setFromDetails(details);
+    if (details.symbol === toDetails.symbol) {
+      console.log("onChange event ==========", details)
+      setToDetails({ ...fromDetails, ...{ amount: '' } });
+    }
+    
+  }
+
+  const setSwapDetailsTo = async (values: {amount: string, symbol: string}) => {
+    const detail2 = {
+      ...toDetails,
+      ...values,
+    };
+    if(!values.symbol) {
+      predictSwapResultTo(getString2Number(detail2.amount));
+    } else {
+      await predictSwapResultTo(0);
+    }
+    setToDetails(detail2);
+    if (detail2.symbol === fromDetails.symbol) {
+      setFromDetails({ ...toDetails, ...{ amount: '' } });
     }
   }
 
@@ -291,14 +360,16 @@ const Home: NextPage = () => {
     changeUserBalances(_userBalance);
     changeTokenAllowances(_tokenAlowance);
     await predictSwapResult(getString2Number(fromDetails.amount));
+    await predictSwapResultTo(getString2Number(toDetails.amount));
     await tokenApproval();
+    await tokenApprovalTo();
   }
 
   const disconnect = () => {
     disconnectWallet();
     setAddress("")
   }
-
+console.log(isMobile)
   return (
     <Box onClick={() => { setOpenDrop(false); }}>
       <Box display="flex" justifyContent={'end'} mr="50px">
@@ -319,9 +390,9 @@ const Home: NextPage = () => {
         </ConnectButton>
       </Box>
       <Box display="flex" justifyContent={'center'} flexDirection="column" alignItems={'center'} pt="100px">
-        <Box display="flex" width={'auto'} mb="50px" justifyContent={'center'} alignItems="center">
-          <Box borderRadius={'8px'} border="1px solid rgba(255, 255, 255, 0.13)" width="100%" p="30px" display="flex" justifyContent={'space-between'}>
-            <Box display='flex' flexDirection="column" mr="20px">
+        <Box display="flex" maxWidth={'90%'} width="590px" justifyContent={'center'} alignItems="center" flexDirection={isMobile !== "lg" ? "column" : "row"}>
+          <Box borderRadius={'8px'} border="1px solid rgba(255, 255, 255, 0.13)" width="100%" p="30px" display="flex" flexDirection={isMobile !== "sm" ? "row" : "column"} justifyContent={'space-between'} mb="30px">
+            <Box display='flex' flexDirection={isMobile !== "sm" ? "column" : "row"} mr="20px">
               <Box mb="30px">Total Token amount</Box>
               <Box textAlign={'center'}>{formatPrice(liquidityBalance)}</Box>
             </Box>
@@ -335,10 +406,10 @@ const Home: NextPage = () => {
             </Box>
 
           </Box>
-          <Box ml="35px" width="25%" height="100%" display="flex" flexDirection="column" alignItems="center" justifyContent={'space-between'}>
-            <Button className="bg_btn" style={{ borderRadius: '5px' }} text="MINT" onClick={() => { setMintModal(true) }} />
-            <Button className="bg_btn" style={{ borderRadius: '5px' }} text="Deposit" onClick={() => { setDepositModal(true) }} />
-            <Button className="bg_btn" style={{ borderRadius: '5px' }} text="Withdraw" onClick={() => { setWithdrawModal(true) }} />
+          <Box ml={isMobile === "lg" ? "35px" : ''} width={isMobile !== "lg" ? "auto":"25%"} height="100%" display="flex" flexDirection={isMobile !== "lg" ? "row" : "column"} alignItems="center" justifyContent={'space-between'} mb="30px">
+            <Button className="bg_btn" style={{ borderRadius: '5px', marginRight: '10px', width: '90px' }} text="MINT" onClick={() => { setMintModal(true) }} />
+            <Button className="bg_btn" style={{ borderRadius: '5px', marginRight: '10px', width: '90px' }} text="Deposit" onClick={() => { setDepositModal(true) }} />
+            <Button className="bg_btn" style={{ borderRadius: '5px', marginRight: '10px', width: '90px' }} text="Withdraw" onClick={() => { setWithdrawModal(true) }} />
           </Box>
         </Box>
         <div className="swap_box">
@@ -346,14 +417,13 @@ const Home: NextPage = () => {
           <div className="swap_box_top">
             <div className="swap_coin_title">
               <Box fontSize="16px" fontWeight="600">From</Box>
-              <Box fontSize="12px" fontWeight="400">Available Balance: {Number(userBalances[getTokenIndex(fromDetails.symbol)]).toFixed(4)} {fromDetails.symbol}</Box>
+              <Box fontSize="12px" fontWeight="400">Balance: {Number(userBalances[getTokenIndex(fromDetails.symbol)]) ? Number(userBalances[getTokenIndex(fromDetails.symbol)]).toFixed(4) : userBalances[getTokenIndex(fromDetails.symbol)]} {fromDetails.symbol}</Box>
             </div>
             <SwapSwapInput
               balances={userBalances}
               // currencies={currencies}
-              from={true}
               value={fromDetails}
-              onChange={setSwapDetails}
+              onChange={setSwapDetailsFrom}
             />
             {/* <Box mt="10px" color="rgba(255, 255, 255, 0.72)" fontSize="11px" textAlign="right">Estimated value: ~$ 30.33</Box> */}
           </div>
@@ -365,20 +435,20 @@ const Home: NextPage = () => {
             </div>
 
             <div className="swap_coin_title" style={{ marginBottom: '10px' }}>
-              <Box fontSize="16px" fontWeight="600">To</Box>
-              <Box fontSize="12px" fontWeight="400">1 {fromDetails.symbol} = {
-                (fromDetails.amount && toDetails.amount) ? formatPrice(Number(fromDetails.amount) / Number(toDetails.amount)) : 0
-              } {toDetails.symbol}</Box>
-              <Box fontSize="12px" fontWeight="400">Available Balance: {Number(userBalances[getTokenIndex(toDetails.symbol)]).toFixed(4)} {toDetails.symbol}</Box>
-
+              <Box fontSize="16px" fontWeight="600" mr = "30px">To</Box>
+              <Box display="flex" width={isMobile === "sm" ? "auto" : "100%"} justifyContent="space-between" flexDirection={isMobile === "sm" ? "column" : "row"}>
+                <Box fontSize="12px" fontWeight="400">1 {fromDetails.symbol} = {
+                  (fromDetails.amount && toDetails.amount) ? formatPrice(Number(fromDetails.amount) / Number(toDetails.amount)) : 0
+                } {toDetails.symbol}</Box>
+                <Box fontSize="12px" fontWeight="400">Balance: {Number(userBalances[getTokenIndex(toDetails.symbol)]) ? Number(userBalances[getTokenIndex(toDetails.symbol)]).toFixed(4) : userBalances[getTokenIndex(toDetails.symbol)]} {toDetails.symbol}</Box>
+              </Box>
             </div>
             <SwapSwapInput
               balances={userBalances}
               // currencies={currencies}
-              from={false}
-              value={{symbol: toDetails.symbol, amount: formatPrice(toDetails.amount)}} // format to details amount
-              onChange={setSwapDetails}
-              readOnly={true}
+              value={toDetails} // format to details amount
+              onChange={setSwapDetailsTo}
+              showMax={false}
             />
             <div className="swap_button" style={{ marginTop: '30px' }}>
               {(!isTokenApproved) && isWalletConnected() && (

@@ -101,7 +101,7 @@ const StyledBorderedButton = styled('button')(
     `,
 );
 
-const StyledListbox = (width?: string) => styled('ul')(
+const StyledListbox = (width?: number) => styled('ul')(
   ({ theme }) => `
     font-family: IBM Plex Sans, sans-serif;
     font-size: 0.875rem;
@@ -109,7 +109,7 @@ const StyledListbox = (width?: string) => styled('ul')(
     
     padding: 1px;
     margin: 0px 0;
-    min-width: ${width ? width : "485px"};
+    min-width: ${width ? width+"px" : "510px"};
     max-height: 485px;
     background: #25263d;
     border-radius: 5px;
@@ -124,7 +124,7 @@ const StyledPopper = styled(PopperUnstyled)`
   `;
 
 export const CustomSelect = React.forwardRef(function CustomSelect(
-  props: SelectUnstyledProps<number> & {borderBox?: boolean, width?: string},
+  props: SelectUnstyledProps<number> & {borderBox?: boolean, width?: number},
   ref: any,
 ) {
   const components: SelectUnstyledProps<number>['components'] = {
@@ -133,8 +133,6 @@ export const CustomSelect = React.forwardRef(function CustomSelect(
     Popper: StyledPopper,
     ...props.components,
   };
-
-  console.log(props)
 
   return <SelectUnstyled {...props} ref={ref} components={components} />;
 });
@@ -145,7 +143,7 @@ interface Props{
   balances: string[];
   value: string;
   borderBox?: boolean;
-  listWidth?: string;
+  listWidth?: number;
 }
 
 const SwapCurrencySelector = ({
@@ -199,7 +197,7 @@ const SwapCurrencySelector = ({
   return (
     <CustomSelect onChange={handleTokenSelect} value={tokenIndex} borderBox={borderBox} width={listWidth}>
       {tokens.map((c: any, index: number) => (
-        <Box display="flex" justifyContent="space-between" alignItems="center" px="10px" >
+        <BoxWraper >
           <StyledOption key={c.symbol} value={index} >
             <Box display="flex" alignItems={"center"}>
               <img
@@ -212,8 +210,8 @@ const SwapCurrencySelector = ({
               {c.symbol}
             </Box>
           </StyledOption>
-          <Box>{Number(balances[index]).toFixed(4)}</Box>
-        </Box>
+          <Box>{Number(balances[index]) ? Number(balances[index]).toFixed(4) : balances[index]}</Box>
+        </BoxWraper>
       ))}
     </CustomSelect>
     
@@ -221,3 +219,13 @@ const SwapCurrencySelector = ({
 };
 
 export default SwapCurrencySelector;
+
+const BoxWraper = styled(Box)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+    &:hover {
+      background-color: '#808081';
+    }
+`

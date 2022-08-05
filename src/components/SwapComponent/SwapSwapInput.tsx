@@ -1,9 +1,10 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import SwapCurrencySelector from "./SwapCurrencySelector";
 import { tokens } from "../../services/constants";
 import _ from "lodash";
 import { getTokenIndex } from "../../libs/utils";
+import useMobile from "../../libs/useMobile";
 
 const SwapInputBox = styled((props: any)=>(<div {...props} />))`
   display: flex;
@@ -24,7 +25,7 @@ const SwapInputBox = styled((props: any)=>(<div {...props} />))`
     height: 40px;
     background: transparent !important;
     padding: 20px 10px 20px 7px;
-    font-size: 28px;
+    font-size: ${props => props.mobile==="true" ? "16px" : "28px"};
     border: none;
     outline: none;
     text-align: right;
@@ -64,15 +65,15 @@ const MaxButton = styled.button`
 
 interface Props {
   value?: any;
-  onChange: (e: any, from: boolean) => void;
+  onChange: (e: any) => void;
   currencies?: string;
   balances?: string[];
   className?: string;
-  from: boolean;
   readOnly?: boolean;
   borderBox?: boolean;
-  listWidth?: string;
+  listWidth?: number;
   isWithdraw?: boolean;
+  showMax?: boolean;
 }
 
 const SwapSwapInput = ({
@@ -81,30 +82,40 @@ const SwapSwapInput = ({
   currencies,
   balances = [],
   className,
-  from,
   readOnly,
   borderBox,
-  listWidth,
-  isWithdraw
+  listWidth = 510,
+  isWithdraw,
+  showMax = true
 }: Props) => {
+
+  const ref = useRef<any>(null);
+  const [width, SetWidth] = useState(0);
+  const {isMobile, windowWidth} = useMobile();
+
+  useEffect(()=>{
+    if(!ref?.current) return;
+    console.log("adsasfdasdf",ref.current.offsetWidth)
+    SetWidth(ref.current.offsetWidth)
+  },[windowWidth])
+
   const setCurrency = useCallback(
-    (symbol) => onChange({ symbol, amount: "" }, from),
+    (symbol) => onChange({ symbol, amount: "" }),
     [onChange]
   );
   const setAmount = useCallback(
-    (e) => onChange({ amount: e.target.value.replace(/[^0-9.]/g, "") }, from),
+    (e) => onChange({ amount: e.target.value.replace(/[^0-9.]/g, "") }),
     [onChange]
   );
 
   const setMax = () => {
-    if(isWithdraw) onChange(null, from);
-    console.log(balances)
-    console.log(value)
-    onChange({ amount: balances[getTokenIndex(value.symbol)]}, from)
+    if(isWithdraw) onChange(null);
+    onChange({ amount: Math.round(Number(balances[getTokenIndex(value.symbol)]) * 10000) / 10000})
   }
 
   return (
-    <SwapInputBox readOnly={readOnly}>
+    <div ref={ref}>
+    <SwapInputBox readOnly={readOnly} mobile={isMobile ? "true" : "false"}>
       <div className="currencySelector">
         <SwapCurrencySelector
           currencies={currencies}
@@ -112,19 +123,20 @@ const SwapSwapInput = ({
           onChange={setCurrency}
           value={value.symbol}
           borderBox={borderBox}
-          listWidth={listWidth}
+          listWidth={listWidth * (width / 510) - 15}
         />
-        {!readOnly && <MaxButton onClick={setMax}>Max</MaxButton>}
+        {(showMax) && <MaxButton onClick={setMax}>Max</MaxButton>}
       </div>
       <input
         onChange={setAmount}
-        value={from ? value.amount : Number(value.amount).toFixed(4)}
+        value={value.amount}
         className={className}
         placeholder="0.00"
         type="text"
         disabled={readOnly}
       />
     </SwapInputBox>
+    </div>
   );
 };
 

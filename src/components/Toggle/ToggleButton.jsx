@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "@xstyled/styled-components";
+import useMobile from "../../libs/useMobile";
 
 const Text = styled.div`
   display: grid;
@@ -12,18 +13,20 @@ const Text = styled.div`
 
 const ToggleButtonWrapper = styled.ul`
   display: flex;
-  flex-direction: row;
+  flex-direction: ${({ mobile }) => mobile ? 'column' : 'row'};
   align-items: center;
   background: #ddf1f7;
   border: 1px solid #292D3F14;
   border-radius: 12px;
-  width: fit-content;
+  width: 100%;
   padding: 4px;
 `;
 
 const ToggleItem = styled.li`
   display: block;
-  width: ${({ width }) => width}px;
+  padding-left: 20px;
+  padding-right: 20px;
+  width: 100%;
   border-radius: 8px;
   padding-top: ${({ size }) => (size === "sm" ? "4px" : "8px")};
   padding-bottom: ${({ size }) => (size === "sm" ? "4px" : "8px")};
@@ -65,8 +68,10 @@ const ToggleButton = ({ ...props }) => {
     toggleClick = () => {},
   } = props;
 
+  const {windowWidth} = useMobile()
+
   return (
-    <ToggleButtonWrapper {...props}>
+    <ToggleButtonWrapper mobile={windowWidth < 470} {...props}>
       <ToggleItem
         onClick={() => toggleClick(1)}
         show={leftSelected}
