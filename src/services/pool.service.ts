@@ -616,6 +616,70 @@ export const getWithdrawERC20Amount = async (
   return decimalString;
 };
 
+export const getProportinalWithdrawERC20Amount = async (
+  amountLpToken: number
+) => {
+  if (!amountLpToken) return '--';
+
+  const pool = new starknet.Contract(starknetPool_ABI as starknet.Abi, poolAddress);
+  const decimalsLpToken = Number(await pool.decimals());
+  const amountLpTokenBN = ethers.utils.parseUnits(
+    amountLpToken.toFixed(decimalsLpToken),
+    decimalsLpToken
+  );
+
+  const data = await pool.view_proportional_withdraw_given_pool_in(
+    Object.values(starknet.uint256.bnToUint256(amountLpTokenBN.toString()))
+  );
+  const result = data[0];
+
+  const amounts = ["", "", ""]
+  for(let i = 0; i < 3; i++) {
+    const tokenAddress = '0x0' + (result[i].erc_address).toString('hex');
+    const tokenAmountBN: ethers.BigNumber = starknet.uint256.uint256ToBN(result[i].amount);
+    
+    const index = tokens.findIndex(t => t.address === tokenAddress);
+    const amount = ethers.utils.formatUnits(
+      tokenAmountBN.toString(),
+      tokens[index].decimals
+    ).toString();
+    amounts[index] = amount;
+  }
+  return amounts;
+};
+
+// ERC 20 deposit to lp amount
+export const proportinalWithdrawERC20Amount = async (
+  amountLpToken: number
+) => {
+  if (!amountLpToken) return;
+  const pool = new starknet.Contract(starknetPool_ABI as starknet.Abi, poolAddress);
+  const decimalsLpToken = Number(await pool.decimals());
+  const amountLpTokenBN = ethers.utils.parseUnits(
+    amountLpToken.toFixed(decimalsLpToken),
+    decimalsLpToken
+  );
+  
+  const wallet = getStarknet();
+  const [address] = await wallet.enable();
+  // checks that enable succeeded
+  if (wallet.isConnected === false) throw Error("starknet wallet not connected");
+
+  const { code, transaction_hash } = await wallet.account.execute({
+    contractAddress: routerAddress,
+    entrypoint: 'mammoth_proportional_withdraw',
+    calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
+      Object.values(starknet.uint256.bnToUint256(amountLpTokenBN.toString())),
+      starknet.number.toBN(address.toString()),
+      starknet.number.toBN(poolAddress.toString()),
+    ].flatMap((x) => x)),
+  });
+
+  if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
+  await starknet.defaultProvider.waitForTransaction(transaction_hash);
+  return transaction_hash;
+};
+
 // this is not used and should probably removed 
 /*
 export const transfer = async (
