@@ -679,37 +679,3 @@ export const proportinalWithdrawERC20Amount = async (
   await starknet.defaultProvider.waitForTransaction(transaction_hash);
   return transaction_hash;
 };
-
-// this is not used and should probably removed 
-/*
-export const transfer = async (
-  tokenIndex: number,
-  transferTo: string,
-  transferAmount: number,
-): Promise<any> => {
-  const wallet = getStarknet();
-  await wallet.enable();
-  const tokenAddress = tokens[tokenIndex].address;
-  const tokenDecimals = tokens[tokenIndex].decimals;
-  const amountBN = ethers.utils.parseUnits(
-    transferAmount.toFixed(tokenDecimals),
-    tokenDecimals
-  );
-
-  // checks that enable succeeded
-  if (wallet.isConnected === false)
-    throw Error("starknet wallet not connected");  
-
-  const { code, transaction_hash } = await wallet.account.execute({
-    contractAddress: tokenAddress,
-    entrypoint: 'transfer',
-    calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
-      starknet.number.toBN(transferTo.toString()),
-      starknet.uint256.bnToUint256(amountBN)
-    ].flatMap((x) => x)),
-  });  
-  if (code !== 'TRANSACTION_RECEIVED') return false;
-  await starknet.defaultProvider.waitForTransaction(transaction_hash);
-  return transaction_hash;
-};
-*/
