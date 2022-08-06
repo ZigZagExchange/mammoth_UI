@@ -167,7 +167,7 @@ export const getApproveTokenFee = async (
     tokenDecimals
   );
 
-  const { amount: fee } = await wallet.account.estimateFee({
+  const { suggestedMaxFee: fee } = await wallet.account.estimateFee({
     contractAddress: tokenAddress,
     entrypoint: 'approve',
     calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
@@ -265,9 +265,9 @@ export const getDepositPoolFee = async (
       starknet.number.toBN(tokenAddress.toString())
     ].flatMap((x) => x)),
   });
-  if(!res.amount) return '0';
+  if(!res.suggestedMaxFee) return '0';
 
-  return ethers.utils.parseEther(res.amount).toString();
+  return ethers.utils.parseEther(res.suggestedMaxFee).toString();
 };
 
 export const withdrawPool = async (
@@ -319,7 +319,7 @@ export const getWithdrawPoolFee = async (
   // checks that enable succeeded
   if (wallet.isConnected === false) throw Error("starknet wallet not connected");
 
-  const { amount: fee } = await wallet.account.estimateFee({
+  const { suggestedMaxFee: fee } = await wallet.account.estimateFee({
     contractAddress: routerAddress,
     entrypoint: 'mammoth_withdraw_single_asset',
     calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
@@ -387,7 +387,7 @@ export const getSwapPoolFee = async (
   // checks that enable succeeded
   if (wallet.isConnected === false) throw Error("starknet wallet not connected");
 
-  const { amount: fee } = await wallet.account.estimateFee({
+  const { suggestedMaxFee: fee } = await wallet.account.estimateFee({
     contractAddress: routerAddress,
     entrypoint: 'mammoth_swap',
     calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
