@@ -167,7 +167,7 @@ export const getApproveTokenFee = async (
     tokenDecimals
   );
 
-  const { amount: fee } = await wallet.account.estimateFee({
+  const { suggestedMaxFee: fee } = await wallet.account.estimateFee({
     contractAddress: tokenAddress,
     entrypoint: 'approve',
     calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
@@ -265,9 +265,9 @@ export const getDepositPoolFee = async (
       starknet.number.toBN(tokenAddress.toString())
     ].flatMap((x) => x)),
   });
-  if(!res.amount) return '0';
+  if(!res.suggestedMaxFee) return '0';
 
-  return ethers.utils.parseEther(res.amount).toString();
+  return ethers.utils.parseEther(res.suggestedMaxFee).toString();
 };
 
 export const withdrawPool = async (
@@ -319,7 +319,7 @@ export const getWithdrawPoolFee = async (
   // checks that enable succeeded
   if (wallet.isConnected === false) throw Error("starknet wallet not connected");
 
-  const { amount: fee } = await wallet.account.estimateFee({
+  const { suggestedMaxFee: fee } = await wallet.account.estimateFee({
     contractAddress: routerAddress,
     entrypoint: 'mammoth_withdraw_single_asset',
     calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
@@ -387,7 +387,7 @@ export const getSwapPoolFee = async (
   // checks that enable succeeded
   if (wallet.isConnected === false) throw Error("starknet wallet not connected");
 
-  const { amount: fee } = await wallet.account.estimateFee({
+  const { suggestedMaxFee: fee } = await wallet.account.estimateFee({
     contractAddress: routerAddress,
     entrypoint: 'mammoth_swap',
     calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
@@ -616,36 +616,66 @@ export const getWithdrawERC20Amount = async (
   return decimalString;
 };
 
-// this is not used and should probably removed 
-/*
-export const transfer = async (
-  tokenIndex: number,
-  transferTo: string,
-  transferAmount: number,
-): Promise<any> => {
-  const wallet = getStarknet();
-  await wallet.enable();
-  const tokenAddress = tokens[tokenIndex].address;
-  const tokenDecimals = tokens[tokenIndex].decimals;
-  const amountBN = ethers.utils.parseUnits(
-    transferAmount.toFixed(tokenDecimals),
-    tokenDecimals
+export const getProportinalWithdrawERC20Amount = async (
+  amountLpToken: number
+) => {
+  if (!amountLpToken) return '--';
+
+  const pool = new starknet.Contract(starknetPool_ABI as starknet.Abi, poolAddress);
+  const decimalsLpToken = Number(await pool.decimals());
+  const amountLpTokenBN = ethers.utils.parseUnits(
+    amountLpToken.toFixed(decimalsLpToken),
+    decimalsLpToken
   );
 
+  const data = await pool.view_proportional_withdraw_given_pool_in(
+    Object.values(starknet.uint256.bnToUint256(amountLpTokenBN.toString()))
+  );
+  const result = data[0];
+
+  const amounts = ["", "", ""]
+  for(let i = 0; i < 3; i++) {
+    const tokenAddress = '0x0' + (result[i].erc_address).toString('hex');
+    const tokenAmountBN: ethers.BigNumber = starknet.uint256.uint256ToBN(result[i].amount);
+    
+    const index = tokens.findIndex(t => t.address === tokenAddress);
+    const amount = ethers.utils.formatUnits(
+      tokenAmountBN.toString(),
+      tokens[index].decimals
+    ).toString();
+    amounts[index] = amount;
+  }
+  return amounts;
+};
+
+// ERC 20 deposit to lp amount
+export const proportinalWithdrawERC20Amount = async (
+  amountLpToken: number
+) => {
+  if (!amountLpToken) return;
+  const pool = new starknet.Contract(starknetPool_ABI as starknet.Abi, poolAddress);
+  const decimalsLpToken = Number(await pool.decimals());
+  const amountLpTokenBN = ethers.utils.parseUnits(
+    amountLpToken.toFixed(decimalsLpToken),
+    decimalsLpToken
+  );
+  
+  const wallet = getStarknet();
+  const [address] = await wallet.enable();
   // checks that enable succeeded
-  if (wallet.isConnected === false)
-    throw Error("starknet wallet not connected");  
+  if (wallet.isConnected === false) throw Error("starknet wallet not connected");
 
   const { code, transaction_hash } = await wallet.account.execute({
-    contractAddress: tokenAddress,
-    entrypoint: 'transfer',
+    contractAddress: routerAddress,
+    entrypoint: 'mammoth_proportional_withdraw',
     calldata: starknet.number.bigNumberishArrayToDecimalStringArray([
-      starknet.number.toBN(transferTo.toString()),
-      starknet.uint256.bnToUint256(amountBN)
+      Object.values(starknet.uint256.bnToUint256(amountLpTokenBN.toString())),
+      starknet.number.toBN(address.toString()),
+      starknet.number.toBN(poolAddress.toString()),
     ].flatMap((x) => x)),
-  });  
-  if (code !== 'TRANSACTION_RECEIVED') return false;
+  });
+
+  if (code !== 'TRANSACTION_RECEIVED') throw new Error(code);
   await starknet.defaultProvider.waitForTransaction(transaction_hash);
   return transaction_hash;
 };
-*/
