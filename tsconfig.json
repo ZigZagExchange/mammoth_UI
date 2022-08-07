@@ -17,7 +17,6 @@
         "noEmit": true,
         "jsx": "preserve",
         "incremental": true,
-        "strict": false,
         "plugins": [{ "name": "typescript-plugin-css-modules" }]
     },
     "include": ["src"],
