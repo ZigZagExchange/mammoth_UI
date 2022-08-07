@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from '@xstyled/styled-components';
+import useMobile from '../../libs/useMobile';
 
 const Text = styled.div`
     display: grid;
