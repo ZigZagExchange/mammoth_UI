@@ -21,6 +21,7 @@
     "@mui/styled-engine-sc": "^5.8.0",
     "@mui/system": "^5.8.2",
     "@types/lodash": "^4.14.182",
+    "@typescript-eslint/eslint-plugin": "^5.32.0",
     "@xstyled/styled-components": "^3.6.0",
     "classnames": "^2.3.1",
     "ethers": "^5.5.1",

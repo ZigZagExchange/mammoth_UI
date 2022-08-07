@@ -1,4 +1,4 @@
-import styles from "../styles/Loading.module.css";
+import styles from '../styles/Loading.module.css';
 
 export interface indicatorProps {
   msg: string;
@@ -8,10 +8,10 @@ export interface indicatorProps {
 }
 
 const defaultProps: indicatorProps = {
-  msg: "Loading",
+  msg: 'Loading',
   isLoading: false,
   closeable: false,
-  onClose: () => {},
+  onClose: () => {}
 };
 const Indicator = (props: indicatorProps) => {
   const { msg, isLoading, closeable, onClose } = { ...defaultProps, ...props };

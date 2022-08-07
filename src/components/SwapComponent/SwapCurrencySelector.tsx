@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
-import styled from "@emotion/styled";
-import { tokens } from "../../services/constants";
-import _ from "lodash"
+import React, { useEffect, useState } from 'react';
+import styled from '@emotion/styled';
+import { tokens } from '../../services/constants';
+import _ from 'lodash';
 
 import SelectUnstyled, {
   SelectUnstyledProps,
-  selectUnstyledClasses,
+  selectUnstyledClasses
 } from '@mui/base/SelectUnstyled';
 import { PopperUnstyled } from '@mui/base';
-import { StyledOption } from "../DepositComponent";
-import { Box } from "@mui/material";
+import { StyledOption } from '../DepositComponent';
+import { Box } from '@mui/material';
 
 const StyledButton = styled('button')(
   ({ theme }) => `
@@ -53,7 +53,7 @@ const StyledButton = styled('button')(
     & img {
       margin-right: 10px;
     }
-    `,
+    `
 );
 
 const StyledBorderedButton = styled('button')(
@@ -98,47 +98,48 @@ const StyledBorderedButton = styled('button')(
     & img {
       margin-right: 10px;
     }
-    `,
+    `
 );
 
-const StyledListbox = (width?: number) => styled('ul')(
-  ({ theme }) => `
+const StyledListbox = (width?: number) =>
+  styled('ul')(
+    ({ theme }) => `
     font-family: IBM Plex Sans, sans-serif;
     font-size: 0.875rem;
     box-sizing: border-box;
     
     padding: 1px;
     margin: 0px 0;
-    min-width: ${width ? width+"px" : "510px"};
+    min-width: ${width ? `${width}px` : '510px'};
     max-height: 485px;
     background: #25263d;
     border-radius: 5px;
     color: white;
     overflow: auto;
     outline: 0px;
-    `,
-);
+    `
+  );
 
 const StyledPopper = styled(PopperUnstyled)`
-    z-index: 1;
-  `;
+  z-index: 1;
+`;
 
 export const CustomSelect = React.forwardRef(function CustomSelect(
-  props: SelectUnstyledProps<number> & {borderBox?: boolean, width?: number},
-  ref: any,
+  props: SelectUnstyledProps<number> & { borderBox?: boolean; width?: number },
+  ref: any
 ) {
   const components: SelectUnstyledProps<number>['components'] = {
     Root: props.borderBox ? StyledBorderedButton : StyledButton,
     Listbox: StyledListbox(props.width),
     Popper: StyledPopper,
-    ...props.components,
+    ...props.components
   };
 
   return <SelectUnstyled {...props} ref={ref} components={components} />;
 });
 
-interface Props{
-  onChange: (e:any)=>void;
+interface Props {
+  onChange: (e: any) => void;
   currencies: any;
   balances: string[];
   value: string;
@@ -152,7 +153,7 @@ const SwapCurrencySelector = ({
   balances = [],
   value,
   borderBox,
-  listWidth,
+  listWidth
 }: Props) => {
   const [showingOptions, setShowingOptions] = useState(false);
   // const network = useSelector(networkSelector);
@@ -166,25 +167,24 @@ const SwapCurrencySelector = ({
     setShowingOptions(false);
   };
 
-  useEffect(()=>{
-    const index = _.findIndex(tokens, {symbol: value});
+  useEffect(() => {
+    const index = _.findIndex(tokens, { symbol: value });
     changeIndex(index);
-  },[value])
+  }, [value]);
 
   useEffect(() => {
     if (showingOptions) {
-      window.addEventListener("click", hideOptions, false);
+      window.addEventListener('click', hideOptions, false);
     }
 
     return () => {
-      window.removeEventListener("click", hideOptions);
+      window.removeEventListener('click', hideOptions);
     };
   }, [showingOptions]);
 
   if (!value) {
     return null;
   }
-
 
   const handleTokenSelect = async (e: any) => {
     // e.preventDefault();
@@ -195,11 +195,16 @@ const SwapCurrencySelector = ({
   };
 
   return (
-    <CustomSelect onChange={handleTokenSelect} value={tokenIndex} borderBox={borderBox} width={listWidth}>
+    <CustomSelect
+      onChange={handleTokenSelect}
+      value={tokenIndex}
+      borderBox={borderBox}
+      width={listWidth}
+    >
       {tokens.map((c: any, index: number) => (
-        <BoxWraper key={index} >
-          <StyledOption key={c.symbol} value={index} >
-            <Box display="flex" alignItems={"center"}>
+        <BoxWraper key={index}>
+          <StyledOption key={c.symbol} value={index}>
+            <Box display="flex" alignItems={'center'}>
               <img
                 loading="lazy"
                 width="30"
@@ -210,11 +215,14 @@ const SwapCurrencySelector = ({
               {c.symbol}
             </Box>
           </StyledOption>
-          <Box>{Number(balances[index]) ? Number(balances[index]).toFixed(4) : balances[index]}</Box>
+          <Box>
+            {Number(balances[index])
+              ? Number(balances[index]).toFixed(4)
+              : balances[index]}
+          </Box>
         </BoxWraper>
       ))}
     </CustomSelect>
-    
   );
 };
 
@@ -225,7 +233,7 @@ const BoxWraper = styled(Box)`
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-    &:hover {
-      background-color: '#808081';
-    }
-`
+  &:hover {
+    background-color: '#808081';
+  }
+`;

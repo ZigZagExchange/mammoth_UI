@@ -1,6 +1,6 @@
-import React from "react";
-import styled from "@xstyled/styled-components";
-import useMobile from "../../libs/useMobile";
+import React from 'react';
+import styled from '@xstyled/styled-components';
+import useMobile from '../../libs/useMobile';
 
 const Text = styled.div`
   display: grid;
@@ -13,10 +13,10 @@ const Text = styled.div`
 
 const ToggleButtonWrapper = styled.ul`
   display: flex;
-  flex-direction: ${({ mobile }) => mobile ? 'column' : 'row'};
+  flex-direction: ${({ mobile }) => (mobile ? 'column' : 'row')};
   align-items: center;
   background: #ddf1f7;
-  border: 1px solid #292D3F14;
+  border: 1px solid #292d3f14;
   border-radius: 12px;
   width: 100%;
   padding: 4px;
@@ -28,12 +28,12 @@ const ToggleItem = styled.li`
   padding-right: 20px;
   width: 100%;
   border-radius: 8px;
-  padding-top: ${({ size }) => (size === "sm" ? "4px" : "8px")};
-  padding-bottom: ${({ size }) => (size === "sm" ? "4px" : "8px")};
-  // padding-left: ${({ type }) => (type === "option" ? "16px" : "40.5px")};
-  // padding-right: ${({ type }) => (type === "option" ? "16px" : "40.5px")};
+  padding-top: ${({ size }) => (size === 'sm' ? '4px' : '8px')};
+  padding-bottom: ${({ size }) => (size === 'sm' ? '4px' : '8px')};
+  // padding-left: ${({ type }) => (type === 'option' ? '16px' : '40.5px')};
+  // padding-right: ${({ type }) => (type === 'option' ? '16px' : '40.5px')};
   box-shadow: ${({ show }) =>
-    show ? "0px 3px 3px -1px #00000014, 0px 1px 1px 0px #00000014" : "unset"};
+    show ? '0px 3px 3px -1px #00000014, 0px 1px 1px 0px #00000014' : 'unset'};
   text-align: center;
   text-transform: uppercase;
   user-select: none;
@@ -41,16 +41,13 @@ const ToggleItem = styled.li`
   background: ${({ show }) =>
     show
       ? `linear-gradient(93.46deg, #2AABEE 16.94%, #0CCFCF 97.24%)`
-      : "transparent"};
+      : 'transparent'};
   opacity: 1;
   div {
     transition: color 0.25s;
   }
   &:hover div {
-    color: ${({ show }) =>
-      !show
-        ? `#2AABEE !important`
-        : "#ddf1f7"};
+    color: ${({ show }) => (!show ? `#2AABEE !important` : '#ddf1f7')};
   }
   &:hover {
     opacity: 0.7;
@@ -65,10 +62,10 @@ const ToggleButton = ({ ...props }) => {
     width,
     rightLabel,
     leftSelected = true,
-    toggleClick = () => {},
+    toggleClick = () => {}
   } = props;
 
-  const {windowWidth} = useMobile()
+  const { windowWidth } = useMobile();
 
   return (
     <ToggleButtonWrapper mobile={windowWidth < 470} {...props}>
@@ -83,9 +80,7 @@ const ToggleButton = ({ ...props }) => {
         <Text
           font="primaryBoldDisplay"
           color={
-            leftSelected
-              ? "backgroundMediumEmphasis"
-              : "foregroundHighEmphasis"
+            leftSelected ? 'backgroundMediumEmphasis' : 'foregroundHighEmphasis'
           }
           textAlign="center"
         >

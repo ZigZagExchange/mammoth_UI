@@ -1,16 +1,16 @@
-import React from "react";
-import cx from "classnames";
-import {Circles} from "react-loader-spinner";
+import React from 'react';
+import cx from 'classnames';
+import { Circles } from 'react-loader-spinner';
 
 interface ButtonProps {
-    className?: string;
-    text?: string;
-    img?: any;
-    loading?: boolean;
-    icon?: any;
-    style?: any;
-    children?: any;
-    onClick: (e:any)=>void;
+  className?: string;
+  text?: string;
+  img?: any;
+  loading?: boolean;
+  icon?: any;
+  style?: any;
+  children?: any;
+  onClick: (e: any) => void;
 }
 
 export const Button = (props: ButtonProps) => {
@@ -36,7 +36,7 @@ export const Button = (props: ButtonProps) => {
     <button
       type="button"
       style={props.style}
-      className={cx("zig_btn", props.className, { zig_btn_loading: loading })}
+      className={cx('zig_btn', props.className, { zig_btn_loading: loading })}
       onClick={loading ? undefined : props.onClick}
     >
       <span style={{ opacity: loading ? 0 : 1 }}>{buttonContent}</span>
