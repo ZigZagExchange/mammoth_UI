@@ -116,6 +116,11 @@ export default function MintDialogComponent(props: DepositDialogProps) {
         navigator.clipboard.writeText(tokens[tokenIndex].address);
     };
 
+    let path = '';
+    if (typeof window !== 'undefined') {
+        path = window.location.pathname.split('/')[2];
+    }
+
     return (
         <div>
             <Dialog
@@ -180,7 +185,7 @@ export default function MintDialogComponent(props: DepositDialogProps) {
                                             'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png'
                                         }
                                         width="30px"
-                                        alt="eth"
+                                        alt="token"
                                     />
                                     <Box ml="20px" color="white">
                                         ETH

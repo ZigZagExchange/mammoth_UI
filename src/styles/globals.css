@@ -27,7 +27,7 @@
   --box-shadow: 0 2px 4px;
   --color: #0097fc;
   --color-accent: #0097fc4f;
-  --color-bg: #191A33;
+  --color-bg: #191a33;
   --color-bg-secondary: #555;
   --color-link: #0097fc;
   --color-secondary: #e20de9;
@@ -51,7 +51,7 @@
   :root {
     --color: #0097fc;
     --color-accent: #0097fc4f;
-    --color-bg: #191A33;
+    --color-bg: #191a33;
     --color-bg-secondary: #555;
     --color-link: #0097fc;
     --color-secondary: #e20de9;
@@ -200,7 +200,7 @@ nav ul li ul {
 
 nav ul li ul::before {
   /* fill gap above to make mousing over them easier */
-  content: "";
+  content: '';
   position: absolute;
   left: 0;
   right: 0;
@@ -416,13 +416,13 @@ textarea {
   max-width: var(--width-card-wide);
 }
 
-input[type="checkbox"],
-input[type="radio"] {
+input[type='checkbox'],
+input[type='radio'] {
   display: inline-block;
 }
 
-input[type="checkbox"] + label,
-input[type="radio"] + label {
+input[type='checkbox'] + label,
+input[type='radio'] + label {
   display: inline-block;
   font-weight: normal;
   position: relative;
@@ -534,7 +534,7 @@ blockquote footer {
   height: 35px;
   padding: 4px 30px;
   font-weight: bold;
-  background: linear-gradient(93.46deg, #2AABEE 16.94%, #0CCFCF 97.24%);
+  background: linear-gradient(93.46deg, #2aabee 16.94%, #0ccfcf 97.24%);
   box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.08), 0px 3px 3px -1px rgba(0, 0, 0, 0.08);
   border: 0;
   border-radius: 8px;
@@ -558,7 +558,12 @@ blockquote footer {
   height: 55px;
   padding: 4px 30px;
   font-weight: bold;
-  background: linear-gradient(93.59deg, rgba(9, 170, 245, 0.5) 4.26%, rgba(8, 207, 232, 0.5) 52.59%, rgba(98, 210, 173, 0.5) 102.98%);;
+  background: linear-gradient(
+    93.59deg,
+    rgba(9, 170, 245, 0.5) 4.26%,
+    rgba(8, 207, 232, 0.5) 52.59%,
+    rgba(98, 210, 173, 0.5) 102.98%
+  );
   box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.08), 0px 3px 3px -1px rgba(0, 0, 0, 0.08);
   border: 2px solid rgba(255, 255, 255, 0.4);
   border-radius: 6px;
@@ -585,15 +590,13 @@ blockquote footer {
 }
 
 .zig_btn:hover {
-  box-shadow: 0 0 1px 2px rgba(255, 255, 255, 0.3) inset,
-    0 0 8px 1px rgba(120, 255, 255, 0.4);
+  box-shadow: 0 0 1px 2px rgba(255, 255, 255, 0.3) inset, 0 0 8px 1px rgba(120, 255, 255, 0.4);
 }
 
 .zig_btn:active {
   transition: none;
   background-color: #087fcf;
-  box-shadow: -2px -2px 4px 1px rgba(0, 0, 0, 0.2) inset,
-    0 1px 0 1px rgba(255, 255, 255, 0.2) inset;
+  box-shadow: -2px -2px 4px 1px rgba(0, 0, 0, 0.2) inset, 0 1px 0 1px rgba(255, 255, 255, 0.2) inset;
 }
 
 .zig_btn_sm {
@@ -613,7 +616,7 @@ blockquote footer {
   pointer-events: none;
   cursor: not-allowed;
   background: rgba(98, 210, 173, 0.75);
-  border: 2px solid #62D2AD;
+  border: 2px solid #62d2ad;
 }
 
 .zig_btn_loading {
@@ -1004,7 +1007,7 @@ blockquote footer {
 }
 
 .swap_box {
-  width: 561px;
+  width: 590px;
   max-width: 90%;
   /* background: rgba(0, 0, 0, 0.2); */
   border-radius: 8px;
@@ -1042,7 +1045,7 @@ blockquote footer {
 
 .swap_coin_title {
   margin-bottom: 8px;
-  color: #FFFFFF;
+  color: #ffffff;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1050,7 +1053,7 @@ blockquote footer {
 
 .swap_coin_title h5 {
   font-size: 14px;
-  color: #FFFFFF;
+  color: #ffffff;
   font-weight: 600;
 }
 
@@ -1082,9 +1085,9 @@ blockquote footer {
 }
 
 @font-face {
-  font-family: "Iceland";
-  src: url("../assets/fonts/Iceland.woff2") format("woff2"),
-    url("../assets/fonts/Iceland.woff") format("woff");
+  font-family: 'Iceland';
+  src: url('../assets/fonts/Iceland.woff2') format('woff2'),
+    url('../assets/fonts/Iceland.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }

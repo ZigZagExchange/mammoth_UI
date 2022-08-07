@@ -1,6 +1,8 @@
 import React, { useCallback } from 'react';
 import styled from '@emotion/styled';
 import SwapCurrencySelector from './SwapCurrencySelector';
+import { tokens } from '../../services/constants';
+import _ from 'lodash';
 import { getTokenIndex } from '../../libs/utils';
 
 const SwapInputBox = styled((props: any) => <div {...props} />)`

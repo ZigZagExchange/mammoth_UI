@@ -56,10 +56,6 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
     }, [txComplete]);
 
     React.useEffect(() => {
-        if (failMsg.length) openErrorWindow(failMsg, 2);
-    }, [failMsg]);
-
-    React.useEffect(() => {
         if (!isLoading) return;
         openErrorWindow('Withdrawing...', 3);
     }, [isLoading]);

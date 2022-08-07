@@ -34,6 +34,7 @@ module.exports = {
         'jsx-a11y/no-static-element-interactions': 'off',
         'no-unused-vars': 'off',
         'react/prop-types': 'off',
+        'no-empty': 'off',
     },
     overrides: [
         {

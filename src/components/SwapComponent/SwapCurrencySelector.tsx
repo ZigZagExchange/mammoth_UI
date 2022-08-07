@@ -103,7 +103,7 @@ const StyledBorderedButton = styled('button')(
 
 const StyledListbox = (width?: string) =>
     styled('ul')(
-        () => `
+        ({ theme }) => `
     font-family: IBM Plex Sans, sans-serif;
     font-size: 0.875rem;
     box-sizing: border-box;
@@ -182,7 +182,7 @@ const SwapCurrencySelector = ({ onChange, balances = [], value, borderBox, listW
     }
 
     const handleTokenSelect = async (e: any) => {
-        e.preventDefault();
+        // e.preventDefault();
         const val = e;
         //await tokenApproval();
         changeIndex(parseInt(val));
@@ -224,3 +224,13 @@ const SwapCurrencySelector = ({ onChange, balances = [], value, borderBox, listW
 };
 
 export default SwapCurrencySelector;
+
+const BoxWraper = styled(Box)`
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    &:hover {
+        background-color: '#808081';
+    }
+`;

@@ -59,10 +59,17 @@ const Home: NextPage = () => {
     }));
     const [address, setAddress] = useState('');
     const [openDrop, setOpenDrop] = useState(false);
+    const [isMobile, setMobile] = useState('lg');
+    const [rate, setRate] = useState(0);
 
     useEffect(() => {
-        onEvent();
-        // setInterval(() => { onEvent(); }, 60000);
+        if (typeof window !== 'undefined') {
+            let width;
+            if (window && window.innerWidth < 480) width = 'sm';
+            else if (window && window.innerWidth < 660) width = 'md';
+            else width = 'lg';
+            setMobile(width);
+        }
     }, []);
 
     useEffect(() => {
@@ -89,7 +96,6 @@ const Home: NextPage = () => {
         setAddress(address);
         const res: string = await getLiquidityBalances();
         changeLiquidityBalance(res);
-        console.log('test2', isWalletConnected());
     };
 
     const tokenApproval = useCallback(async () => {
@@ -347,7 +353,7 @@ const Home: NextPage = () => {
                                 src="/view.svg"
                                 width="20px"
                                 style={{ marginRight: '10px' }}
-                                alt="view"
+                                alt="logo"
                             />{' '}
                             View on Explorer
                         </DropdownItem>

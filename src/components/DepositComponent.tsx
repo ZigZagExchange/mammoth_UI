@@ -124,34 +124,35 @@ export const StyledOption = styled(OptionUnstyled)(
     cursor: default;
     display: flex;
     align-items: center;
+    width: 100%;
   
     &:last-of-type {
       border-bottom: none;
     }
   
-    &.${optionUnstyledClasses.selected} {
-      background-color: '#3C435A';
-      color: ${theme.palette.mode === 'dark' ? blue[100] : blue[900]};
-    }
+    // &.${optionUnstyledClasses.selected} {
+    //   background-color: '#3C435A';
+    //   color: ${theme.palette.mode === 'dark' ? blue[100] : blue[900]};
+    // }
   
-    &.${optionUnstyledClasses.highlighted} {
-      background-color: #3C435A;
-      color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
-    }
+    // &.${optionUnstyledClasses.highlighted} {
+    //   background-color: #3C435A;
+    //   color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
+    // }
   
-    &.${optionUnstyledClasses.highlighted}.${optionUnstyledClasses.selected} {
-      background-color: #3C435A;
-      color: #E0E3E7;
-    }
+    // &.${optionUnstyledClasses.highlighted}.${optionUnstyledClasses.selected} {
+    //   background-color: #3C435A;
+    //   color: #E0E3E7;
+    // }
   
-    &.${optionUnstyledClasses.disabled} {
-      color: ${theme.palette.mode === 'dark' ? grey[700] : grey[400]};
-    }
+    // &.${optionUnstyledClasses.disabled} {
+    //   color: ${theme.palette.mode === 'dark' ? grey[700] : grey[400]};
+    // }
   
-    &:hover:not(.${optionUnstyledClasses.disabled}) {
-      background-color: #3C435A;
-      color: #E0E3E7;
-    }
+    // &:hover:not(.${optionUnstyledClasses.disabled}) {
+    //   background-color: #3C435A;
+    //   color: #E0E3E7;
+    // }
   
     & img {
       margin-right: 10px;
@@ -319,9 +320,7 @@ export default function DepositComponent(props: DepositDialogProps) {
 
     const updateProportionalMode = async () => {
         if (!proportionalMode) return;
-        console.log(`LPAmount ==> ${Number(LPAmount)}`);
         const result = await getProportinalDepositERC20Amount(Number(LPAmount));
-        console.log(`result ==> ${result}`);
 
         const newTokenDetails = tokenDetails.map((details, index) => {
             details.amount = formatPrice(result[index]);
@@ -392,7 +391,7 @@ export default function DepositComponent(props: DepositDialogProps) {
         }
     };
 
-    const handleApprove = async () => {
+    const handleApprove = async (maxApprove = false) => {
         const approveTokens = [];
         const tokenSymbols = [];
         for (let i = 0; i < 3; i++) {
@@ -422,7 +421,7 @@ export default function DepositComponent(props: DepositDialogProps) {
         }
     };
 
-    const setDepositDetailsOne = (values: any) => {
+    const setDepositDetailsOne = (values: any, from: boolean) => {
         const details = {
             ...tokenDetails[0],
             ...values,
@@ -430,7 +429,7 @@ export default function DepositComponent(props: DepositDialogProps) {
         setTokenDetails([details, tokenDetails[1], tokenDetails[2]]);
     };
 
-    const setDepositDetailsOTwo = (values: any) => {
+    const setDepositDetailsOTwo = (values: any, from: boolean) => {
         const details = {
             ...tokenDetails[1],
             ...values,
@@ -438,7 +437,7 @@ export default function DepositComponent(props: DepositDialogProps) {
         setTokenDetails([tokenDetails[0], details, tokenDetails[2]]);
     };
 
-    const setDepositDetailsThree = (values: any) => {
+    const setDepositDetailsThree = (values: any, from: boolean) => {
         const details = {
             ...tokenDetails[2],
             ...values,
@@ -577,7 +576,7 @@ export default function DepositComponent(props: DepositDialogProps) {
                                 <CustomButton
                                     className={cx('bg_btn_deposit', {})}
                                     text="ApproveUnlimit"
-                                    onClick={() => handleApprove()}
+                                    onClick={() => handleApprove(true)}
                                     style={{ marginRight: '10px' }}
                                 />
                             )}
