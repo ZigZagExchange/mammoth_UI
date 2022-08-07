@@ -1,12 +1,12 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import styled from "@emotion/styled";
-import SwapCurrencySelector from "./SwapCurrencySelector";
-import { tokens } from "../../services/constants";
-import _ from "lodash";
-import { getTokenIndex } from "../../libs/utils";
-import useMobile from "../../libs/useMobile";
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import styled from '@emotion/styled';
+import SwapCurrencySelector from './SwapCurrencySelector';
+import { tokens } from '../../services/constants';
+import _ from 'lodash';
+import { getTokenIndex } from '../../libs/utils';
+import useMobile from '../../libs/useMobile';
 
-const SwapInputBox = styled((props: any)=>(<div {...props} />))`
+const SwapInputBox = styled((props: any) => <div {...props} />)`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -14,9 +14,11 @@ const SwapInputBox = styled((props: any)=>(<div {...props} />))`
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  background: ${props => props.readOnly ? "none" : "rgba(255, 255, 255, 0.05)"};
+  background: ${props =>
+    props.readOnly ? 'none' : 'rgba(255, 255, 255, 0.05)'};
   /* Background[light]/300 */
-  border: ${props => props.readOnly ? "none" : "1px solid rgba(255, 255, 255, 0.08)"};
+  border: ${props =>
+    props.readOnly ? 'none' : '1px solid rgba(255, 255, 255, 0.08)'};
   border-radius: 8px;
 
   input,
@@ -25,7 +27,7 @@ const SwapInputBox = styled((props: any)=>(<div {...props} />))`
     height: 40px;
     background: transparent !important;
     padding: 20px 10px 20px 7px;
-    font-size: ${props => props.mobile==="true" ? "16px" : "28px"};
+    font-size: ${props => (props.mobile === 'true' ? '16px' : '28px')};
     border: none;
     outline: none;
     text-align: right;
@@ -33,11 +35,11 @@ const SwapInputBox = styled((props: any)=>(<div {...props} />))`
     appearance: none;
     color: white;
     font-weight: 600;
-    cursor: ${props => props.readOnly ? "default !important" : "text"};
+    cursor: ${props => (props.readOnly ? 'default !important' : 'text')};
   }
 
   .currencySelector {
-    width: ${props => props.readOnly ? "148px" : "208px"};
+    width: ${props => (props.readOnly ? '148px' : '208px')};
     display: flex;
     align-items: center;
   }
@@ -58,10 +60,10 @@ const MaxButton = styled.button`
   border: none;
   font-weight: 400;
   font-size: 10px;
-  color: #2AABEE;
+  color: #2aabee;
   margin-left: 10px;
   margin-right: 10px;
-`
+`;
 
 interface Props {
   value?: any;
@@ -88,16 +90,15 @@ const SwapSwapInput = ({
   isWithdraw,
   showMax = true
 }: Props) => {
-
   const ref = useRef<any>(null);
   const [width, SetWidth] = useState(0);
-  const {isMobile, windowWidth} = useMobile();
+  const { isMobile, windowWidth } = useMobile();
 
-  useEffect(()=>{
-    if(!ref?.current) return;
-    console.log("adsasfdasdf",ref?.current.offsetWidth)
-    SetWidth(ref?.current.offsetWidth)
-  },[windowWidth])
+  useEffect(() => {
+    if (!ref?.current) return;
+    console.log('adsasfdasdf', ref?.current.offsetWidth);
+    SetWidth(ref?.current.offsetWidth);
+  }, [windowWidth]);
 
   // const setCurrency = useCallback(
   //   (symbol) => onChange({ symbol, amount: "" }),
@@ -108,37 +109,42 @@ const SwapSwapInput = ({
   //   [onChange]
   // );
 
-  const setCurrency = (symbol: any) => onChange({ symbol, amount: "" });
-  const setAmount = (e: any) => onChange({ amount: e.target.value.replace(/[^0-9.]/g, "") });
+  const setCurrency = (symbol: any) => onChange({ symbol, amount: '' });
+  const setAmount = (e: any) =>
+    onChange({ amount: e.target.value.replace(/[^0-9.]/g, '') });
 
   const setMax = () => {
-    if(isWithdraw) onChange(null);
-    onChange({ amount: Math.round(Number(balances[getTokenIndex(value.symbol)]) * 10000) / 10000})
-  }
+    if (isWithdraw) onChange(null);
+    onChange({
+      amount:
+        Math.round(Number(balances[getTokenIndex(value.symbol)]) * 10000) /
+        10000
+    });
+  };
 
   return (
     <div ref={ref}>
-    <SwapInputBox readOnly={readOnly} mobile={isMobile ? "true" : "false"}>
-      <div className="currencySelector">
-        <SwapCurrencySelector
-          currencies={currencies}
-          balances={balances}
-          onChange={setCurrency}
-          value={value.symbol}
-          borderBox={borderBox}
-          listWidth={listWidth * (width / 510) - 15}
+      <SwapInputBox readOnly={readOnly} mobile={isMobile ? 'true' : 'false'}>
+        <div className="currencySelector">
+          <SwapCurrencySelector
+            currencies={currencies}
+            balances={balances}
+            onChange={setCurrency}
+            value={value.symbol}
+            borderBox={borderBox}
+            listWidth={listWidth * (width / 510) - 15}
+          />
+          {showMax && <MaxButton onClick={setMax}>Max</MaxButton>}
+        </div>
+        <input
+          onChange={setAmount}
+          value={value.amount}
+          className={className}
+          placeholder="0.00"
+          type="text"
+          disabled={readOnly}
         />
-        {(showMax) && <MaxButton onClick={setMax}>Max</MaxButton>}
-      </div>
-      <input
-        onChange={setAmount}
-        value={value.amount}
-        className={className}
-        placeholder="0.00"
-        type="text"
-        disabled={readOnly}
-      />
-    </SwapInputBox>
+      </SwapInputBox>
     </div>
   );
 };

@@ -1,6 +1,6 @@
-import Image from "next/image";
+import Image from 'next/image';
 
-import styles from "../styles/Header.module.css";
+import styles from '../styles/Header.module.css';
 const Header = () => {
   return (
     <div className={styles.header}>
