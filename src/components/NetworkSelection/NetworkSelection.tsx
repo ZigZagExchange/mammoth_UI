@@ -2,15 +2,15 @@ import React, { Fragment, useState } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
 
-const networks = [{ name: 'Ethereum Mainnet' }, { name: 'Goeril Testnet' }];
+const networks = [{ name: 'StarkNet' }, { name: 'StarkNet Goerli' }];
 
-const NetworkSelection = () => {
+const NetworkSelection = ({ disabled }: any) => {
   const [selected, setSelected] = useState(networks[0]);
   return (
     <div className="mt-6">
-      <Listbox value={selected} onChange={setSelected}>
+      <Listbox value={selected} onChange={setSelected} disabled={disabled}>
         <div className="relative">
-          <Listbox.Button className="relative !my-0 w-48 border border-gray-800 py-2.5 pl-3 pr-10 text-left bg-black rounded-lg cursor-default outline-none focus:outline-none  sm:text-sm">
+          <Listbox.Button className="relative !my-0  w-48 border border-gray-800 py-2.5  pl-3 pr-10 text-left bg-black rounded-lg cursor-default outline-none focus:outline-none  sm:text-sm">
             <span className="block font-medium text-white font-work">
               {selected.name}
             </span>

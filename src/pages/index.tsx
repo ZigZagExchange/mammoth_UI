@@ -412,8 +412,8 @@ const Home: NextPage = () => {
         setOpenDrop(false);
       }}
     >
-      <Box display="flex" justifyContent={'end'} mr="50px">
-        <NetworkSelection />
+      <Box display="flex" justifyContent={'end'} className="mx-4 md:mr-12">
+        <NetworkSelection disabled={false} />
         <ConnectButton
           onClick={(e: any) => {
             if (address) {
