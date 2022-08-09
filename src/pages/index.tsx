@@ -19,6 +19,7 @@ import MintDialogComponent from '../components/MintDialogComponent';
 import _ from 'lodash';
 import WithdrawComponent from '../components/WithdrawComponent';
 import DepositComponent from '../components/DepositComponent';
+import NetworkSelection from '../components/NetworkSelection';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { getStarknet } from 'get-starknet';
@@ -411,7 +412,8 @@ const Home: NextPage = () => {
         setOpenDrop(false);
       }}
     >
-      <Box display="flex" justifyContent={'end'} mr="50px">
+      <Box display="flex" justifyContent={'end'} className="mx-4 md:mr-12">
+        <NetworkSelection disabled={false} />
         <ConnectButton
           onClick={(e: any) => {
             if (address) {
@@ -696,10 +698,11 @@ const ConnectButton = styled('div')(
   ({ theme }) =>
     `
     border-radius: 8px;
-    padding: 10px 30px;
+    // padding: 10px 30px;
     margin-left: 20px;
-    margin-top: 20px;
+    margin-top: 24px;
     width: 210px;
+    height: 43px;
     border: 1px solid rgba(255, 255, 255, 0.13);
     cursor: pointer;
     background: rgba(0,0,0,0.8);
@@ -707,7 +710,8 @@ const ConnectButton = styled('div')(
     display: flex;
     transition: all 0.2s ease-out;
     z-index: 10;
-    justify-content: end;
+    justify-content: center;
+    align-items: center;
 
     &:hover {
       transition: all 0.2s ease-out;
