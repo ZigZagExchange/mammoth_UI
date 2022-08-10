@@ -15,13 +15,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import { formatPrice } from '../libs/utils';
 
 interface WithdrawDialogProps {
-  open: boolean;
-  onClose: () => void;
   onEvent: () => void;
 }
 
 export default function WithdrawComponent(props: WithdrawDialogProps) {
-  const [open, setOpen] = React.useState(false);
+  // const [open, setOpen] = React.useState(false);
 
   const [withdrawAmount, changeWithdrawAmount] = useState(0);
   const [ERC20Amount, changeERC20Amount] = useState({
@@ -38,17 +36,11 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
   const [liquidityBalance, changeLiquidityBalance] = useState('0');
 
   React.useEffect(() => {
-    setOpen(props.open);
     (async () => {
       const val = await getLiquidityBalances();
       changeLiquidityBalance(val);
     })();
-  }, [props.open]);
-
-  const handleClose = () => {
-    props.onClose();
-    setOpen(false);
-  };
+  });
 
   React.useEffect(() => {
     if (!txComplete) return;
@@ -145,83 +137,63 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
 
   return (
     <Box>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-        style={{ backdropFilter: 'blur(2px)' }}
-        PaperProps={{
-          style: {
-            background: 'linear-gradient(180deg, #32374B 0%, #1C1E27 100%)',
-            borderRadius: '6px',
-            overflow: 'auto',
-            fontSize: '0.8rem'
-          }
-        }}
+      <Box
+        display="flex"
+        flexDirection="column"
+        px="40px"
+        pb="50px"
+        // bgcolor={'#232735'}
       >
-        <Box fontSize="18px" fontWeight="700" px="30px" py="25px" color="white">
-          Withdraw
+        <Box
+          bgcolor="#181B25"
+          color="#636EA8"
+          mt="33px"
+          mb="23px"
+          p="11px 13px"
+          fontFamily="Inter"
+          fontWeight={700}
+          fontSize="13px"
+        >
+          Tip: When you add liquidity, you will receive pool tokens representing
+          your position. These tokens automatically earn fees proportional to
+          your share of the pool, and can be redeemed at any time.
+        </Box>
+        <SwapSwapInput
+          // currencies={currencies}
+          value={withdrawDetails}
+          onChange={setWithdrawDetails}
+          borderBox
+          listWidth={505}
+        />
+        <Box
+          textAlign={'right'}
+          mt="20px"
+          mb="4px"
+          color="rgb(256,256,256,0.5)"
+          fontSize="14px"
+        >
+          Balance: {formatPrice(liquidityBalance)} LP tokens
         </Box>
         <Box
-          display="flex"
-          flexDirection="column"
-          px="40px"
-          pb="50px"
-          bgcolor={'#232735'}
+          textAlign={'right'}
+          mt="4px"
+          mb="42px"
+          color="rgb(256,256,256,0.5)"
+          fontSize="14px"
         >
-          <Box
-            bgcolor="#181B25"
-            color="#636EA8"
-            mt="33px"
-            mb="23px"
-            p="11px 13px"
-            fontFamily="Inter"
-            fontWeight={700}
-            fontSize="13px"
-          >
-            Tip: When you add liquidity, you will receive pool tokens
-            representing your position. These tokens automatically earn fees
-            proportional to your share of the pool, and can be redeemed at any
-            time.
-          </Box>
-          <SwapSwapInput
-            // currencies={currencies}
-            value={withdrawDetails}
-            onChange={setWithdrawDetails}
-            borderBox
-            listWidth={505}
-          />
-          <Box
-            textAlign={'right'}
-            mt="20px"
-            mb="4px"
-            color="rgb(256,256,256,0.5)"
-            fontSize="14px"
-          >
-            Balance: {formatPrice(liquidityBalance)} LP tokens
-          </Box>
-          <Box
-            textAlign={'right'}
-            mt="4px"
-            mb="42px"
-            color="rgb(256,256,256,0.5)"
-            fontSize="14px"
-          >
-            Estimated recived: {formatPrice(ERC20Amount[withdrawAmount])} LP
-            tokens
-          </Box>
-          <Box display="flex" width="50%">
-            <Box color="#09aaf5" width="100%" height="100%" mr="1vw">
-              <CustomButton
-                className="bg_btn_deposit"
-                text="Withdraw"
-                onClick={() => handleWithdraw()}
-              />
-            </Box>
+          Estimated recived: {formatPrice(ERC20Amount[withdrawAmount])} LP
+          tokens
+        </Box>
+        <Box display="flex" width="50%">
+          <Box color="#09aaf5" width="100%" height="100%" mr="1vw">
+            <CustomButton
+              className="bg_btn_deposit"
+              text="Withdraw"
+              onClick={() => handleWithdraw()}
+            />
           </Box>
         </Box>
-      </Dialog>
+      </Box>
     </Box>
   );
 }
