@@ -133,7 +133,7 @@ const SwapSwapInput = ({
     <div ref={ref}>
       <SwapInputBox readOnly={readOnly} mobile={isMobile ? 'true' : 'false'}>
         <div className="currencySelector">
-          <Box display="flex" alignItems={'center'}>
+          <Box display="flex" alignItems={'center'} p="10px">
             <img
               loading="lazy"
               width="30"
@@ -141,7 +141,7 @@ const SwapSwapInput = ({
               srcSet={imageLogo}
               alt={`coin`}
             />
-            {imageSymbol}
+            <Box ml="10px">{imageSymbol}</Box>
           </Box>
           {showMax && <MaxButton onClick={setMax}>Max</MaxButton>}
         </div>
