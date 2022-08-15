@@ -1,8 +1,15 @@
 import React, { useState } from 'react';
 import Dialog from '@mui/material/Dialog';
-import { Box } from '@mui/material';
+import { Avatar, AvatarGroup, Box } from '@mui/material';
 import { tokens } from '../services/constants';
 import _ from 'lodash';
+import styled from '@emotion/styled';
+import SelectUnstyled, {
+  SelectUnstyledProps,
+  selectUnstyledClasses
+} from '@mui/base/SelectUnstyled';
+import { PopperUnstyled } from '@mui/base';
+import { StyledOption } from './DepositComponent';
 import {
   getWithdrawERC20Amount,
   withdrawPool,
@@ -135,6 +142,49 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
     await predictWithdrawResult(val);
   };
 
+  const AllTokens = () => {
+    return (
+      <Box display="flex" alignItems="center">
+        <AvatarGroup>
+          {tokens.map((c, i) => (
+            <Avatar
+              style={{
+                width: '25px',
+                height: '25px',
+                zIndex: i + 100
+              }}
+              src={c.logo}
+              srcSet={c.logo}
+              alt="coins"
+              key={c.symbol}
+            />
+          ))}
+        </AvatarGroup>
+        <Box>AllTokens</Box>
+      </Box>
+    );
+  };
+
+  const SelectedToken = (index: any, data: any) => {
+    return (
+      <Box display="flex" alignItems="center">
+        <img
+          style={{
+            width: '25px',
+            height: '25px',
+            zIndex: index + 100
+          }}
+          src={data.logo}
+          alt="coin"
+        />
+        <Box>{data.symbol}</Box>
+      </Box>
+    );
+  };
+
+  const [coin, setCoin] = useState(AllTokens());
+  const [noShow, setNoShow] = useState('none');
+
   return (
     <Box>
       <Box
@@ -158,6 +208,88 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
           your position. These tokens automatically earn fees proportional to
           your share of the pool, and can be redeemed at any time.
         </Box>
+        <ul>
+          <li>
+            <Box
+              onClick={() => {
+                if (noShow === 'none') {
+                  setNoShow('block');
+                }
+
+                if (noShow === 'block') {
+                  setNoShow('none');
+                }
+              }}
+              style={{ padding: '10px', width: '200px', cursor: 'pointer' }}
+            >
+              {coin}
+            </Box>
+
+            <ul
+              style={{
+                display: noShow,
+                width: '200px',
+                border: '1px solid white'
+              }}
+            >
+              <li style={{ padding: '10px', cursor: 'pointer' }}>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  onClick={() => {
+                    setCoin(AllTokens());
+                    setNoShow('none');
+                  }}
+                >
+                  <AvatarGroup>
+                    {tokens.map((c, i) => (
+                      <Avatar
+                        style={{
+                          width: '25px',
+                          height: '25px',
+                          zIndex: i + 100
+                        }}
+                        src={c.logo}
+                        srcSet={c.logo}
+                        alt="coins"
+                        key={c.symbol}
+                      />
+                    ))}
+                  </AvatarGroup>
+                  <Box>AllTokens</Box>
+                </Box>
+              </li>
+
+              {tokens.map((c, i) => (
+                <li
+                  key={c.symbol}
+                  style={{ padding: '10px', cursor: 'pointer' }}
+                >
+                  <Box
+                    display="flex"
+                    alignItems="center"
+                    onClick={() => {
+                      setCoin(SelectedToken(i, c));
+                      setNoShow('none');
+                    }}
+                  >
+                    <img
+                      style={{
+                        width: '25px',
+                        height: '25px',
+                        zIndex: i + 100
+                      }}
+                      src={c.logo}
+                      alt=""
+                    />
+                    <Box>{c.symbol}</Box>
+                  </Box>
+                </li>
+              ))}
+            </ul>
+          </li>
+        </ul>
+
         <SwapSwapInput
           // currencies={currencies}
           value={withdrawDetails}

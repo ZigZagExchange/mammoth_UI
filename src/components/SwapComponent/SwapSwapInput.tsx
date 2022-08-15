@@ -5,6 +5,7 @@ import { tokens } from '../../services/constants';
 import _ from 'lodash';
 import { getTokenIndex } from '../../libs/utils';
 import useMobile from '../../libs/useMobile';
+import { Box } from '@mui/material';
 
 const SwapInputBox = styled((props: any) => <div {...props} />)`
   display: flex;
@@ -76,9 +77,15 @@ interface Props {
   listWidth?: number;
   isWithdraw?: boolean;
   showMax?: boolean;
+  imageSource: string;
+  imageLogo: string;
+  imageSymbol: string;
 }
 
 const SwapSwapInput = ({
+  imageSource,
+  imageLogo,
+  imageSymbol,
   value = {},
   onChange,
   currencies,
@@ -126,14 +133,16 @@ const SwapSwapInput = ({
     <div ref={ref}>
       <SwapInputBox readOnly={readOnly} mobile={isMobile ? 'true' : 'false'}>
         <div className="currencySelector">
-          <SwapCurrencySelector
-            currencies={currencies}
-            balances={balances}
-            onChange={setCurrency}
-            value={value.symbol}
-            borderBox={borderBox}
-            listWidth={listWidth * (width / 510) - 15}
-          />
+          <Box display="flex" alignItems={'center'}>
+            <img
+              loading="lazy"
+              width="30"
+              src={imageSource}
+              srcSet={imageLogo}
+              alt={`coin`}
+            />
+            {imageSymbol}
+          </Box>
           {showMax && <MaxButton onClick={setMax}>Max</MaxButton>}
         </div>
         <input

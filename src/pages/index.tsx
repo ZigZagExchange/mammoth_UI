@@ -14,6 +14,7 @@ import { Button } from '../components/Button/Button';
 import cx from 'classnames';
 import { SwapButton } from '../components/SwapButton';
 import SwapSwapInput from '../components/SwapComponent/SwapSwapInput';
+import ProportioanlSwapInput from '../components/SwapComponent/ProportionalSwap';
 import { Box } from '@mui/material';
 import MintDialogComponent from '../components/MintDialogComponent';
 import _ from 'lodash';
@@ -87,6 +88,9 @@ const Home: NextPage = () => {
               // currencies={currencies}
               value={fromDetails}
               onChange={setSwapDetailsFrom}
+              imageSource={tokens[0].logo}
+              imageSymbol={tokens[0].symbol}
+              imageLogo={tokens[0].logo}
             />
             {/* <Box mt="10px" color="rgba(255, 255, 255, 0.72)" fontSize="11px" textAlign="right">Estimated value: ~$ 30.33</Box> */}
           </div>
@@ -127,6 +131,9 @@ const Home: NextPage = () => {
               value={toDetails} // format to details amount
               onChange={setSwapDetailsTo}
               showMax={false}
+              imageSource={tokens[1].logo}
+              imageSymbol={tokens[1].symbol}
+              imageLogo={tokens[1].logo}
             />
             <div className="swap_button" style={{ marginTop: '30px' }}>
               {!isTokenApproved && isWalletConnected() && (
