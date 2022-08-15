@@ -13,7 +13,7 @@ import SelectUnstyled, {
 import OptionUnstyled, {
   optionUnstyledClasses
 } from '@mui/base/OptionUnstyled';
-import { styled } from '@mui/system';
+import { border, styled } from '@mui/system';
 import { PopperUnstyled } from '@mui/base';
 
 import {
@@ -231,6 +231,7 @@ export default function DepositComponent(props: DepositDialogProps) {
   const [txComplete, changeTxComplete] = useState(false);
   const [txMessage, changeTxMsg] = useState('Deposit Complete');
   const [failMsg, changeFailMsg] = useState('');
+  const [open, setOpen] = React.useState(false);
 
   useEffect(() => {
     const newTokenApprove = [false, false, false];
@@ -472,6 +473,13 @@ export default function DepositComponent(props: DepositDialogProps) {
       setValue(100);
     }
   };
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (value: string) => {
+    setOpen(false);
+  };
 
   return (
     <Box>
@@ -595,8 +603,8 @@ export default function DepositComponent(props: DepositDialogProps) {
           <div>
             <Box
               textAlign={'right'}
-              mt="4px"
-              mb="20px"
+              mt="20px"
+              mb="4px"
               color="rgb(256,256,256,0.5)"
               fontSize="14px"
             >
@@ -633,8 +641,8 @@ export default function DepositComponent(props: DepositDialogProps) {
           <div>
             <Box
               textAlign={'right'}
-              mt="4px"
-              mb="20px"
+              mt="20px"
+              mb="4px"
               color="rgb(256,256,256,0.5)"
               fontSize="14px"
             >
@@ -681,12 +689,34 @@ export default function DepositComponent(props: DepositDialogProps) {
         {!proportionalMode && (
           <Box
             textAlign={'right'}
-            mt="4px"
+            mt="42px"
             mb="42px"
             color="rgb(256,256,256,0.5)"
             fontSize="14px"
           >
-            Estimated amount: {LPAmount ? LPAmount : '--'} MLP
+            Estimated amount: {LPAmount ? LPAmount : '--'} MLP <br />
+            Price impact: 0%
+          </Box>
+        )}
+        {proportionalMode && (
+          <Box p="10px">
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Box>Total</Box>
+              <Box>$00.00</Box>
+            </Box>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Box>Price Impact</Box>
+              <Box>0%</Box>
+            </Box>
+            <Box></Box>
           </Box>
         )}
         <ToggleButton
@@ -722,16 +752,87 @@ export default function DepositComponent(props: DepositDialogProps) {
               className={cx('bg_btn_deposit', {
                 zig_disabled: !isTokenApproved
               })}
-              text="Supply"
-              onClick={() =>
-                proportionalMode
-                  ? handleSubmitProportional()
-                  : handleSubmitNormal()
-              }
+              text="Preview"
+              onClick={() => handleClickOpen()}
             />
           </Box>
         </Box>
       </Box>
+      <Dialog onClose={handleClose} open={open}>
+        <Box
+          style={{
+            backgroundColor: '#191a33',
+            color: '#ffffff',
+            width: '400px',
+            border: '1px solid #ffffff25'
+          }}
+        >
+          <Box p="10px">
+            <Box style={{ color: '#fff' }} fontSize="22px" mb="40px">
+              Investment Preview
+            </Box>
+
+            <Box>
+              {tokens.map((coin, index) => (
+                <Box
+                  key={coin.symbol}
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  p="10px"
+                >
+                  <Box display="flex" alignItems="center">
+                    <img src={coin.logo} alt="" height="30" width="30" />
+                    <Box ml="10px">0 {coin.symbol}</Box>
+                  </Box>
+                  <Box>
+                    <Box fontSize="12px" color="#ffffff50">
+                      $00.00 (0%)
+                    </Box>
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+            <Box>
+              <Box p="10px" mt="40px">
+                Summery
+              </Box>
+              <Box p="10px">
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <Box>Total</Box>
+                  <Box>$00.00</Box>
+                </Box>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <Box>Price Impact</Box>
+                  <Box>0%</Box>
+                </Box>
+                <Box></Box>
+              </Box>
+            </Box>
+            <Box display="flex" width="100%">
+              <Box color="#09aaf5" width="100%" height="100%" mr="1vw">
+                <CustomButton
+                  className="bg_btn_deposit"
+                  text="Invest"
+                  onClick={() =>
+                    proportionalMode
+                      ? handleSubmitProportional()
+                      : handleSubmitNormal()
+                  }
+                />
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </Dialog>
     </Box>
   );
 }
