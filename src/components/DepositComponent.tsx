@@ -533,7 +533,7 @@ export default function DepositComponent(props: DepositDialogProps) {
             </Box>
 
             <Box display="flex" justifyContent="space-between">
-              <Box>Proportional Deposite</Box>
+              <Box>Proportional Deposit</Box>
               <Box display="flex">
                 <Input
                   value={value}
@@ -795,7 +795,7 @@ export default function DepositComponent(props: DepositDialogProps) {
             </Box>
             <Box>
               <Box p="10px" mt="40px">
-                Summery
+                Summary
               </Box>
               <Box p="10px">
                 <Box

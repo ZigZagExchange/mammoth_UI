@@ -27,9 +27,9 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 interface WithdrawDialogProps {
   onEvent: () => void;
-  open: boolean;
-  selectedValue: string;
-  onClose: (value: string) => void;
+  open?: boolean;
+  selectedValue?: string;
+  onClose?: (value: string) => void;
 }
 
 const Input = styled(MuiInput)`
