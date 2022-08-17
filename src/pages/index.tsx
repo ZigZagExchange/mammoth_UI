@@ -805,7 +805,12 @@ const Home: NextPage = () => {
             >
               <Box mt="10px">
                 <Box display={'flex'} justifyContent="space-between">
-                  ETH :&nbsp; <b>{poolbalances[0] === '--' ? poolbalances[0] : parseFloat(poolbalances[0]).toFixed(4)}</b>{' '}
+                  ETH :&nbsp;{' '}
+                  <b>
+                    {poolbalances[0] === '--'
+                      ? poolbalances[0]
+                      : parseFloat(poolbalances[0]).toFixed(4)}
+                  </b>{' '}
                 </Box>
                 <Box
                   display={'flex'}
@@ -818,7 +823,12 @@ const Home: NextPage = () => {
               </Box>
               <Box mt="10px">
                 <Box display={'flex'} justifyContent="space-between">
-                  BTC :&nbsp; <b>{poolbalances[1] === '--' ? poolbalances[1] : parseFloat(poolbalances[1]).toFixed(4)}</b>{' '}
+                  BTC :&nbsp;{' '}
+                  <b>
+                    {poolbalances[1] === '--'
+                      ? poolbalances[1]
+                      : parseFloat(poolbalances[1]).toFixed(4)}
+                  </b>{' '}
                 </Box>
                 <Box
                   display={'flex'}
@@ -831,7 +841,12 @@ const Home: NextPage = () => {
               </Box>
               <Box mt="10px">
                 <Box display={'flex'} justifyContent="space-between">
-                  USDC :&nbsp; <b>{poolbalances[2] === '--' ? poolbalances[2] : parseFloat(poolbalances[2]).toFixed(4)}</b>{' '}
+                  USDC :&nbsp;{' '}
+                  <b>
+                    {poolbalances[2] === '--'
+                      ? poolbalances[2]
+                      : parseFloat(poolbalances[2]).toFixed(4)}
+                  </b>{' '}
                 </Box>
                 <Box
                   display={'flex'}
