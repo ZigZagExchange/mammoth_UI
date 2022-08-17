@@ -674,9 +674,9 @@ const Home: NextPage = () => {
             </Box>
           </Box>
           <div className="swap_box">
-            <div style={{ display: 'flex' }} className="ml-3 mt-1">
+            <div className="ml-3 mt-1 flex justify-center border border-white/25">
               <Button
-                className="bg_btn"
+                className={`bg_btn ${openTab === 1 ? 'active_bg' : ''}`}
                 style={{
                   borderRadius: '5px',
                   marginRight: '10px',
@@ -689,7 +689,7 @@ const Home: NextPage = () => {
                 }}
               />
               <Button
-                className="bg_btn"
+                className={`bg_btn ${openTab === 2 ? 'active_bg' : ''}`}
                 style={{
                   borderRadius: '5px',
                   marginRight: '10px',
@@ -702,7 +702,7 @@ const Home: NextPage = () => {
                 }}
               />
               <Button
-                className="bg_btn"
+                className={`bg_btn ${openTab === 3 ? 'active_bg' : ''}`}
                 style={{
                   borderRadius: '5px',
                   marginRight: '10px',
