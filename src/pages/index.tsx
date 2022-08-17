@@ -641,7 +641,7 @@ const Home: NextPage = () => {
             alignItems="center"
             flexDirection={isMobile !== 'lg' ? 'column' : 'row'}
           >
-            {/* <Box
+            <Box
               width="100%"
               p="30px"
               display="flex"
@@ -671,12 +671,12 @@ const Home: NextPage = () => {
                   setMintModal(true);
                 }}
               />
-            </Box> */}
+            </Box>
           </Box>
           <div className="swap_box">
-            <div className="ml-3 mt-1 flex justify-center border border-white/25">
+            <div style={{ display: 'flex' }} className="ml-3 mt-1">
               <Button
-                className={`bg_btn ${openTab === 1 ? 'active_bg' : ''}`}
+                className="bg_btn"
                 style={{
                   borderRadius: '5px',
                   marginRight: '10px',
@@ -689,7 +689,7 @@ const Home: NextPage = () => {
                 }}
               />
               <Button
-                className={`bg_btn ${openTab === 2 ? 'active_bg' : ''}`}
+                className="bg_btn"
                 style={{
                   borderRadius: '5px',
                   marginRight: '10px',
@@ -702,7 +702,7 @@ const Home: NextPage = () => {
                 }}
               />
               <Button
-                className={`bg_btn ${openTab === 3 ? 'active_bg' : ''}`}
+                className="bg_btn"
                 style={{
                   borderRadius: '5px',
                   marginRight: '10px',
@@ -805,7 +805,7 @@ const Home: NextPage = () => {
             >
               <Box mt="10px">
                 <Box display={'flex'} justifyContent="space-between">
-                  ETH :&nbsp; <b>$0.0</b>{' '}
+                  ETH :&nbsp; <b>{poolbalances[0] === '--' ? poolbalances[0] : parseFloat(poolbalances[0]).toFixed(4)}</b>{' '}
                 </Box>
                 <Box
                   display={'flex'}
@@ -818,7 +818,7 @@ const Home: NextPage = () => {
               </Box>
               <Box mt="10px">
                 <Box display={'flex'} justifyContent="space-between">
-                  BTC :&nbsp; <b>$0.0</b>{' '}
+                  BTC :&nbsp; <b>{poolbalances[1] === '--' ? poolbalances[1] : parseFloat(poolbalances[1]).toFixed(4)}</b>{' '}
                 </Box>
                 <Box
                   display={'flex'}
@@ -831,7 +831,7 @@ const Home: NextPage = () => {
               </Box>
               <Box mt="10px">
                 <Box display={'flex'} justifyContent="space-between">
-                  USDC :&nbsp; <b>$0.0</b>{' '}
+                  USDC :&nbsp; <b>{poolbalances[2] === '--' ? poolbalances[2] : parseFloat(poolbalances[2]).toFixed(4)}</b>{' '}
                 </Box>
                 <Box
                   display={'flex'}
