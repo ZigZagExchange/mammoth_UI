@@ -742,7 +742,12 @@ const Home: NextPage = () => {
             >
               <Box mt="10px">
                 <Box display={'flex'} justifyContent="space-between">
-                  ETH :&nbsp; <b>$0.0</b>{' '}
+                  ETH :&nbsp;{' '}
+                  <b>
+                    {Number(userBalances[0])
+                      ? Number(userBalances[0]).toFixed(4)
+                      : userBalances[0]}
+                  </b>{' '}
                 </Box>
                 <Box
                   display={'flex'}
@@ -755,7 +760,12 @@ const Home: NextPage = () => {
               </Box>
               <Box mt="10px">
                 <Box display={'flex'} justifyContent="space-between">
-                  BTC :&nbsp; <b>$0.0</b>{' '}
+                  BTC :&nbsp;{' '}
+                  <b>
+                    {Number(userBalances[1])
+                      ? Number(userBalances[1]).toFixed(4)
+                      : userBalances[1]}
+                  </b>{' '}
                 </Box>
                 <Box
                   display={'flex'}
@@ -768,7 +778,12 @@ const Home: NextPage = () => {
               </Box>
               <Box mt="10px">
                 <Box display={'flex'} justifyContent="space-between">
-                  USDC :&nbsp; <b>$0.0</b>{' '}
+                  USDC :&nbsp;{' '}
+                  <b>
+                    {Number(userBalances[2])
+                      ? Number(userBalances[2]).toFixed(4)
+                      : userBalances[2]}
+                  </b>{' '}
                 </Box>
                 <Box
                   display={'flex'}

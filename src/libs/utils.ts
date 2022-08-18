@@ -1,14 +1,14 @@
-import { BigNumber } from "ethers";
-import _ from "lodash";
-import isString from "lodash/isString";
-import { tokens } from "../services/constants";
+import { BigNumber } from 'ethers';
+import _ from 'lodash';
+import isString from 'lodash/isString';
+import { tokens } from '../services/constants';
 
 export function formatUSD(floatNum: string) {
   const num = parseFloat(floatNum || '0')
     .toFixed(2)
-    .split(".");
+    .split('.');
   num[0] = parseInt(num[0]).toLocaleString();
-  return num.join(".");
+  return num.join('.');
 }
 
 export function formatAmount(amount: any, currency: any) {
@@ -18,17 +18,16 @@ export function formatAmount(amount: any, currency: any) {
 }
 
 export function getTokenIndex(symbol: string) {
-  return _.findIndex(tokens, {symbol})
+  return _.findIndex(tokens, { symbol });
 }
 
 export function formatPrice(input: any) {
-  const inputNumber = Number(input)
-  if (
-    Number.isNaN(inputNumber) ||
-    !Number.isFinite(inputNumber)
-  ) { return '--'; }
-  if(inputNumber === 0) return input;
-  
+  const inputNumber = Number(input);
+  if (Number.isNaN(inputNumber) || !Number.isFinite(inputNumber)) {
+    return '--';
+  }
+  if (inputNumber === 0) return input;
+
   let outputNumber;
   if (inputNumber > 99999) {
     outputNumber = inputNumber.toFixed(0);
@@ -46,48 +45,48 @@ export function formatPrice(input: any) {
     outputNumber = inputNumber.toPrecision(6);
   }
   // remove trailing zero's
-  return Number(outputNumber).toString();    
+  return Number(outputNumber).toString();
 }
 
 export function toBaseUnit(value: any, decimals: any) {
   if (!isString(value)) {
-    throw new Error("Pass strings to prevent floating point precision issues.");
+    throw new Error('Pass strings to prevent floating point precision issues.');
   }
 
   const base = BigNumber.from(10).pow(decimals);
 
-  if (value.charAt(0) === "-") {
+  if (value.charAt(0) === '-') {
     value = value.substring(1);
   }
 
-  if (value === ".") {
+  if (value === '.') {
     throw new Error(
       `Invalid value ${value} cannot be converted to` +
-      ` base unit with ${decimals} decimals.`
+        ` base unit with ${decimals} decimals.`
     );
   }
 
   // Split it into a whole and fractional part
-  let comps = value.split(".");
+  let comps = value.split('.');
   if (comps.length > 2) {
-    throw new Error("Too many decimal points");
+    throw new Error('Too many decimal points');
   }
 
   let whole = comps[0],
     fraction = comps[1];
 
   if (!whole) {
-    whole = "0";
+    whole = '0';
   }
   if (!fraction) {
-    fraction = "0";
+    fraction = '0';
   }
   if (fraction.length > decimals) {
-    throw new Error("Too many decimal places");
+    throw new Error('Too many decimal places');
   }
 
   while (fraction.length < decimals) {
-    fraction += "0";
+    fraction += '0';
   }
 
   whole = BigNumber.from(whole);
@@ -97,22 +96,22 @@ export function toBaseUnit(value: any, decimals: any) {
 
 export function numStringToSymbol(str: any, decimals: any) {
   const lookup = [
-    { value: 1e6, symbol: "M" },
+    { value: 1e6, symbol: 'M' }
     // { value: 1e3, symbol: "k" }, uncomment for thousands abbreviation
   ];
 
-  const item = lookup.find((item) => str >= item.value);
+  const item = lookup.find(item => str >= item.value);
 
   if (!item) return str;
   return (str / item.value).toFixed(decimals) + item.symbol;
 }
 
 export function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 function padTo2Digits(num: number) {
-  return num.toString().padStart(2, "0");
+  return num.toString().padStart(2, '0');
 }
 
 function isLessThan24HourAgo(date: any) {
@@ -129,13 +128,13 @@ export function formatDate(date: any) {
     return [
       padTo2Digits(date.getHours()),
       padTo2Digits(date.getMinutes()),
-      padTo2Digits(date.getSeconds()),
-    ].join(":");
+      padTo2Digits(date.getSeconds())
+    ].join(':');
   } else {
     return [
       padTo2Digits(date.getDate()),
       padTo2Digits(date.getMonth() + 1),
-      date.getFullYear(),
-    ].join("-");
+      date.getFullYear()
+    ].join('-');
   }
 }
