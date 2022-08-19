@@ -588,8 +588,7 @@ const Home: NextPage = () => {
         display="flex"
         justifyContent={'center'}
         flexDirection="row"
-        alignItems={'center'}
-        pt="100px"
+        pt="0px"
       >
         <Box
           borderRadius={'8px'}
@@ -600,6 +599,8 @@ const Home: NextPage = () => {
           alignItems={'center'}
           p="30px"
           mt="100px"
+          height="500px"
+          paddingTop="100px"
         >
           <Box
             display="flex"
@@ -628,10 +629,11 @@ const Home: NextPage = () => {
 
         <Box
           display="flex"
-          justifyContent={'center'}
           flexDirection="column"
           alignItems={'center'}
           pt="100px"
+          height="1000px"
+          paddingTop="100px"
         >
           <Box
             display="flex"
@@ -674,7 +676,7 @@ const Home: NextPage = () => {
             </Box>
           </Box>
           <div className="swap_box">
-            <div className="ml-3 mt-1 flex justify-center border border-white/25">
+            <div className="flex justify-center border border-white/25">
               <Button
                 className={`bg_btn ${openTab === 1 ? 'active_bg' : ''}`}
                 style={{
@@ -724,6 +726,8 @@ const Home: NextPage = () => {
           justifyContent={'space-around'}
           flexDirection="column"
           alignItems={'center'}
+          height="750px"
+          paddingTop="100px"
         >
           <Box
             borderRadius={'8px'}
