@@ -24,6 +24,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { formatPrice } from '../libs/utils';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import ReactTooltip from 'react-tooltip';
 
 interface WithdrawDialogProps {
   onEvent: () => void;
@@ -333,9 +334,10 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
           fontWeight={700}
           fontSize="13px"
         >
-          Tip: When you add liquidity, you will receive pool tokens representing
-          your position. These tokens automatically earn fees proportional to
-          your share of the pool, and can be redeemed at any time.
+          <p data-tip="When you add liquidity, you will receive pool tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and can be redeemed at any time.">
+            Tip:
+          </p>
+          <ReactTooltip />
         </Box>
         <Box mb="40px">
           <ul>

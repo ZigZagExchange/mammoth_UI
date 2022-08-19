@@ -34,6 +34,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { formatPrice } from '../libs/utils';
 import { ethers } from 'ethers';
+import ReactTooltip from 'react-tooltip';
 
 interface DepositDialogProps {
   balance: string[];
@@ -499,9 +500,10 @@ export default function DepositComponent(props: DepositDialogProps) {
           fontWeight={700}
           fontSize="13px"
         >
-          Tip: When you add liquidity, you will receive pool tokens representing
-          your position. These tokens automatically earn fees proportional to
-          your share of the pool, and can be redeemed at any time.
+          <p data-tip="When you add liquidity, you will receive pool tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and can be redeemed at any time.">
+            Tip:
+          </p>
+          <ReactTooltip />
         </Box>
         {proportionalMode && (
           <div>
@@ -778,11 +780,22 @@ export default function DepositComponent(props: DepositDialogProps) {
                 >
                   <Box display="flex" alignItems="center">
                     <img src={coin.logo} alt="" height="30" width="30" />
-                    <Box ml="10px">0 {coin.symbol}</Box>
+                    <Box ml="10px">{coin.symbol}</Box>
                   </Box>
                   <Box>
                     <Box fontSize="12px" color="#ffffff50">
-                      $00.00 (0%)
+                      {tokenDetails[index].amount
+                        ? tokenDetails[index].amount
+                        : 0}{' '}
+                      (
+                      {tokenDetails[index].amount
+                        ? (
+                            (parseFloat(tokenDetails[index].amount) /
+                              parseFloat(props.balance[index])) *
+                            100
+                          ).toString()
+                        : 0}
+                      %)
                     </Box>
                   </Box>
                 </Box>
