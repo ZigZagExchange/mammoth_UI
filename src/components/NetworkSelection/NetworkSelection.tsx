@@ -1,11 +1,20 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, SelectorIcon } from '@heroicons/react/solid';
+import { getStarknet } from 'get-starknet';
 
-const networks = [{ name: 'StarkNet' }, { name: 'StarkNet Goerli' }];
+const networks = [{ name: 'StarkNet Goerli' }, { name: 'StarkNet' }];
 
 const NetworkSelection = ({ disabled }: any) => {
   const [selected, setSelected] = useState(networks[0]);
+  useEffect(() => {
+    const { baseUrl } = getStarknet().provider;
+    if (baseUrl.includes('alpha-mainnet.starknet.io')) {
+      setSelected(networks[1]);
+    } else if (baseUrl.includes('alpha4.starknet.io')) {
+      setSelected(networks[0]);
+    }
+  });
   return (
     <div className="mt-6">
       <Listbox value={selected} onChange={setSelected} disabled={disabled}>

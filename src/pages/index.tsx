@@ -88,9 +88,9 @@ const Home: NextPage = () => {
               // currencies={currencies}
               value={fromDetails}
               onChange={setSwapDetailsFrom}
-              imageSource={tokens[0].logo}
-              imageSymbol={tokens[0].symbol}
-              imageLogo={tokens[0].logo}
+              imageSource={tokens[getTokenIndex(fromDetails.symbol)].logo}
+              imageSymbol={tokens[getTokenIndex(fromDetails.symbol)].symbol}
+              imageLogo={tokens[getTokenIndex(fromDetails.symbol)].logo}
             />
             {/* <Box mt="10px" color="rgba(255, 255, 255, 0.72)" fontSize="11px" textAlign="right">Estimated value: ~$ 30.33</Box> */}
           </div>
@@ -131,9 +131,9 @@ const Home: NextPage = () => {
               value={toDetails} // format to details amount
               onChange={setSwapDetailsTo}
               showMax={false}
-              imageSource={tokens[1].logo}
-              imageSymbol={tokens[1].symbol}
-              imageLogo={tokens[1].logo}
+              imageSource={tokens[getTokenIndex(toDetails.symbol)].logo}
+              imageSymbol={tokens[getTokenIndex(toDetails.symbol)].symbol}
+              imageLogo={tokens[getTokenIndex(toDetails.symbol)].logo}
             />
             <div className="swap_button" style={{ marginTop: '30px' }}>
               {!isTokenApproved && isWalletConnected() && (
@@ -541,7 +541,7 @@ const Home: NextPage = () => {
       }}
     >
       <Box display="flex" justifyContent={'end'} className="mx-4 md:mr-12">
-        <NetworkSelection disabled={false} />
+        <NetworkSelection disabled={true} />
         <ConnectButton
           onClick={(e: any) => {
             if (address) {

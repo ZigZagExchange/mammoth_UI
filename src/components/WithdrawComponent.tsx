@@ -19,7 +19,7 @@ import {
   getLiquidityBalances
 } from '../services/pool.service';
 import { Button as CustomButton } from './Button/Button';
-import SwapSwapInput from './SwapComponent/SwapSwapInput';
+import DepositWithdrawInput from './SwapComponent/DepositWithdrawInput';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { formatPrice } from '../libs/utils';
@@ -48,7 +48,7 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
   const [txComplete, changeTxComplete] = useState(false);
   const [failMsg, changeFailMsg] = useState('');
   const [withdrawDetails, _setWithdrawDetails] = useState(() => ({
-    amount: '',
+    amount: 0,
     symbol: tokens[0].symbol
   }));
   const [liquidityBalance, changeLiquidityBalance] = useState('0');
@@ -230,7 +230,7 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
   const inputElements = (coinStage: any) => {
     if (coinStage > 0) {
       return (
-        <SwapSwapInput
+        <DepositWithdrawInput
           // currencies={currencies}
           value={withdrawDetails}
           onChange={setWithdrawDetails}

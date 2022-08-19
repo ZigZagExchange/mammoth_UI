@@ -26,7 +26,7 @@ import {
 import ToggleButton from './Toggle/ToggleButton';
 
 import { Button as CustomButton } from './Button/Button';
-import SwapSwapInput from './SwapComponent/SwapSwapInput';
+import DepositWithdrawInput from './SwapComponent/DepositWithdrawInput';
 import ProportioanlSwapInput from './SwapComponent/ProportionalSwap';
 import _ from 'lodash';
 import cx from 'classnames';
@@ -255,11 +255,6 @@ export default function DepositComponent(props: DepositDialogProps) {
 
       const minAllowance = ethers.constants.MaxUint256.div(100);
       newTokenUnlimitApprove[i] = minAllowance.lt(userAllownace);
-
-      if (amount) {
-        const amountBN = ethers.BigNumber.from(amount);
-        newTokenApprove[i] = amountBN.lt(userAllownace);
-      }
     }
     setTokenApproved(newTokenApprove);
     setUnlimitApprove(newTokenUnlimitApprove);
@@ -577,7 +572,7 @@ export default function DepositComponent(props: DepositDialogProps) {
           </div>
         )}
 
-        <SwapSwapInput
+        <DepositWithdrawInput
           balances={props.balance}
           value={tokenDetails[0]}
           onChange={setDepositDetailsOne}
@@ -613,7 +608,7 @@ export default function DepositComponent(props: DepositDialogProps) {
           </div>
         )}
 
-        <SwapSwapInput
+        <DepositWithdrawInput
           balances={props.balance}
           value={tokenDetails[1]}
           onChange={setDepositDetailsOTwo}
@@ -651,7 +646,7 @@ export default function DepositComponent(props: DepositDialogProps) {
           </div>
         )}
 
-        <SwapSwapInput
+        <DepositWithdrawInput
           balances={props.balance}
           value={tokenDetails[2]}
           onChange={setDepositDetailsThree}
