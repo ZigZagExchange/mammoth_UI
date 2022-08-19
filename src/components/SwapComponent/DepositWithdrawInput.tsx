@@ -1,13 +1,12 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from '@emotion/styled';
-import SwapCurrencySelector from './SwapCurrencySelector';
 import { tokens } from '../../services/constants';
 import _ from 'lodash';
 import { getTokenIndex } from '../../libs/utils';
 import useMobile from '../../libs/useMobile';
 import { Box } from '@mui/material';
 
-const SwapInputBox = styled((props: any) => <div {...props} />)`
+const DepositWithdrawInputBox = styled((props: any) => <div {...props} />)`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -82,7 +81,7 @@ interface Props {
   imageSymbol: string;
 }
 
-const SwapSwapInput = ({
+const DepositWithdrawInput = ({
   imageSource,
   imageLogo,
   imageSymbol,
@@ -103,7 +102,7 @@ const SwapSwapInput = ({
 
   useEffect(() => {
     if (!ref?.current) return;
-
+    console.log('adsasfdasdf', ref?.current.offsetWidth);
     SetWidth(ref?.current.offsetWidth);
   }, [windowWidth]);
 
@@ -131,16 +130,21 @@ const SwapSwapInput = ({
 
   return (
     <div ref={ref}>
-      <SwapInputBox readOnly={readOnly} mobile={isMobile ? 'true' : 'false'}>
+      <DepositWithdrawInputBox
+        readOnly={readOnly}
+        mobile={isMobile ? 'true' : 'false'}
+      >
         <div className="currencySelector">
-          <SwapCurrencySelector
-            currencies={currencies}
-            balances={balances}
-            onChange={setCurrency}
-            value={value.symbol}
-            borderBox={borderBox}
-            listWidth={listWidth * (width / 510) - 15}
-          />
+          <Box display="flex" alignItems={'center'} p="10px">
+            <img
+              loading="lazy"
+              width="30"
+              src={imageSource}
+              srcSet={imageLogo}
+              alt={`coin`}
+            />
+            <Box ml="10px">{imageSymbol}</Box>
+          </Box>
           {showMax && <MaxButton onClick={setMax}>Max</MaxButton>}
         </div>
         <input
@@ -151,9 +155,9 @@ const SwapSwapInput = ({
           type="text"
           disabled={readOnly}
         />
-      </SwapInputBox>
+      </DepositWithdrawInputBox>
     </div>
   );
 };
 
-export default SwapSwapInput;
+export default DepositWithdrawInput;
