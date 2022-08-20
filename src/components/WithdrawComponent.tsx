@@ -4,6 +4,7 @@ import { Avatar, AvatarGroup, Box, DialogTitle, Slider } from '@mui/material';
 import MuiInput from '@mui/material/Input';
 import Collapse from '@mui/material/Collapse';
 import SettingsIcon from '@mui/icons-material/Settings';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { tokens } from '../services/constants';
 import _ from 'lodash';
 import styled from '@emotion/styled';
@@ -322,23 +323,15 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
       >
         <SettingsIcon
           cursor="pointer"
-          style={{ position: 'absolute', top: '5px', right: '40px' }}
+          style={{ position: 'absolute', top: '15px', right: '40px' }}
         />
-        <Box
-          bgcolor="#181B25"
-          color="#636EA8"
-          mt="33px"
-          mb="23px"
-          p="11px 13px"
-          fontFamily="Inter"
-          fontWeight={700}
-          fontSize="13px"
-        >
-          <p data-tip="When you add liquidity, you will receive pool tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and can be redeemed at any time.">
-            Tip:
-          </p>
-          <ReactTooltip />
-        </Box>
+        <p data-tip="When you add liquidity, you will receive pool tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and can be redeemed at any time.">
+          <HelpOutlineIcon
+            cursor="pointer"
+            style={{ position: 'absolute', top: '15px', right: '80px' }}
+          />
+        </p>
+        <ReactTooltip />
         <Box mb="40px">
           <ul>
             <li>
@@ -557,7 +550,7 @@ export default function WithdrawComponent(props: WithdrawDialogProps) {
               </Box>
             </Box>
             <Box display="flex" width="100%">
-              <Box color="#09aaf5" width="100%" height="100%" mr="1vw">
+              <Box color="#09aaf5" width="100%" height="100%">
                 <CustomButton
                   className="bg_btn_deposit"
                   text="Withdraw"
