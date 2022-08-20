@@ -14,6 +14,7 @@ import { Button } from '../components/Button/Button';
 import cx from 'classnames';
 import { SwapButton } from '../components/SwapButton';
 import SwapSwapInput from '../components/SwapComponent/SwapSwapInput';
+import ProportioanlSwapInput from '../components/SwapComponent/ProportionalSwap';
 import { Box } from '@mui/material';
 import MintDialogComponent from '../components/MintDialogComponent';
 import _ from 'lodash';
@@ -87,6 +88,9 @@ const Home: NextPage = () => {
               // currencies={currencies}
               value={fromDetails}
               onChange={setSwapDetailsFrom}
+              imageSource={tokens[getTokenIndex(fromDetails.symbol)].logo}
+              imageSymbol={tokens[getTokenIndex(fromDetails.symbol)].symbol}
+              imageLogo={tokens[getTokenIndex(fromDetails.symbol)].logo}
             />
             {/* <Box mt="10px" color="rgba(255, 255, 255, 0.72)" fontSize="11px" textAlign="right">Estimated value: ~$ 30.33</Box> */}
           </div>
@@ -127,6 +131,9 @@ const Home: NextPage = () => {
               value={toDetails} // format to details amount
               onChange={setSwapDetailsTo}
               showMax={false}
+              imageSource={tokens[getTokenIndex(toDetails.symbol)].logo}
+              imageSymbol={tokens[getTokenIndex(toDetails.symbol)].symbol}
+              imageLogo={tokens[getTokenIndex(toDetails.symbol)].logo}
             />
             <div className="swap_button" style={{ marginTop: '30px' }}>
               {!isTokenApproved && isWalletConnected() && (
@@ -534,7 +541,7 @@ const Home: NextPage = () => {
       }}
     >
       <Box display="flex" justifyContent={'end'} className="mx-4 md:mr-12">
-        <NetworkSelection disabled={false} />
+        <NetworkSelection disabled={true} />
         <ConnectButton
           onClick={(e: any) => {
             if (address) {
@@ -581,8 +588,7 @@ const Home: NextPage = () => {
         display="flex"
         justifyContent={'center'}
         flexDirection="row"
-        alignItems={'center'}
-        pt="100px"
+        pt="0px"
       >
         <Box
           borderRadius={'8px'}
@@ -593,6 +599,8 @@ const Home: NextPage = () => {
           alignItems={'center'}
           p="30px"
           mt="100px"
+          height="500px"
+          paddingTop="100px"
         >
           <Box
             display="flex"
@@ -621,10 +629,11 @@ const Home: NextPage = () => {
 
         <Box
           display="flex"
-          justifyContent={'center'}
           flexDirection="column"
           alignItems={'center'}
           pt="100px"
+          height="1000px"
+          paddingTop="100px"
         >
           <Box
             display="flex"
@@ -634,7 +643,7 @@ const Home: NextPage = () => {
             alignItems="center"
             flexDirection={isMobile !== 'lg' ? 'column' : 'row'}
           >
-            {/* <Box
+            <Box
               width="100%"
               p="30px"
               display="flex"
@@ -664,12 +673,12 @@ const Home: NextPage = () => {
                   setMintModal(true);
                 }}
               />
-            </Box> */}
+            </Box>
           </Box>
           <div className="swap_box">
-            <div style={{ display: 'flex' }} className="ml-3 mt-1">
+            <div className="flex justify-center border border-white/25">
               <Button
-                className="bg_btn"
+                className={`bg_btn ${openTab === 1 ? 'active_bg' : ''}`}
                 style={{
                   borderRadius: '5px',
                   marginRight: '10px',
@@ -682,7 +691,7 @@ const Home: NextPage = () => {
                 }}
               />
               <Button
-                className="bg_btn"
+                className={`bg_btn ${openTab === 2 ? 'active_bg' : ''}`}
                 style={{
                   borderRadius: '5px',
                   marginRight: '10px',
@@ -695,7 +704,7 @@ const Home: NextPage = () => {
                 }}
               />
               <Button
-                className="bg_btn"
+                className={`bg_btn ${openTab === 3 ? 'active_bg' : ''}`}
                 style={{
                   borderRadius: '5px',
                   marginRight: '10px',
@@ -717,6 +726,8 @@ const Home: NextPage = () => {
           justifyContent={'space-around'}
           flexDirection="column"
           alignItems={'center'}
+          height="750px"
+          paddingTop="100px"
         >
           <Box
             borderRadius={'8px'}
@@ -735,7 +746,12 @@ const Home: NextPage = () => {
             >
               <Box mt="10px">
                 <Box display={'flex'} justifyContent="space-between">
-                  ETH :&nbsp; <b>$0.0</b>{' '}
+                  ETH :&nbsp;{' '}
+                  <b>
+                    {Number(userBalances[0])
+                      ? Number(userBalances[0]).toFixed(4)
+                      : userBalances[0]}
+                  </b>{' '}
                 </Box>
                 <Box
                   display={'flex'}
@@ -748,7 +764,12 @@ const Home: NextPage = () => {
               </Box>
               <Box mt="10px">
                 <Box display={'flex'} justifyContent="space-between">
-                  BTC :&nbsp; <b>$0.0</b>{' '}
+                  BTC :&nbsp;{' '}
+                  <b>
+                    {Number(userBalances[1])
+                      ? Number(userBalances[1]).toFixed(4)
+                      : userBalances[1]}
+                  </b>{' '}
                 </Box>
                 <Box
                   display={'flex'}
@@ -761,7 +782,12 @@ const Home: NextPage = () => {
               </Box>
               <Box mt="10px">
                 <Box display={'flex'} justifyContent="space-between">
-                  USDC :&nbsp; <b>$0.0</b>{' '}
+                  USDC :&nbsp;{' '}
+                  <b>
+                    {Number(userBalances[2])
+                      ? Number(userBalances[2]).toFixed(4)
+                      : userBalances[2]}
+                  </b>{' '}
                 </Box>
                 <Box
                   display={'flex'}
@@ -798,7 +824,12 @@ const Home: NextPage = () => {
             >
               <Box mt="10px">
                 <Box display={'flex'} justifyContent="space-between">
-                  ETH :&nbsp; <b>$0.0</b>{' '}
+                  ETH :&nbsp;{' '}
+                  <b>
+                    {poolbalances[0] === '--'
+                      ? poolbalances[0]
+                      : parseFloat(poolbalances[0]).toFixed(4)}
+                  </b>{' '}
                 </Box>
                 <Box
                   display={'flex'}
@@ -811,7 +842,12 @@ const Home: NextPage = () => {
               </Box>
               <Box mt="10px">
                 <Box display={'flex'} justifyContent="space-between">
-                  BTC :&nbsp; <b>$0.0</b>{' '}
+                  BTC :&nbsp;{' '}
+                  <b>
+                    {poolbalances[1] === '--'
+                      ? poolbalances[1]
+                      : parseFloat(poolbalances[1]).toFixed(4)}
+                  </b>{' '}
                 </Box>
                 <Box
                   display={'flex'}
@@ -824,7 +860,12 @@ const Home: NextPage = () => {
               </Box>
               <Box mt="10px">
                 <Box display={'flex'} justifyContent="space-between">
-                  USDC :&nbsp; <b>$0.0</b>{' '}
+                  USDC :&nbsp;{' '}
+                  <b>
+                    {poolbalances[2] === '--'
+                      ? poolbalances[2]
+                      : parseFloat(poolbalances[2]).toFixed(4)}
+                  </b>{' '}
                 </Box>
                 <Box
                   display={'flex'}

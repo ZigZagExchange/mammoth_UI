@@ -5,9 +5,9 @@ import { tokens } from '../../services/constants';
 import _ from 'lodash';
 import { getTokenIndex } from '../../libs/utils';
 import useMobile from '../../libs/useMobile';
-import { Box } from '@mui/material';
+import { Slider } from '@mui/material';
 
-const SwapInputBox = styled((props: any) => <div {...props} />)`
+const ProportioanlSwapInputBox = styled((props: any) => <div {...props} />)`
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -21,7 +21,6 @@ const SwapInputBox = styled((props: any) => <div {...props} />)`
   border: ${props =>
     props.readOnly ? 'none' : '1px solid rgba(255, 255, 255, 0.08)'};
   border-radius: 8px;
-
   input,
   input:focus {
     width: calc(100% - 148px);
@@ -38,7 +37,6 @@ const SwapInputBox = styled((props: any) => <div {...props} />)`
     font-weight: 600;
     cursor: ${props => (props.readOnly ? 'default !important' : 'text')};
   }
-
   .currencySelector {
     width: ${props => (props.readOnly ? '148px' : '208px')};
     display: flex;
@@ -77,15 +75,9 @@ interface Props {
   listWidth?: number;
   isWithdraw?: boolean;
   showMax?: boolean;
-  imageSource: string;
-  imageLogo: string;
-  imageSymbol: string;
 }
 
-const SwapSwapInput = ({
-  imageSource,
-  imageLogo,
-  imageSymbol,
+const ProportioanlSwapInput = ({
   value = {},
   onChange,
   currencies,
@@ -103,7 +95,7 @@ const SwapSwapInput = ({
 
   useEffect(() => {
     if (!ref?.current) return;
-
+    console.log('adsasfdasdf', ref?.current.offsetWidth);
     SetWidth(ref?.current.offsetWidth);
   }, [windowWidth]);
 
@@ -131,7 +123,10 @@ const SwapSwapInput = ({
 
   return (
     <div ref={ref}>
-      <SwapInputBox readOnly={readOnly} mobile={isMobile ? 'true' : 'false'}>
+      <ProportioanlSwapInputBox
+        readOnly={readOnly}
+        mobile={isMobile ? 'true' : 'false'}
+      >
         <div className="currencySelector">
           <SwapCurrencySelector
             currencies={currencies}
@@ -151,9 +146,9 @@ const SwapSwapInput = ({
           type="text"
           disabled={readOnly}
         />
-      </SwapInputBox>
+      </ProportioanlSwapInputBox>
     </div>
   );
 };
 
-export default SwapSwapInput;
+export default ProportioanlSwapInput;

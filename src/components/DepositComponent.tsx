@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Dialog from '@mui/material/Dialog';
-import { Box } from '@mui/material';
+import { Box, Slider } from '@mui/material';
+import MuiInput from '@mui/material/Input';
+import Avatar from '@mui/material/Avatar';
+import AvatarGroup from '@mui/material/AvatarGroup';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { tokens } from '../services/constants';
 import SelectUnstyled, {
   SelectUnstyledProps,
@@ -9,7 +14,7 @@ import SelectUnstyled, {
 import OptionUnstyled, {
   optionUnstyledClasses
 } from '@mui/base/OptionUnstyled';
-import { styled } from '@mui/system';
+import { border, styled } from '@mui/system';
 import { PopperUnstyled } from '@mui/base';
 
 import {
@@ -22,13 +27,15 @@ import {
 import ToggleButton from './Toggle/ToggleButton';
 
 import { Button as CustomButton } from './Button/Button';
-import SwapSwapInput from './SwapComponent/SwapSwapInput';
+import DepositWithdrawInput from './SwapComponent/DepositWithdrawInput';
+import ProportioanlSwapInput from './SwapComponent/ProportionalSwap';
 import _ from 'lodash';
 import cx from 'classnames';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { formatPrice } from '../libs/utils';
 import { ethers } from 'ethers';
+import ReactTooltip from 'react-tooltip';
 
 interface DepositDialogProps {
   balance: string[];
@@ -56,6 +63,10 @@ const grey = {
   800: '#2D3843',
   900: '#1A2027'
 };
+
+const Input = styled(MuiInput)`
+  width: 42px;
+`;
 
 const StyledButton = styled('button')(
   ({ theme }) => `
@@ -222,6 +233,7 @@ export default function DepositComponent(props: DepositDialogProps) {
   const [txComplete, changeTxComplete] = useState(false);
   const [txMessage, changeTxMsg] = useState('Deposit Complete');
   const [failMsg, changeFailMsg] = useState('');
+  const [open, setOpen] = React.useState(false);
 
   useEffect(() => {
     const newTokenApprove = [false, false, false];
@@ -245,11 +257,6 @@ export default function DepositComponent(props: DepositDialogProps) {
 
       const minAllowance = ethers.constants.MaxUint256.div(100);
       newTokenUnlimitApprove[i] = minAllowance.lt(userAllownace);
-
-      if (amount) {
-        const amountBN = ethers.BigNumber.from(amount);
-        newTokenApprove[i] = amountBN.lt(userAllownace);
-      }
     }
     setTokenApproved(newTokenApprove);
     setUnlimitApprove(newTokenUnlimitApprove);
@@ -442,77 +449,225 @@ export default function DepositComponent(props: DepositDialogProps) {
     setLPAmount(values.amount);
   };
 
+  const [value, setValue] = React.useState<
+    number | string | Array<number | string>
+  >(0);
+
+  const handleSliderChange = (event: Event, newValue: number | number[]) => {
+    setValue(newValue);
+    setLPAmount(Number(value));
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(event.target.value === '' ? '' : Number(event.target.value));
+    setLPAmount(Number(value));
+  };
+
+  const handleBlur = () => {
+    if (value < 0) {
+      setValue(0);
+    } else if (value > 100) {
+      setValue(100);
+    }
+  };
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (value: string) => {
+    setOpen(false);
+  };
+
   return (
     <Box>
-      <Box display="flex" flexDirection="column" px="40px" pb="50px">
-        <Box
-          bgcolor="#181B25"
-          color="#636EA8"
-          mt="33px"
-          mb="23px"
-          p="11px 13px"
-          fontFamily="Inter"
-          fontWeight={700}
-          fontSize="13px"
-        >
-          Tip: When you add liquidity, you will receive pool tokens representing
-          your position. These tokens automatically earn fees proportional to
-          your share of the pool, and can be redeemed at any time.
-        </Box>
-        <Box
-          textAlign={'right'}
-          mt="20px"
-          mb="4px"
-          color="rgb(256,256,256,0.5)"
-          fontSize="14px"
-        >
-          Balance: {formatPrice(props.balance[0])} {tokenDetails[0].symbol}
-        </Box>
-        <SwapSwapInput
+      <Box
+        display="flex"
+        flexDirection="column"
+        px="40px"
+        pb="50px"
+        style={{ position: 'relative' }}
+      >
+        <SettingsIcon
+          cursor="pointer"
+          style={{ position: 'absolute', top: '15px', right: '40px' }}
+        />
+        <p data-tip="When you add liquidity, you will receive pool tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and can be redeemed at any time.">
+          <HelpOutlineIcon
+            cursor="pointer"
+            style={{ position: 'absolute', top: '15px', right: '80px' }}
+          />
+        </p>
+        <ReactTooltip />
+        {proportionalMode && (
+          <div>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+              mb="4px"
+            >
+              <AvatarGroup>
+                {tokens.map((c, i) => (
+                  <Avatar
+                    style={{ width: '25px', height: '25px' }}
+                    src={c.logo}
+                    alt=""
+                    key={c.symbol}
+                  />
+                ))}
+              </AvatarGroup>
+              <Box fontSize="22px">00</Box>
+            </Box>
+            <Box mt="0px" mb="30px" textAlign="right">
+              $00.00
+            </Box>
+
+            <Box display="flex" justifyContent="space-between">
+              <Box>Proportional Deposit</Box>
+              <Box display="flex">
+                <Input
+                  value={value}
+                  size="small"
+                  style={{
+                    color: 'white'
+                  }}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                  inputProps={{
+                    step: 1,
+                    min: 0,
+                    max: 100,
+                    type: 'number',
+                    'aria-labelledby': 'input-slider'
+                  }}
+                />
+                <Box>%</Box>
+              </Box>
+            </Box>
+
+            <Slider
+              value={typeof value === 'number' ? value : 0}
+              onChange={handleSliderChange}
+              aria-labelledby="input-slider"
+            />
+          </div>
+        )}
+
+        {!proportionalMode && (
+          <div>
+            <Box
+              textAlign={'right'}
+              mt="20px"
+              mb="4px"
+              color="rgb(256,256,256,0.5)"
+              fontSize="14px"
+            >
+              Balance: {formatPrice(props.balance[0])} {tokenDetails[0].symbol}
+            </Box>
+          </div>
+        )}
+
+        <DepositWithdrawInput
           balances={props.balance}
           value={tokenDetails[0]}
           onChange={setDepositDetailsOne}
           borderBox
           listWidth={505}
           readOnly={proportionalMode}
+          imageSource={tokens[0].logo}
+          imageSymbol={tokens[0].symbol}
+          imageLogo={tokens[0].logo}
         />
-        <Box
-          textAlign={'right'}
-          mt="20px"
-          mb="4px"
-          color="rgb(256,256,256,0.5)"
-          fontSize="14px"
-        >
-          Balance: {formatPrice(props.balance[1])} {tokenDetails[1].symbol}
-        </Box>
-        <SwapSwapInput
+        {proportionalMode && (
+          <Box
+            textAlign={'right'}
+            mt="4px"
+            mb="20px"
+            color="rgb(256,256,256,0.5)"
+            fontSize="14px"
+          >
+            $00.00
+          </Box>
+        )}
+        {!proportionalMode && (
+          <div>
+            <Box
+              textAlign={'right'}
+              mt="20px"
+              mb="4px"
+              color="rgb(256,256,256,0.5)"
+              fontSize="14px"
+            >
+              Balance: {formatPrice(props.balance[1])} {tokenDetails[1].symbol}
+            </Box>
+          </div>
+        )}
+
+        <DepositWithdrawInput
           balances={props.balance}
           value={tokenDetails[1]}
           onChange={setDepositDetailsOTwo}
           borderBox
           listWidth={505}
           readOnly={proportionalMode}
+          imageSource={tokens[1].logo}
+          imageSymbol={tokens[1].symbol}
+          imageLogo={tokens[1].logo}
         />
-        <Box
-          textAlign={'right'}
-          mt="20px"
-          mb="4px"
-          color="rgb(256,256,256,0.5)"
-          fontSize="14px"
-        >
-          Balance: {formatPrice(props.balance[2])} {tokenDetails[2].symbol}
-        </Box>
-        <SwapSwapInput
+        {proportionalMode && (
+          <div>
+            <Box
+              textAlign={'right'}
+              mt="4px"
+              mb="20px"
+              color="rgb(256,256,256,0.5)"
+              fontSize="14px"
+            >
+              $00.00
+            </Box>
+          </div>
+        )}
+        {!proportionalMode && (
+          <div>
+            <Box
+              textAlign={'right'}
+              mt="20px"
+              mb="4px"
+              color="rgb(256,256,256,0.5)"
+              fontSize="14px"
+            >
+              Balance: {formatPrice(props.balance[2])} {tokenDetails[2].symbol}
+            </Box>
+          </div>
+        )}
+
+        <DepositWithdrawInput
           balances={props.balance}
           value={tokenDetails[2]}
           onChange={setDepositDetailsThree}
           borderBox
           listWidth={505}
           readOnly={proportionalMode}
+          imageSource={tokens[2].logo}
+          imageSymbol={tokens[2].symbol}
+          imageLogo={tokens[2].logo}
         />
         {proportionalMode && (
           <div>
-            <SwapSwapInput
+            <Box
+              textAlign={'right'}
+              mt="4px"
+              mb="20px"
+              color="rgb(256,256,256,0.5)"
+              fontSize="14px"
+            >
+              $00.00
+            </Box>
+          </div>
+        )}
+        {/* {proportionalMode && (
+          <div>
+            <ProportioanlSwapInput
               balances={props.balance}
               value={{ amount: LPAmount, symbol: 'MLP' }}
               onChange={changeLpAmount}
@@ -520,16 +675,38 @@ export default function DepositComponent(props: DepositDialogProps) {
               listWidth={505}
             />
           </div>
-        )}
+        )} */}
         {!proportionalMode && (
           <Box
             textAlign={'right'}
-            mt="4px"
+            mt="42px"
             mb="42px"
             color="rgb(256,256,256,0.5)"
             fontSize="14px"
           >
-            Estimated amount: {LPAmount ? LPAmount : '--'} MLP
+            Estimated amount: {LPAmount ? LPAmount : '--'} MLP <br />
+            Price impact: 0%
+          </Box>
+        )}
+        {proportionalMode && (
+          <Box p="10px">
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Box>Total</Box>
+              <Box>$00.00</Box>
+            </Box>
+            <Box
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <Box>Price Impact</Box>
+              <Box>0%</Box>
+            </Box>
+            <Box></Box>
           </Box>
         )}
         <ToggleButton
@@ -565,16 +742,98 @@ export default function DepositComponent(props: DepositDialogProps) {
               className={cx('bg_btn_deposit', {
                 zig_disabled: !isTokenApproved
               })}
-              text="Supply"
-              onClick={() =>
-                proportionalMode
-                  ? handleSubmitProportional()
-                  : handleSubmitNormal()
-              }
+              text="Preview"
+              onClick={() => handleClickOpen()}
             />
           </Box>
         </Box>
       </Box>
+      <Dialog onClose={handleClose} open={open}>
+        <Box
+          style={{
+            backgroundColor: '#191a33',
+            color: '#ffffff',
+            width: '400px',
+            border: '1px solid #ffffff25'
+          }}
+        >
+          <Box p="10px">
+            <Box style={{ color: '#fff' }} fontSize="22px" mb="40px">
+              Investment Preview
+            </Box>
+
+            <Box>
+              {tokens.map((coin, index) => (
+                <Box
+                  key={coin.symbol}
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  p="10px"
+                >
+                  <Box display="flex" alignItems="center">
+                    <img src={coin.logo} alt="" height="30" width="30" />
+                    <Box ml="10px">{coin.symbol}</Box>
+                  </Box>
+                  <Box>
+                    <Box fontSize="12px" color="#ffffff50">
+                      {tokenDetails[index].amount
+                        ? tokenDetails[index].amount
+                        : 0}{' '}
+                      (
+                      {tokenDetails[index].amount
+                        ? (
+                            (parseFloat(tokenDetails[index].amount) /
+                              parseFloat(props.balance[index])) *
+                            100
+                          ).toString()
+                        : 0}
+                      %)
+                    </Box>
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+            <Box>
+              <Box p="10px" mt="40px">
+                Summary
+              </Box>
+              <Box p="10px">
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <Box>Total</Box>
+                  <Box>$00.00</Box>
+                </Box>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <Box>Price Impact</Box>
+                  <Box>0%</Box>
+                </Box>
+                <Box></Box>
+              </Box>
+            </Box>
+            <Box display="flex" width="100%">
+              <Box color="#09aaf5" width="100%" height="100%">
+                <CustomButton
+                  className="bg_btn_deposit"
+                  text="Invest"
+                  onClick={() =>
+                    proportionalMode
+                      ? handleSubmitProportional()
+                      : handleSubmitNormal()
+                  }
+                />
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </Dialog>
     </Box>
   );
 }

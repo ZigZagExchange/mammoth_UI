@@ -534,7 +534,6 @@ blockquote footer {
   height: 35px;
   padding: 4px 30px;
   font-weight: bold;
-  background: linear-gradient(93.46deg, #2aabee 16.94%, #0ccfcf 97.24%);
   box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.08),
     0px 3px 3px -1px rgba(0, 0, 0, 0.08);
   border: 0;
@@ -546,6 +545,10 @@ blockquote footer {
   font-size: 14px;
   line-height: 1.5;
   outline: none;
+}
+
+.active_bg {
+  background: linear-gradient(93.46deg, #2aabee 16.94%, #0ccfcf 97.24%);
 }
 
 .bg_btn > img {
