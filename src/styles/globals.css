@@ -51,7 +51,7 @@
   :root {
     --color: #0097fc;
     --color-accent: #0097fc4f;
-    --color-bg: #191a33;
+    --color-bg: rgb(7, 7, 28);
     --color-bg-secondary: #555;
     --color-link: #0097fc;
     --color-secondary: #e20de9;
@@ -251,11 +251,11 @@ ul li {
   padding: 0.2rem 0;
 }
 
-p {
+/* p {
   margin: 0.75rem 0;
   padding: 0;
   width: 100%;
-}
+} */
 
 pre {
   margin: 1rem 0;
@@ -288,7 +288,7 @@ sup {
 }
 
 /* Links */
-a {
+/* a {
   color: var(--color-link);
   display: inline-block;
   font-weight: bold;
@@ -303,13 +303,13 @@ a:active {
 a:hover {
   filter: brightness(var(--hover-brightness));
   text-decoration: underline;
-}
+} */
 
 a b,
 a em,
 a i,
 a strong,
-button {
+/* button {
   border-radius: var(--border-radius);
   display: inline-block;
   font-size: medium;
@@ -339,24 +339,24 @@ button:active {
 button:hover {
   cursor: pointer;
   filter: brightness(var(--hover-brightness));
-}
+} */
 
 a b,
 a strong,
-button {
+/* button {
   background-color: var(--color-link);
   border: 2px solid var(--color-link);
   color: white;
-}
+} */
 
 a em,
-a i {
+/* a i {
   border: 2px solid var(--color-link);
   border-radius: var(--border-radius);
   color: var(--color-link);
   display: inline-block;
   padding: 1rem 2rem;
-}
+} */
 
 article aside a {
   color: var(--color-secondary);
@@ -378,7 +378,7 @@ figure figcaption {
 
 /* Forms */
 
-button:disabled,
+/* button:disabled, */
 input:disabled {
   background: var(--color-bg-secondary);
   border-color: var(--color-bg-secondary);
@@ -386,9 +386,9 @@ input:disabled {
   cursor: not-allowed;
 }
 
-button[disabled]:hover {
+/* button[disabled]:hover {
   filter: none;
-}
+} */
 
 form {
   border: 1px solid var(--color-bg-secondary);

@@ -8,7 +8,8 @@ import {
   getUserBalances,
   getLiquidityBalances
 } from '../services/pool.service';
-import { truncateAddress } from '../services/address.service';
+import Header from '../components/Header';
+import BalanceReportContainer from '../components/BalanceReportContainer';
 import { tokens } from '../services/constants';
 import { Button } from '../components/Button/Button';
 import cx from 'classnames';
@@ -20,7 +21,6 @@ import MintDialogComponent from '../components/MintDialogComponent';
 import _ from 'lodash';
 import WithdrawComponent from '../components/WithdrawComponent';
 import DepositComponent from '../components/DepositComponent';
-import NetworkSelection from '../components/NetworkSelection';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { getStarknet } from 'get-starknet';
@@ -33,6 +33,7 @@ import {
 import { getTokenIndex, formatPrice } from '../libs/utils';
 import { NextComponentType, NextPage } from 'next/types';
 import { ethers } from 'ethers';
+import TabContainer from '../components/TabContainer';
 
 const Home: NextPage = () => {
   const [isLoading, changeIsLoading] = useState(false);
@@ -533,101 +534,30 @@ const Home: NextPage = () => {
     disconnectWallet();
     setAddress('');
   };
-  console.log(isMobile);
   return (
-    <Box
+    <div
       onClick={() => {
         setOpenDrop(false);
       }}
     >
-      <Box display="flex" justifyContent={'end'} className="mx-4 md:mr-12">
-        <NetworkSelection disabled={true} />
-        <ConnectButton
-          onClick={(e: any) => {
-            if (address) {
-              e.stopPropagation();
-              setOpenDrop(!openDrop);
-            } else {
-              connectWallet();
-            }
-          }}
-        >
-          <Box>{address ? truncateAddress(address) : 'Connect Wallet'}</Box>
-          <Dropdown visible={openDrop}>
-            <DropdownItem onClick={copyAddress}>
-              <img
-                src="/copy.svg"
-                width="20px"
-                style={{ marginRight: '10px' }}
-              />{' '}
-              Copy Address
-            </DropdownItem>
-            <DropdownItem
-              href={`${getExplorerBaseUrl()}/contract/${address}`}
-              target="_blank"
-            >
-              <img
-                src="/view.svg"
-                width="20px"
-                style={{ marginRight: '10px' }}
-              />{' '}
-              View on Explorer
-            </DropdownItem>
-            <DropdownItem onClick={disconnect}>
-              <img
-                src="/disconnect.svg"
-                width="20px"
-                style={{ marginRight: '10px' }}
-              />{' '}
-              Disconnect
-            </DropdownItem>
-          </Dropdown>
-        </ConnectButton>
-      </Box>
-      <Box
-        display="flex"
-        justifyContent={'center'}
-        flexDirection="row"
-        pt="0px"
-      >
-        <Box
-          borderRadius={'8px'}
-          border="1px solid rgba(255, 255, 255, 0.13)"
-          display="flex"
-          justifyContent={'space-around'}
-          flexDirection="column"
-          alignItems={'center'}
-          p="30px"
-          mt="100px"
-          height="500px"
-          paddingTop="100px"
-        >
-          <Box
-            display="flex"
-            flexDirection={isMobile !== 'sm' ? 'column' : 'row'}
-            mr="20px"
-          >
-            <Box mb="30px">Total Token amount</Box>
-            <Box textAlign={'center'}>{formatPrice(liquidityBalance)}</Box>
-          </Box>
-          <Box display="flex" flexDirection="column" mt="30px">
-            <Box>Detailed balance report</Box>
-            {_.map(poolbalances, (each: any, index) => {
-              return (
-                <Box
-                  display={'flex'}
-                  key={index}
-                  justifyContent="space-between"
-                >
-                  {tokens[index].name} :&nbsp;{' '}
-                  <b>{each === '--' ? each : parseFloat(each).toFixed(4)}</b>{' '}
-                </Box>
-              );
-            })}
-          </Box>
-        </Box>
+      <Header
+        onClickConnectWallet={connectWallet}
+        onClickCopyAddress={copyAddress}
+        onClickDisconnect={disconnect}
+        connected={isWalletConnected()}
+        address={address}
+        link={`${getExplorerBaseUrl()}/contract/${address}`}
+      />
+      <div className="flex justify-center gap-4">
+        <BalanceReportContainer
+          className=""
+          poolbalances={poolbalances}
+          liquidityBalance={liquidityBalance}
+        />
 
-        <Box
+        <TabContainer onEvent={onEvent} userBalances={userBalances} />
+
+        {/* <Box
           display="flex"
           flexDirection="column"
           alignItems={'center'}
@@ -635,46 +565,6 @@ const Home: NextPage = () => {
           height="1000px"
           paddingTop="100px"
         >
-          <Box
-            display="flex"
-            maxWidth={'90%'}
-            width="590px"
-            justifyContent={'center'}
-            alignItems="center"
-            flexDirection={isMobile !== 'lg' ? 'column' : 'row'}
-          >
-            <Box
-              width="100%"
-              p="30px"
-              display="flex"
-              flexDirection={isMobile !== 'sm' ? 'row' : 'column'}
-              justifyContent={'space-between'}
-              mb="30px"
-            ></Box>
-            <Box
-              ml={isMobile === 'lg' ? '35px' : ''}
-              width={isMobile !== 'lg' ? 'auto' : '25%'}
-              height="100%"
-              display="flex"
-              flexDirection={isMobile !== 'lg' ? 'row' : 'column'}
-              alignItems="center"
-              justifyContent={'space-between'}
-              mb="30px"
-            >
-              <Button
-                className="bg_btn"
-                style={{
-                  borderRadius: '5px',
-                  marginRight: '10px',
-                  width: '90px'
-                }}
-                text="MINT"
-                onClick={() => {
-                  setMintModal(true);
-                }}
-              />
-            </Box>
-          </Box>
           <div className="swap_box">
             <div className="flex justify-center border border-white/25">
               <Button
@@ -720,8 +610,8 @@ const Home: NextPage = () => {
 
             <TabData />
           </div>
-        </Box>
-        <Box
+        </Box> */}
+        {/* <Box
           display="flex"
           justifyContent={'space-around'}
           flexDirection="column"
@@ -883,8 +773,8 @@ const Home: NextPage = () => {
               </Box>
             </Box>
           </Box>
-        </Box>
-      </Box>
+        </Box> */}
+      </div>
 
       <MintDialogComponent
         open={mintModal}
@@ -894,7 +784,7 @@ const Home: NextPage = () => {
         onEvent={onEvent}
       />
       <ToastContainer />
-    </Box>
+    </div>
   );
 };
 

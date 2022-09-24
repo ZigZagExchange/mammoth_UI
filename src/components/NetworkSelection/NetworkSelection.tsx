@@ -16,10 +16,10 @@ const NetworkSelection = ({ disabled }: any) => {
     }
   });
   return (
-    <div className="mt-6">
+    <div className="">
       <Listbox value={selected} onChange={setSelected} disabled={disabled}>
         <div className="relative">
-          <Listbox.Button className="relative !my-0  w-48 border border-gray-800 py-2.5  pl-3 pr-10 text-left bg-black rounded-lg cursor-default outline-none focus:outline-none  sm:text-sm">
+          <Listbox.Button className="relative !my-0  w-48 border border-foreground-500 bg-black py-2.5  pl-3 pr-10 text-left rounded-lg cursor-default outline-none focus:outline-none  sm:text-sm">
             <span className="block font-medium text-white font-work">
               {selected.name}
             </span>
