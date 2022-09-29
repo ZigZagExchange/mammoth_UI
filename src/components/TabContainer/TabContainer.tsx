@@ -5,16 +5,47 @@ import { useState } from 'react';
 import { Tab } from '@headlessui/react';
 import MintPanel from './MintPanel';
 import SwapPanel from './SwapPanel';
+import DepositPanel from './DepositPanel';
 
 type props = {
   className?: string;
-  onEvent: () => void;
   userBalances: any;
+  fromDetails: any;
+  setSwapDetailsFrom: any;
+  toDetails: any;
+  setSwapDetailsTo: any;
+  switchTransferType: any;
+  rate: any;
+  isTokenApproved: any;
+  isWalletConnected: any;
+  isLoading: boolean;
+  handleApprove: any;
+  handleSubmit: any;
+  connectWallet: any;
+  tokenAllowances: any;
+  onEvent: () => void;
 };
 
 const categories = ['Swap', 'Deposit', 'Withdraw', 'Mint'];
 
-const TabContainer = ({ className, userBalances, onEvent }: props) => {
+const TabContainer = ({
+  className,
+  userBalances,
+  setSwapDetailsFrom,
+  fromDetails,
+  setSwapDetailsTo,
+  toDetails,
+  switchTransferType,
+  rate,
+  isTokenApproved,
+  isWalletConnected,
+  isLoading,
+  handleApprove,
+  handleSubmit,
+  connectWallet,
+  tokenAllowances,
+  onEvent
+}: props) => {
   return (
     <div
       className={classNames(
@@ -42,15 +73,28 @@ const TabContainer = ({ className, userBalances, onEvent }: props) => {
         </Tab.List>
         <Tab.Panels className="mt-2">
           <Tab.Panel className={classNames('rounded-xl  p-3')}>
-            <SwapPanel userBalances={userBalances} />
+            <SwapPanel
+              userBalances={userBalances}
+              setSwapDetailsFrom={setSwapDetailsFrom}
+              fromDetails={fromDetails}
+              setSwapDetailsTo={setSwapDetailsTo}
+              toDetails={toDetails}
+              switchTransferType={switchTransferType}
+              rate={rate}
+              isTokenApproved={isTokenApproved}
+              isWalletConnected={isWalletConnected}
+              isLoading={isLoading}
+              handleApprove={handleApprove}
+              handleSubmit={handleSubmit}
+              connectWallet={connectWallet}
+            />
           </Tab.Panel>
-          <Tab.Panel
-            className={classNames(
-              'rounded-xl bg-white p-3',
-              'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2'
-            )}
-          >
-            <ul>12312</ul>
+          <Tab.Panel className={classNames('rounded-xl  p-3')}>
+            <DepositPanel
+              balance={userBalances}
+              allowance={tokenAllowances}
+              onEvent={onEvent}
+            />
           </Tab.Panel>
           <Tab.Panel
             className={classNames(

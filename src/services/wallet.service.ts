@@ -15,7 +15,6 @@ export const walletAddress = async (): Promise<string | undefined> => {
 export const networkId = () => {
   try {
     const { baseUrl } = getStarknet().provider;
-    console.log(getStarknet().provider);
     if (baseUrl.includes('alpha-mainnet.starknet.io')) {
       return 'mainnet-alpha';
     } else if (baseUrl.includes('alpha4.starknet.io')) {

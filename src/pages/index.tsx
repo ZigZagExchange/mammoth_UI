@@ -23,6 +23,7 @@ import WithdrawComponent from '../components/WithdrawComponent';
 import DepositComponent from '../components/DepositComponent';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 import { getStarknet } from 'get-starknet';
 import styled from '@emotion/styled';
 import {
@@ -431,6 +432,7 @@ const Home: NextPage = () => {
     amount: string;
     symbol: string;
   }) => {
+    console.log(values);
     const details = {
       ...fromDetails,
       ...values
@@ -555,9 +557,25 @@ const Home: NextPage = () => {
           liquidityBalance={liquidityBalance}
         />
 
-        <TabContainer onEvent={onEvent} userBalances={userBalances} />
+        <TabContainer
+          onEvent={onEvent}
+          userBalances={userBalances}
+          setSwapDetailsFrom={setSwapDetailsFrom}
+          fromDetails={fromDetails}
+          setSwapDetailsTo={setSwapDetailsTo}
+          toDetails={toDetails}
+          switchTransferType={switchTransferType}
+          rate={rate}
+          isTokenApproved={isTokenApproved}
+          isWalletConnected={isWalletConnected()}
+          isLoading={isLoading}
+          handleApprove={handleApprove}
+          handleSubmit={handleSubmit}
+          connectWallet={connectWallet}
+          tokenAllowances={tokenAllowances}
+        />
 
-        {/* <Box
+        <Box
           display="flex"
           flexDirection="column"
           alignItems={'center'}
@@ -610,7 +628,7 @@ const Home: NextPage = () => {
 
             <TabData />
           </div>
-        </Box> */}
+        </Box>
         {/* <Box
           display="flex"
           justifyContent={'space-around'}
