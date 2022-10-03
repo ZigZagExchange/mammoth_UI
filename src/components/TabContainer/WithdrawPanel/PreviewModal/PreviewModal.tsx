@@ -3,14 +3,7 @@ import { Fragment, useState } from 'react';
 import CustomButton from '../../../CustomButton';
 import { tokens } from '../../../../services/constants';
 
-const PreviewModal = ({
-  isTokenApproved,
-  tokenDetails,
-  handleSubmitNormal,
-  handleSubmitProportional,
-  proportionalMode,
-  balance
-}: any) => {
+const PreviewModal = ({ tokenDetails, handleWithdraw }: any) => {
   const [isOpen, setIsOpen] = useState(false);
 
   function closeModal() {
@@ -23,11 +16,7 @@ const PreviewModal = ({
 
   function onClickDeposit() {
     setIsOpen(false);
-    if (proportionalMode) {
-      handleSubmitProportional();
-    } else {
-      handleSubmitNormal();
-    }
+    handleWithdraw();
   }
 
   return (
@@ -35,7 +24,6 @@ const PreviewModal = ({
       <div className="">
         <CustomButton
           className="w-full flex items-center justify-center gap-2 px-4 py-2.5 font-semibold uppercase rounded-md mt-5"
-          disabled={!isTokenApproved}
           onClick={openModal}
         >
           Preview
@@ -78,7 +66,7 @@ const PreviewModal = ({
                     {tokens.map((token, index) => {
                       return (
                         <div key={index}>
-                          <div className="flex items-center justify-between">
+                          <div className="flex items-start justify-between">
                             <div className="flex items-center gap-2">
                               <img
                                 src={token.logo}
@@ -87,20 +75,16 @@ const PreviewModal = ({
                               />
                               <p>{token.symbol}</p>
                             </div>
-                            <p>
-                              {tokenDetails[index].amount
+                            <div className="text-right font-poppins">
+                              <p className="text-xl font-medium">
+                                00.00
+                                {/* {tokenDetails[index].amount
                                 ? tokenDetails[index].amount
                                 : 0}{' '}
-                              (
-                              {tokenDetails[index].amount
-                                ? (
-                                    (parseFloat(tokenDetails[index].amount) /
-                                      parseFloat(balance[index])) *
-                                    100
-                                  ).toString()
-                                : 0}
-                              %)
-                            </p>
+                              ( */}
+                              </p>
+                              <p className="text-sm">(0%)</p>
+                            </div>
                           </div>
                         </div>
                       );
@@ -123,7 +107,7 @@ const PreviewModal = ({
                       className="w-full tracking-wide flex items-center justify-center gap-2 px-4 py-2.5 font-semibold uppercase rounded-md"
                       onClick={onClickDeposit}
                     >
-                      Deposit
+                      Withdraw
                     </CustomButton>
                   </div>
                 </Dialog.Panel>

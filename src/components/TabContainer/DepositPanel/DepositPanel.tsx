@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { IoMdHelpCircleOutline, IoMdSettings } from 'react-icons/io';
+import { IoMdSettings } from 'react-icons/io';
 import { ethers } from 'ethers';
 
 import ModeSelection from './ModeSelection';
 import CustomButton from '../../CustomButton';
 import InfoPopover from './InfoPopover';
 import PreviewModal from './PreviewModal';
-import AmountSlider from './AmountSlider';
+import AmountSlider from '../../AmountSlider';
 import { tokens } from '../../../services/constants';
 import { formatPrice } from '../../../libs/utils';
 import {
@@ -29,12 +29,17 @@ const modes = [
   }
 ];
 
-const DepositPanel = ({ balance, allowance, onEvent }: any) => {
+const DepositPanel = ({
+  balance,
+  allowance,
+  onEvent,
+  isWalletConnected
+}: any) => {
   const [isTokenApproved, setTokenApproved] = useState([false, false, false]);
   const [isUnLimitApprove, setUnlimitApprove] = useState([false, false, false]);
 
-  const [selectedMode, setSelectedMode] = useState(modes[1]);
-  const [proportionalMode, setProportionalMode] = useState(true);
+  const [selectedMode, setSelectedMode] = useState(modes[0]);
+  const [proportionalMode, setProportionalMode] = useState(false);
   const [LPAmount, setLPAmount] = useState(0);
 
   const [isLoading, changeIsLoading] = useState(false);
@@ -42,6 +47,9 @@ const DepositPanel = ({ balance, allowance, onEvent }: any) => {
   const [txComplete, changeTxComplete] = useState(false);
   const [txMessage, changeTxMsg] = useState('Deposit Complete');
   const [failMsg, changeFailMsg] = useState('');
+  const [value, setValue] = React.useState<
+    number | string | Array<number | string>
+  >(0);
 
   const [tokenDetails, setTokenDetails] = useState(() => [
     {
@@ -242,10 +250,6 @@ const DepositPanel = ({ balance, allowance, onEvent }: any) => {
     setLPAmount(values.amount);
   };
 
-  const [value, setValue] = React.useState<
-    number | string | Array<number | string>
-  >(0);
-
   const handleSliderChange = (newValue: any) => {
     setValue(newValue);
     setLPAmount(Number(value));
@@ -253,7 +257,6 @@ const DepositPanel = ({ balance, allowance, onEvent }: any) => {
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const amount = event.target.value.replace(',', '.').replace(/[^0-9.]/g, '');
-    console.log(amount);
     setValue(Number(amount));
     setLPAmount(Number(amount));
   };
@@ -280,6 +283,22 @@ const DepositPanel = ({ balance, allowance, onEvent }: any) => {
   const onChangeMode = (mode: any) => {
     setSelectedMode(mode);
     setProportionalMode(mode.value);
+    setTokenDetails([
+      {
+        amount: '',
+        symbol: tokens[0].symbol
+      },
+      {
+        amount: '',
+        symbol: tokens[1].symbol
+      },
+      {
+        amount: '',
+        symbol: tokens[2].symbol
+      }
+    ]);
+    setValue(0);
+    setLPAmount(0);
   };
 
   const setDepositDetails = (e: any, index: any) => {
@@ -291,6 +310,27 @@ const DepositPanel = ({ balance, allowance, onEvent }: any) => {
     };
 
     switch (index) {
+      case 0:
+        setTokenDetails([details, tokenDetails[1], tokenDetails[2]]);
+        break;
+      case 1:
+        setTokenDetails([tokenDetails[0], details, tokenDetails[2]]);
+        break;
+      case 2:
+        setTokenDetails([tokenDetails[0], tokenDetails[1], details]);
+        break;
+    }
+  };
+
+  const onClickMax = (tokenIndex: any) => {
+    let amount = Math.round(Number(balance[tokenIndex]) * 10000) / 10000;
+    let values = { amount: String(amount) };
+    const details = {
+      ...tokenDetails[tokenIndex],
+      ...values
+    };
+
+    switch (tokenIndex) {
       case 0:
         setTokenDetails([details, tokenDetails[1], tokenDetails[2]]);
         break;
@@ -326,15 +366,15 @@ const DepositPanel = ({ balance, allowance, onEvent }: any) => {
                   <img
                     src={token.logo}
                     alt={token.symbol}
-                    className="w-8 h-8 max-w-fit"
+                    className="w-12 h-12 max-w-fit"
                   />
                 </div>
               );
             })}
           </div>
           <div className="text-right">
-            <p className="text-xl font-medium">00.00</p>
-            <p className="text-sm font-normal">$0.00</p>
+            <p className="text-3xl font-medium">00.00</p>
+            <p className="text-base font-normal">$0.00</p>
           </div>
         </div>
       )}
@@ -344,6 +384,7 @@ const DepositPanel = ({ balance, allowance, onEvent }: any) => {
           value={typeof value === 'number' ? value : 0}
           onChangeValue={handleSliderChange}
           onChangeInputValue={handleInputChange}
+          label="Proportional Deposit"
         />
       )}
 
@@ -356,9 +397,18 @@ const DepositPanel = ({ balance, allowance, onEvent }: any) => {
               </p>
             )}
             <div className="flex items-center justify-between px-3 py-2 mt-2 rounded-lg bg-foreground-200 ring-1 ring-offset-0 ring-foreground-500 ">
-              <div className="flex items-center p-2 text-sm font-medium rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 ">
-                <img src={token.logo} alt={token.symbol} className="w-7" />
-                <p className="ml-3 text-lg ">{token.symbol}</p>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center p-2 text-sm font-medium rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 ">
+                  <img src={token.logo} alt={token.symbol} className="w-7" />
+                  <p className="ml-3 text-lg ">{token.symbol}</p>
+                </div>
+                <button
+                  className="bg-[#07071C] px-2 py-1 rounded-md text-sm font-semibold text-primary-900 ml-2.5 hover:bg-slate-800 disabled:bg-slate-800 "
+                  onClick={() => onClickMax(index)}
+                  disabled={!isWalletConnected}
+                >
+                  Max
+                </button>
               </div>
               <input
                 className="ml-3 text-2xl font-semibold text-right bg-transparent border-none w-36 md:w-72 focus:outline-none read-only:bg-transparent"
@@ -416,6 +466,8 @@ const DepositPanel = ({ balance, allowance, onEvent }: any) => {
           isTokenApproved={isTokenApproved}
           tokenDetails={tokenDetails}
           handleSubmitNormal={handleSubmitNormal}
+          handleSubmitProportional={handleSubmitProportional}
+          proportionalMode={proportionalMode}
           balance={balance}
         />
       </div>

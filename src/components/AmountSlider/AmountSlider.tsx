@@ -11,6 +11,7 @@ type AmountSliderProps = {
   onChangeValue: any;
   onChangeInputValue: any;
   value: number;
+  label: string;
 };
 
 const HandleTooltip = (props: {
@@ -99,7 +100,8 @@ const TooltipSlider = ({
 const AmountSlider = ({
   onChangeValue,
   onChangeInputValue,
-  value
+  value,
+  label
 }: AmountSliderProps) => {
   const marks = {
     0: '0%',
@@ -111,8 +113,18 @@ const AmountSlider = ({
 
   return (
     <div className="mt-5 mb-12 amountSlider">
-      <div className="flex items-center justify-between mb-8">
-        <p className="text-base font-medium uppercase">Proportional Deposit</p>
+      <p className="mb-2 text-base font-medium uppercase">{label}</p>
+      <div className="flex items-center mt-5 ml-2 gap-9">
+        <TooltipSlider
+          min={0}
+          marks={marks}
+          step={1}
+          onChange={onChangeValue}
+          defaultValue={0}
+          value={value}
+          included={true}
+          tipProps={undefined}
+        />
         <div className="flex items-center">
           <input
             value={value}
@@ -124,16 +136,6 @@ const AmountSlider = ({
           </p>
         </div>
       </div>
-      <TooltipSlider
-        min={0}
-        marks={marks}
-        step={1}
-        onChange={onChangeValue}
-        defaultValue={0}
-        value={value}
-        included={true}
-        tipProps={undefined}
-      />
     </div>
   );
 };

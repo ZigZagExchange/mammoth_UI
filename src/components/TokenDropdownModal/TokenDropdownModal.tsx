@@ -127,9 +127,9 @@ const TokenDropDownModal = ({
                               Nothing found.
                             </div>
                           ) : (
-                            filteredToken.map((item: any) => (
+                            filteredToken.map((item: any, index: number) => (
                               <Combobox.Option
-                                key={item.id}
+                                key={index}
                                 className={({ active }) =>
                                   `relative cursor-default select-none py-2 font-work pl-10 pr-4 mx-3 bg-foreground-100 rounded-md mb-2 border-t border-l border-r border-b border-foreground-400  ${
                                     item.symbol === selectedOption?.symbol

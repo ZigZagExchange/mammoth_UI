@@ -6,6 +6,7 @@ import { Tab } from '@headlessui/react';
 import MintPanel from './MintPanel';
 import SwapPanel from './SwapPanel';
 import DepositPanel from './DepositPanel';
+import WithdrawPanel from './WithdrawPanel';
 
 type props = {
   className?: string;
@@ -49,7 +50,7 @@ const TabContainer = ({
   return (
     <div
       className={classNames(
-        'border border-foreground-500 h-fit rounded-lg py-8 px-6 text-md shadow-md bg-background-700',
+        'border border-foreground-500 h-fit rounded-lg py-8 px-6 text-md shadow-md bg-background-700 mb-8',
         className
       )}
     >
@@ -94,15 +95,15 @@ const TabContainer = ({
               balance={userBalances}
               allowance={tokenAllowances}
               onEvent={onEvent}
+              isWalletConnected={isWalletConnected}
             />
           </Tab.Panel>
-          <Tab.Panel
-            className={classNames(
-              'rounded-xl bg-white p-3',
-              'ring-white ring-opacity-60 ring-offset-2 ring-offset-blue-400 focus:outline-none focus:ring-2'
-            )}
-          >
-            <ul>23123sdfsdf</ul>
+          <Tab.Panel className={classNames('rounded-xl  p-3')}>
+            <WithdrawPanel
+              onEvent={onEvent}
+              isWalletConnected={isWalletConnected}
+              balance={userBalances}
+            />
           </Tab.Panel>
           <Tab.Panel className={classNames('rounded-xl p-3')}>
             <MintPanel onEvent={onEvent} />

@@ -14,12 +14,12 @@ const ModeSelection = ({ setSelected, selected, options }: any) => {
               className={({ active, checked }) =>
                 `${active ? '' : ''}
           ${checked ? 'bg-sky-900 bg-opacity-75 text-white' : 'bg-white'}
-            relative flex cursor-pointer rounded-lg px-5 py-3 shadow-md focus:outline-none`
+            relative flex cursor-pointer rounded-lg px-5 py-2.5 shadow-md focus:outline-none`
               }
             >
               {({ active, checked }) => (
                 <>
-                  <div className="flex items-center justify-between w-36 ">
+                  <div className="flex items-center justify-between gap-5 ">
                     <div className="flex items-center">
                       <div className="text-sm">
                         <RadioGroup.Label
@@ -34,7 +34,7 @@ const ModeSelection = ({ setSelected, selected, options }: any) => {
                     </div>
                     {checked && (
                       <div className="text-white shrink-0">
-                        <CheckIcon className="w-6 h-6" />
+                        <CheckIcon className="w-5 h-5" />
                       </div>
                     )}
                   </div>
