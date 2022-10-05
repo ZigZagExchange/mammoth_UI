@@ -35,6 +35,8 @@ import { getTokenIndex, formatPrice } from '../libs/utils';
 import { NextComponentType, NextPage } from 'next/types';
 import { ethers } from 'ethers';
 import TabContainer from '../components/TabContainer';
+import PoolTokenBalance from '../components/PoolTokensBalance';
+import MyPoolBalance from '../components/MyPoolBalance';
 
 const Home: NextPage = () => {
   const [isLoading, changeIsLoading] = useState(false);
@@ -550,7 +552,7 @@ const Home: NextPage = () => {
         address={address}
         link={`${getExplorerBaseUrl()}/contract/${address}`}
       />
-      <div className="flex justify-center gap-4">
+      <div className="flex justify-center mt-12 gap-7">
         <BalanceReportContainer
           className=""
           poolbalances={poolbalances}
@@ -574,8 +576,11 @@ const Home: NextPage = () => {
           connectWallet={connectWallet}
           tokenAllowances={tokenAllowances}
         />
-
-        <Box
+        <div className="space-y-5">
+          <PoolTokenBalance className="" userBalances={userBalances} />
+          <MyPoolBalance className="" poolbalances={poolbalances} />
+        </div>
+        {/* <Box
           display="flex"
           flexDirection="column"
           alignItems={'center'}
@@ -628,7 +633,7 @@ const Home: NextPage = () => {
 
             <TabData />
           </div>
-        </Box>
+        </Box> */}
         {/* <Box
           display="flex"
           justifyContent={'space-around'}
@@ -807,58 +812,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-const ConnectButton = styled('div')(
-  ({ theme }) =>
-    `
-    border-radius: 8px;
-    // padding: 10px 30px;
-    margin-left: 20px;
-    margin-top: 24px;
-    width: 210px;
-    height: 43px;
-    border: 1px solid rgba(255, 255, 255, 0.13);
-    cursor: pointer;
-    background: rgba(0,0,0,0.8);
-    position: relative;
-    display: flex;
-    transition: all 0.2s ease-out;
-    z-index: 10;
-    justify-content: center;
-    align-items: center;
-
-    &:hover {
-      transition: all 0.2s ease-out;
-      background: rgba(0,0,0,0.1);
-    }
-  
-    &::after {
-      content: '▾';
-      margin-left: 10px;
-    }
-`
-);
-
-const Dropdown = styled.div<{ visible?: boolean }>`
-  visibility: ${p => (p.visible ? 'visible' : 'hidden')};
-  opacity: ${p => (p.visible ? 1 : 0)};
-  height: ${p => (p.visible ? '150px' : '120px')};
-  width: 250px;
-  background: white;
-  border-radius: 6px;
-  position: absolute;
-  top: 45px;
-  right: 0;
-  display: flex;
-  flex-direction: column;
-  padding: 15px 25px;
-  transition: all 0.2s ease-in;
-`;
-
-const DropdownItem = styled.a`
-  display: flex;
-  align-items: center;
-  color: black;
-  height: 50px;
-  text-decoration: none;
-`;
