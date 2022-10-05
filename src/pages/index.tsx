@@ -552,7 +552,7 @@ const Home: NextPage = () => {
         address={address}
         link={`${getExplorerBaseUrl()}/contract/${address}`}
       />
-      <div className="mx-6 space-y-6 lg:space-y-0 lg:gap-4 lg:grid xl:grid-cols-4 lg:grid-cols-3 2xl:mx-24 xl:mx-8 lg:mx-2 md:mx-6">
+      <div className="mx-6 mt-12 space-y-6 lg:space-y-0 lg:gap-4 lg:grid xl:grid-cols-4 lg:grid-cols-3 2xl:mx-48 xl:mx-8 lg:mx-2 md:mx-6">
         <div className="md:col-span-1">
           <BalanceReportContainer
             className=""
