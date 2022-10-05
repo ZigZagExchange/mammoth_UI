@@ -55,7 +55,7 @@ const TabContainer = ({
       )}
     >
       <Tab.Group>
-        <Tab.List className="flex p-1 space-x-1 bg-black border rounded-xl border-foreground-500">
+        <Tab.List className="p-1 space-x-1 bg-black border md:flex rounded-xl border-foreground-500">
           {categories.map(category => (
             <Tab
               key={category}

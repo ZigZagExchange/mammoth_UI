@@ -1115,13 +1115,13 @@ blockquote footer {
   bottom: -0.438rem;
 }
 .rc-slider-track {
-  background-color: #2aa9ee;
+  background-color: #2aa9ee !important;
   height: 0.313rem;
 }
 .rc-slider-handle {
-  border-color: #2aa9ee;
+  border-color: #2aa9ee !important;
   border: none;
-  background-color: #2aa9ee;
+  background-color: #2aa9ee !important;
   opacity: 1;
   width: 1rem;
   height: 1rem;
@@ -1130,22 +1130,22 @@ blockquote footer {
 .rc-slider-handle-dragging {
   border-color: #2aa9ee !important;
   box-shadow: 0 0 0 5px rgba(#2aa9ee, 0.3) !important;
-  background-color: #0f6eff;
+  background-color: #0f6eff !important;
 }
 .rc-slider-dot-active {
-  border-color: #2aa9ee;
-  background-color: #2aa9ee;
+  border-color: #2aa9ee !important;
+  background-color: #2aa9ee !important;
 }
 .rc-slider-mark {
   top: -1.5rem;
 }
 .rc-slider-mark-text {
   font-family: 'Poppins-Regular';
-  color: #2aa9ee;
+  color: #2aa9ee !important;
   opacity: 0.5;
 }
 .rc-slider-mark-text-active {
   font-family: 'Poppins-SemiBold';
   opacity: 1;
-  color: #2aa9ee;
+  color: #2aa9ee !important;
 }

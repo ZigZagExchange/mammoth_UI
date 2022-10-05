@@ -552,260 +552,51 @@ const Home: NextPage = () => {
         address={address}
         link={`${getExplorerBaseUrl()}/contract/${address}`}
       />
-      <div className="flex justify-center mt-12 gap-7">
-        <BalanceReportContainer
-          className=""
-          poolbalances={poolbalances}
-          liquidityBalance={liquidityBalance}
-        />
-
-        <TabContainer
-          onEvent={onEvent}
-          userBalances={userBalances}
-          setSwapDetailsFrom={setSwapDetailsFrom}
-          fromDetails={fromDetails}
-          setSwapDetailsTo={setSwapDetailsTo}
-          toDetails={toDetails}
-          switchTransferType={switchTransferType}
-          rate={rate}
-          isTokenApproved={isTokenApproved}
-          isWalletConnected={isWalletConnected()}
-          isLoading={isLoading}
-          handleApprove={handleApprove}
-          handleSubmit={handleSubmit}
-          connectWallet={connectWallet}
-          tokenAllowances={tokenAllowances}
-        />
-        <div className="space-y-5">
-          <PoolTokenBalance className="" userBalances={userBalances} />
-          <MyPoolBalance className="" poolbalances={poolbalances} />
+      <div className="mx-6 space-y-6 lg:space-y-0 lg:gap-4 lg:grid xl:grid-cols-4 lg:grid-cols-3 2xl:mx-24 xl:mx-8 lg:mx-2 md:mx-6">
+        <div className="md:col-span-1">
+          <BalanceReportContainer
+            className=""
+            poolbalances={poolbalances}
+            liquidityBalance={liquidityBalance}
+          />
         </div>
-        {/* <Box
-          display="flex"
-          flexDirection="column"
-          alignItems={'center'}
-          pt="100px"
-          height="1000px"
-          paddingTop="100px"
-        >
-          <div className="swap_box">
-            <div className="flex justify-center border border-white/25">
-              <Button
-                className={`bg_btn ${openTab === 1 ? 'active_bg' : ''}`}
-                style={{
-                  borderRadius: '5px',
-                  marginRight: '10px',
-                  width: '90px'
-                }}
-                text="Swap"
-                onClick={e => {
-                  e.preventDefault();
-                  setOpenTab(1);
-                }}
-              />
-              <Button
-                className={`bg_btn ${openTab === 2 ? 'active_bg' : ''}`}
-                style={{
-                  borderRadius: '5px',
-                  marginRight: '10px',
-                  width: '90px'
-                }}
-                text="Deposit"
-                onClick={e => {
-                  e.preventDefault();
-                  setOpenTab(2);
-                }}
-              />
-              <Button
-                className={`bg_btn ${openTab === 3 ? 'active_bg' : ''}`}
-                style={{
-                  borderRadius: '5px',
-                  marginRight: '10px',
-                  width: '90px'
-                }}
-                text="Withdraw"
-                onClick={e => {
-                  e.preventDefault();
-                  setOpenTab(3);
-                }}
-              />
-            </div>
-
-            <TabData />
+        <div className="lg:col-span-2 ">
+          <TabContainer
+            onEvent={onEvent}
+            userBalances={userBalances}
+            setSwapDetailsFrom={setSwapDetailsFrom}
+            fromDetails={fromDetails}
+            setSwapDetailsTo={setSwapDetailsTo}
+            toDetails={toDetails}
+            switchTransferType={switchTransferType}
+            rate={rate}
+            isTokenApproved={isTokenApproved}
+            isWalletConnected={isWalletConnected()}
+            isLoading={isLoading}
+            handleApprove={handleApprove}
+            handleSubmit={handleSubmit}
+            connectWallet={connectWallet}
+            tokenAllowances={tokenAllowances}
+          />
+        </div>
+        <div className="xl:col-span-1 xl:grid-cols-1 xl:space-y-0 md:grid md:grid-cols-2 md:col-span-3 md:gap-5">
+          <div>
+            <PoolTokenBalance className="" userBalances={userBalances} />
           </div>
-        </Box> */}
-        {/* <Box
-          display="flex"
-          justifyContent={'space-around'}
-          flexDirection="column"
-          alignItems={'center'}
-          height="750px"
-          paddingTop="100px"
-        >
-          <Box
-            borderRadius={'8px'}
-            border="1px solid rgba(255, 255, 255, 0.13)"
-            display="flex"
-            flexDirection={isMobile !== 'sm' ? 'column' : 'row'}
-            mr="20px"
-            p="30px"
-            width="100%"
-          >
-            <Box mb="30px">Pool tokens in my wallet</Box>
-            <Box
-              display={'flex'}
-              justifyContent="space-between"
-              flexDirection="column"
-            >
-              <Box mt="10px">
-                <Box display={'flex'} justifyContent="space-between">
-                  ETH :&nbsp;{' '}
-                  <b>
-                    {Number(userBalances[0])
-                      ? Number(userBalances[0]).toFixed(4)
-                      : userBalances[0]}
-                  </b>{' '}
-                </Box>
-                <Box
-                  display={'flex'}
-                  justifyContent="space-between"
-                  color="rgba(255, 255, 255, 0.13);"
-                  fontSize="14px"
-                >
-                  ETH :&nbsp; <b>$0.0</b>{' '}
-                </Box>
-              </Box>
-              <Box mt="10px">
-                <Box display={'flex'} justifyContent="space-between">
-                  BTC :&nbsp;{' '}
-                  <b>
-                    {Number(userBalances[1])
-                      ? Number(userBalances[1]).toFixed(4)
-                      : userBalances[1]}
-                  </b>{' '}
-                </Box>
-                <Box
-                  display={'flex'}
-                  justifyContent="space-between"
-                  color="rgba(255, 255, 255, 0.13);"
-                  fontSize="14px"
-                >
-                  BTC :&nbsp; <b>$0.0</b>{' '}
-                </Box>
-              </Box>
-              <Box mt="10px">
-                <Box display={'flex'} justifyContent="space-between">
-                  USDC :&nbsp;{' '}
-                  <b>
-                    {Number(userBalances[2])
-                      ? Number(userBalances[2]).toFixed(4)
-                      : userBalances[2]}
-                  </b>{' '}
-                </Box>
-                <Box
-                  display={'flex'}
-                  justifyContent="space-between"
-                  color="rgba(255, 255, 255, 0.13);"
-                  fontSize="14px"
-                >
-                  USDC :&nbsp; <b>$0.0</b>{' '}
-                </Box>
-              </Box>
-              <Box mt="20px">
-                <Box display={'flex'} justifyContent="space-between">
-                  Total :&nbsp; <b>$0.0</b>{' '}
-                </Box>
-              </Box>
-            </Box>
-          </Box>
-
-          <Box
-            borderRadius={'8px'}
-            border="1px solid rgba(255, 255, 255, 0.13)"
-            display="flex"
-            flexDirection={isMobile !== 'sm' ? 'column' : 'row'}
-            mr="20px"
-            mt="10px"
-            p="30px"
-            width="100%"
-          >
-            <Box mb="30px">My pool balance</Box>
-            <Box
-              display={'flex'}
-              justifyContent="space-between"
-              flexDirection="column"
-            >
-              <Box mt="10px">
-                <Box display={'flex'} justifyContent="space-between">
-                  ETH :&nbsp;{' '}
-                  <b>
-                    {poolbalances[0] === '--'
-                      ? poolbalances[0]
-                      : parseFloat(poolbalances[0]).toFixed(4)}
-                  </b>{' '}
-                </Box>
-                <Box
-                  display={'flex'}
-                  justifyContent="space-between"
-                  color="rgba(255, 255, 255, 0.13);"
-                  fontSize="14px"
-                >
-                  ETH :&nbsp; <b>$0.0</b>{' '}
-                </Box>
-              </Box>
-              <Box mt="10px">
-                <Box display={'flex'} justifyContent="space-between">
-                  BTC :&nbsp;{' '}
-                  <b>
-                    {poolbalances[1] === '--'
-                      ? poolbalances[1]
-                      : parseFloat(poolbalances[1]).toFixed(4)}
-                  </b>{' '}
-                </Box>
-                <Box
-                  display={'flex'}
-                  justifyContent="space-between"
-                  color="rgba(255, 255, 255, 0.13);"
-                  fontSize="14px"
-                >
-                  BTC :&nbsp; <b>$0.0</b>{' '}
-                </Box>
-              </Box>
-              <Box mt="10px">
-                <Box display={'flex'} justifyContent="space-between">
-                  USDC :&nbsp;{' '}
-                  <b>
-                    {poolbalances[2] === '--'
-                      ? poolbalances[2]
-                      : parseFloat(poolbalances[2]).toFixed(4)}
-                  </b>{' '}
-                </Box>
-                <Box
-                  display={'flex'}
-                  justifyContent="space-between"
-                  color="rgba(255, 255, 255, 0.13);"
-                  fontSize="14px"
-                >
-                  USDC :&nbsp; <b>$0.0</b>{' '}
-                </Box>
-              </Box>
-              <Box mt="20px">
-                <Box display={'flex'} justifyContent="space-between">
-                  Total :&nbsp; <b>$0.0</b>{' '}
-                </Box>
-              </Box>
-            </Box>
-          </Box>
-        </Box> */}
+          <div>
+            <MyPoolBalance className="" poolbalances={poolbalances} />
+          </div>
+        </div>
       </div>
-
-      <MintDialogComponent
-        open={mintModal}
-        onClose={() => {
-          setMintModal(false);
-        }}
-        onEvent={onEvent}
-      />
+      <div>
+        <MintDialogComponent
+          open={mintModal}
+          onClose={() => {
+            setMintModal(false);
+          }}
+          onEvent={onEvent}
+        />
+      </div>
       <ToastContainer />
     </div>
   );
