@@ -53,7 +53,7 @@ const Home: NextPage = () => {
   const [depositModal, setDepositModal] = useState(false);
   const [withdrawModal, setWithdrawModal] = useState(false);
   const [mintModal, setMintModal] = useState(false);
-  const [fromDetails, setFromDetails] = useState(() => ({
+  const [fromDetails, setFromDetails] = useState<any>(() => ({
     amount: '',
     symbol: tokens[0].symbol
   }));
@@ -67,132 +67,6 @@ const Home: NextPage = () => {
   const [isMobile, setMobile] = useState('lg');
   const [rate, setRate] = useState(0);
   const [openTab, setOpenTab] = React.useState(1);
-
-  const TabData = () => {
-    if (openTab === 1) {
-      return (
-        <div>
-          <div className="swap_box_top">
-            <div className="swap_coin_title">
-              <Box fontSize="16px" fontWeight="600">
-                From
-              </Box>
-              <Box fontSize="12px" fontWeight="400">
-                Balance:{' '}
-                {Number(userBalances[getTokenIndex(fromDetails.symbol)])
-                  ? Number(
-                      userBalances[getTokenIndex(fromDetails.symbol)]
-                    ).toFixed(4)
-                  : userBalances[getTokenIndex(fromDetails.symbol)]}{' '}
-                {fromDetails.symbol}
-              </Box>
-            </div>
-            <SwapSwapInput
-              balances={userBalances}
-              // currencies={currencies}
-              value={fromDetails}
-              onChange={setSwapDetailsFrom}
-              imageSource={tokens[getTokenIndex(fromDetails.symbol)].logo}
-              imageSymbol={tokens[getTokenIndex(fromDetails.symbol)].symbol}
-              imageLogo={tokens[getTokenIndex(fromDetails.symbol)].logo}
-            />
-            {/* <Box mt="10px" color="rgba(255, 255, 255, 0.72)" fontSize="11px" textAlign="right">Estimated value: ~$ 30.33</Box> */}
-          </div>
-
-          <div className="swap_box_bottom">
-            <div className="swap_box_swap_wrapper">
-              <SwapButton onClick={switchTransferType} />
-              <div className="swap_box_line" />
-            </div>
-
-            <div className="swap_coin_title" style={{ marginBottom: '10px' }}>
-              <Box fontSize="16px" fontWeight="600" mr="30px">
-                To
-              </Box>
-              <Box
-                display="flex"
-                width={isMobile === 'sm' ? 'auto' : '100%'}
-                justifyContent="space-between"
-                flexDirection={isMobile === 'sm' ? 'column' : 'row'}
-              >
-                <Box fontSize="12px" fontWeight="400">
-                  1 {fromDetails.symbol} = {rate} {toDetails.symbol}
-                </Box>
-                <Box fontSize="12px" fontWeight="400">
-                  Balance:{' '}
-                  {Number(userBalances[getTokenIndex(toDetails.symbol)])
-                    ? Number(
-                        userBalances[getTokenIndex(toDetails.symbol)]
-                      ).toFixed(4)
-                    : userBalances[getTokenIndex(toDetails.symbol)]}{' '}
-                  {toDetails.symbol}
-                </Box>
-              </Box>
-            </div>
-            <SwapSwapInput
-              balances={userBalances}
-              // currencies={currencies}
-              value={toDetails} // format to details amount
-              onChange={setSwapDetailsTo}
-              showMax={false}
-              imageSource={tokens[getTokenIndex(toDetails.symbol)].logo}
-              imageSymbol={tokens[getTokenIndex(toDetails.symbol)].symbol}
-              imageLogo={tokens[getTokenIndex(toDetails.symbol)].logo}
-            />
-            <div className="swap_button" style={{ marginTop: '30px' }}>
-              {!isTokenApproved && isWalletConnected() && (
-                <Button
-                  loading={isLoading}
-                  className={cx('bg_btn', {
-                    zig_disabled: !fromDetails.amount
-                  })}
-                  style={{ height: '40px', fontSize: '18px' }}
-                  text="Approve"
-                  // icon={<MdSwapCalls />}
-                  onClick={() => handleApprove()}
-                />
-              )}
-              {isTokenApproved && isWalletConnected() && (
-                <Button
-                  loading={isLoading}
-                  className={cx('bg_btn', {
-                    zig_disabled: !fromDetails.amount
-                  })}
-                  text="Swap"
-                  // icon={<MdSwapCalls />}
-                  onClick={() => handleSubmit()}
-                />
-              )}
-              {!isWalletConnected() && (
-                <Button
-                  loading={isLoading}
-                  className={cx('bg_btn', {
-                    // zig_disabled:
-                    // !hasAllowance || fromDetails.amount.length === 0,
-                  })}
-                  text="Connect Wallet"
-                  // icon={<MdSwapCalls />}
-                  onClick={() => connectWallet()}
-                />
-              )}
-            </div>
-          </div>
-        </div>
-      );
-    } else if (openTab === 2) {
-      return (
-        <DepositComponent
-          balance={userBalances}
-          allowance={tokenAllowances}
-          onEvent={onEvent}
-        />
-      );
-    } else if (openTab === 3) {
-      return <WithdrawComponent onEvent={onEvent} />;
-    } else {
-      return <div></div>;
-    }
-  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -390,8 +264,8 @@ const Home: NextPage = () => {
     }
   };
 
-  const getString2Number = (amount: string) => {
-    return Number.isNaN(amount) ? 0 : Number(amount);
+  const getString2Number = (amount: any) => {
+    return amount === '' ? 0 : Number(amount);
   };
 
   const handleApprove = async () => {
@@ -434,7 +308,6 @@ const Home: NextPage = () => {
     amount: string;
     symbol: string;
   }) => {
-    console.log(values);
     const details = {
       ...fromDetails,
       ...values
@@ -579,13 +452,15 @@ const Home: NextPage = () => {
             tokenAllowances={tokenAllowances}
           />
         </div>
-        <div className="xl:col-span-1 xl:grid-cols-1 xl:space-y-0 md:grid md:grid-cols-2 md:col-span-3 md:gap-5">
+        <div className="space-y-6 xl:col-span-1 xl:grid-cols-1 md:space-y-0 md:grid md:grid-cols-2 md:col-span-3 md:gap-5 h-fit">
           <div>
             <PoolTokenBalance className="" userBalances={userBalances} />
           </div>
-          <div>
-            <MyPoolBalance className="" poolbalances={poolbalances} />
-          </div>
+          {isWalletConnected() && (
+            <div>
+              <MyPoolBalance className="" poolbalances={poolbalances} />
+            </div>
+          )}
         </div>
       </div>
       <div>

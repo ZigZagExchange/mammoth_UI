@@ -61,7 +61,7 @@ const TabContainer = ({
               key={category}
               className={({ selected }) =>
                 classNames(
-                  'w-full rounded-lg py-2.5 px-12 text-sm font-medium leading-5 uppercase',
+                  'w-full rounded-lg py-2.5 text-sm font-medium leading-5 uppercase',
                   selected
                     ? 'bg-success-900 shadow text-black'
                     : 'text-blue-100 hover:bg-white-900 hover:text-white hover:bg-background-700'
