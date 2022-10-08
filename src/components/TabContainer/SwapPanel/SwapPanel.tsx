@@ -22,7 +22,7 @@ const SwapPanel = ({
   connectWallet
 }: any) => {
   const onChangeFromToken = (token: any) => {
-    let v = { amount: '', symbol: token.symbol };
+    let v = { amount: '', symbol: token.symbol, ...token };
     setSwapDetailsFrom(v);
   };
 
@@ -33,7 +33,7 @@ const SwapPanel = ({
   };
 
   const onChangeToToken = (token: any) => {
-    let v = { amount: '', symbol: token.symbol };
+    let v = { amount: '', symbol: token.symbol, ...token };
     setSwapDetailsTo(v);
   };
 

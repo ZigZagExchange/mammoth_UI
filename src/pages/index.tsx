@@ -55,12 +55,12 @@ const Home: NextPage = () => {
   const [mintModal, setMintModal] = useState(false);
   const [fromDetails, setFromDetails] = useState<any>(() => ({
     amount: '',
-    symbol: tokens[0].symbol
+    ...tokens[0]
   }));
 
   const [toDetails, setToDetails] = useState(() => ({
     amount: '',
-    symbol: tokens[1].symbol
+    ...tokens[1]
   }));
   const [address, setAddress] = useState('');
   const [openDrop, setOpenDrop] = useState(false);
@@ -82,11 +82,11 @@ const Home: NextPage = () => {
     if (!isWalletConnected()) {
       setToDetails({
         amount: '',
-        symbol: tokens[1].symbol
+        ...tokens[1]
       });
       setFromDetails({
         amount: '',
-        symbol: tokens[0].symbol
+        ...tokens[0]
       });
       changeTokenAllowances(['--', '--', '--']);
       changeUserBalances(['--', '--', '--']);

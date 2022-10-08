@@ -53,6 +53,7 @@ const TokenDropDownModal = ({
           onClick={openModal}
           className="flex items-center p-2 text-sm font-medium rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 hover:bg-foreground-400 "
         >
+          <img src={selectedOption?.logo} className="w-8" />
           <p className="ml-3 text-lg ">{selectedOption?.symbol}</p>
           <ChevronDownIcon className="w-5 h-5 ml-1 -mr-1" aria-hidden="true" />
         </button>
