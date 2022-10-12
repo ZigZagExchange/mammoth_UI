@@ -8,7 +8,8 @@ import {
   getUserBalances,
   getLiquidityBalances
 } from '../services/pool.service';
-import { truncateAddress } from '../services/address.service';
+import Header from '../components/Header';
+import BalanceReportContainer from '../components/BalanceReportContainer';
 import { tokens } from '../services/constants';
 import { Button } from '../components/Button/Button';
 import cx from 'classnames';
@@ -20,9 +21,9 @@ import MintDialogComponent from '../components/MintDialogComponent';
 import _ from 'lodash';
 import WithdrawComponent from '../components/WithdrawComponent';
 import DepositComponent from '../components/DepositComponent';
-import NetworkSelection from '../components/NetworkSelection';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 import { getStarknet } from 'get-starknet';
 import styled from '@emotion/styled';
 import {
@@ -33,6 +34,9 @@ import {
 import { getTokenIndex, formatPrice } from '../libs/utils';
 import { NextComponentType, NextPage } from 'next/types';
 import { ethers } from 'ethers';
+import TabContainer from '../components/TabContainer';
+import PoolTokenBalance from '../components/PoolTokensBalance';
+import MyPoolBalance from '../components/MyPoolBalance';
 
 const Home: NextPage = () => {
   const [isLoading, changeIsLoading] = useState(false);
@@ -49,146 +53,20 @@ const Home: NextPage = () => {
   const [depositModal, setDepositModal] = useState(false);
   const [withdrawModal, setWithdrawModal] = useState(false);
   const [mintModal, setMintModal] = useState(false);
-  const [fromDetails, setFromDetails] = useState(() => ({
+  const [fromDetails, setFromDetails] = useState<any>(() => ({
     amount: '',
-    symbol: tokens[0].symbol
+    ...tokens[0]
   }));
 
   const [toDetails, setToDetails] = useState(() => ({
     amount: '',
-    symbol: tokens[1].symbol
+    ...tokens[1]
   }));
   const [address, setAddress] = useState('');
   const [openDrop, setOpenDrop] = useState(false);
   const [isMobile, setMobile] = useState('lg');
   const [rate, setRate] = useState(0);
   const [openTab, setOpenTab] = React.useState(1);
-
-  const TabData = () => {
-    if (openTab === 1) {
-      return (
-        <div>
-          <div className="swap_box_top">
-            <div className="swap_coin_title">
-              <Box fontSize="16px" fontWeight="600">
-                From
-              </Box>
-              <Box fontSize="12px" fontWeight="400">
-                Balance:{' '}
-                {Number(userBalances[getTokenIndex(fromDetails.symbol)])
-                  ? Number(
-                      userBalances[getTokenIndex(fromDetails.symbol)]
-                    ).toFixed(4)
-                  : userBalances[getTokenIndex(fromDetails.symbol)]}{' '}
-                {fromDetails.symbol}
-              </Box>
-            </div>
-            <SwapSwapInput
-              balances={userBalances}
-              // currencies={currencies}
-              value={fromDetails}
-              onChange={setSwapDetailsFrom}
-              imageSource={tokens[getTokenIndex(fromDetails.symbol)].logo}
-              imageSymbol={tokens[getTokenIndex(fromDetails.symbol)].symbol}
-              imageLogo={tokens[getTokenIndex(fromDetails.symbol)].logo}
-            />
-            {/* <Box mt="10px" color="rgba(255, 255, 255, 0.72)" fontSize="11px" textAlign="right">Estimated value: ~$ 30.33</Box> */}
-          </div>
-
-          <div className="swap_box_bottom">
-            <div className="swap_box_swap_wrapper">
-              <SwapButton onClick={switchTransferType} />
-              <div className="swap_box_line" />
-            </div>
-
-            <div className="swap_coin_title" style={{ marginBottom: '10px' }}>
-              <Box fontSize="16px" fontWeight="600" mr="30px">
-                To
-              </Box>
-              <Box
-                display="flex"
-                width={isMobile === 'sm' ? 'auto' : '100%'}
-                justifyContent="space-between"
-                flexDirection={isMobile === 'sm' ? 'column' : 'row'}
-              >
-                <Box fontSize="12px" fontWeight="400">
-                  1 {fromDetails.symbol} = {rate} {toDetails.symbol}
-                </Box>
-                <Box fontSize="12px" fontWeight="400">
-                  Balance:{' '}
-                  {Number(userBalances[getTokenIndex(toDetails.symbol)])
-                    ? Number(
-                        userBalances[getTokenIndex(toDetails.symbol)]
-                      ).toFixed(4)
-                    : userBalances[getTokenIndex(toDetails.symbol)]}{' '}
-                  {toDetails.symbol}
-                </Box>
-              </Box>
-            </div>
-            <SwapSwapInput
-              balances={userBalances}
-              // currencies={currencies}
-              value={toDetails} // format to details amount
-              onChange={setSwapDetailsTo}
-              showMax={false}
-              imageSource={tokens[getTokenIndex(toDetails.symbol)].logo}
-              imageSymbol={tokens[getTokenIndex(toDetails.symbol)].symbol}
-              imageLogo={tokens[getTokenIndex(toDetails.symbol)].logo}
-            />
-            <div className="swap_button" style={{ marginTop: '30px' }}>
-              {!isTokenApproved && isWalletConnected() && (
-                <Button
-                  loading={isLoading}
-                  className={cx('bg_btn', {
-                    zig_disabled: !fromDetails.amount
-                  })}
-                  style={{ height: '40px', fontSize: '18px' }}
-                  text="Approve"
-                  // icon={<MdSwapCalls />}
-                  onClick={() => handleApprove()}
-                />
-              )}
-              {isTokenApproved && isWalletConnected() && (
-                <Button
-                  loading={isLoading}
-                  className={cx('bg_btn', {
-                    zig_disabled: !fromDetails.amount
-                  })}
-                  text="Swap"
-                  // icon={<MdSwapCalls />}
-                  onClick={() => handleSubmit()}
-                />
-              )}
-              {!isWalletConnected() && (
-                <Button
-                  loading={isLoading}
-                  className={cx('bg_btn', {
-                    // zig_disabled:
-                    // !hasAllowance || fromDetails.amount.length === 0,
-                  })}
-                  text="Connect Wallet"
-                  // icon={<MdSwapCalls />}
-                  onClick={() => connectWallet()}
-                />
-              )}
-            </div>
-          </div>
-        </div>
-      );
-    } else if (openTab === 2) {
-      return (
-        <DepositComponent
-          balance={userBalances}
-          allowance={tokenAllowances}
-          onEvent={onEvent}
-        />
-      );
-    } else if (openTab === 3) {
-      return <WithdrawComponent onEvent={onEvent} />;
-    } else {
-      return <div></div>;
-    }
-  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -204,11 +82,11 @@ const Home: NextPage = () => {
     if (!isWalletConnected()) {
       setToDetails({
         amount: '',
-        symbol: tokens[1].symbol
+        ...tokens[1]
       });
       setFromDetails({
         amount: '',
-        symbol: tokens[0].symbol
+        ...tokens[0]
       });
       changeTokenAllowances(['--', '--', '--']);
       changeUserBalances(['--', '--', '--']);
@@ -386,8 +264,8 @@ const Home: NextPage = () => {
     }
   };
 
-  const getString2Number = (amount: string) => {
-    return Number.isNaN(amount) ? 0 : Number(amount);
+  const getString2Number = (amount: any) => {
+    return amount === '' ? 0 : Number(amount);
   };
 
   const handleApprove = async () => {
@@ -533,424 +411,70 @@ const Home: NextPage = () => {
     disconnectWallet();
     setAddress('');
   };
-  console.log(isMobile);
   return (
-    <Box
+    <div
       onClick={() => {
         setOpenDrop(false);
       }}
     >
-      <Box display="flex" justifyContent={'end'} className="mx-4 md:mr-12">
-        <NetworkSelection disabled={true} />
-        <ConnectButton
-          onClick={(e: any) => {
-            if (address) {
-              e.stopPropagation();
-              setOpenDrop(!openDrop);
-            } else {
-              connectWallet();
-            }
-          }}
-        >
-          <Box>{address ? truncateAddress(address) : 'Connect Wallet'}</Box>
-          <Dropdown visible={openDrop}>
-            <DropdownItem onClick={copyAddress}>
-              <img
-                src="/copy.svg"
-                width="20px"
-                style={{ marginRight: '10px' }}
-              />{' '}
-              Copy Address
-            </DropdownItem>
-            <DropdownItem
-              href={`${getExplorerBaseUrl()}/contract/${address}`}
-              target="_blank"
-            >
-              <img
-                src="/view.svg"
-                width="20px"
-                style={{ marginRight: '10px' }}
-              />{' '}
-              View on Explorer
-            </DropdownItem>
-            <DropdownItem onClick={disconnect}>
-              <img
-                src="/disconnect.svg"
-                width="20px"
-                style={{ marginRight: '10px' }}
-              />{' '}
-              Disconnect
-            </DropdownItem>
-          </Dropdown>
-        </ConnectButton>
-      </Box>
-      <Box
-        display="flex"
-        justifyContent={'center'}
-        flexDirection="row"
-        pt="0px"
-      >
-        <Box
-          borderRadius={'8px'}
-          border="1px solid rgba(255, 255, 255, 0.13)"
-          display="flex"
-          justifyContent={'space-around'}
-          flexDirection="column"
-          alignItems={'center'}
-          p="30px"
-          mt="100px"
-          height="500px"
-          paddingTop="100px"
-        >
-          <Box
-            display="flex"
-            flexDirection={isMobile !== 'sm' ? 'column' : 'row'}
-            mr="20px"
-          >
-            <Box mb="30px">Total Token amount</Box>
-            <Box textAlign={'center'}>{formatPrice(liquidityBalance)}</Box>
-          </Box>
-          <Box display="flex" flexDirection="column" mt="30px">
-            <Box>Detailed balance report</Box>
-            {_.map(poolbalances, (each: any, index) => {
-              return (
-                <Box
-                  display={'flex'}
-                  key={index}
-                  justifyContent="space-between"
-                >
-                  {tokens[index].name} :&nbsp;{' '}
-                  <b>{each === '--' ? each : parseFloat(each).toFixed(4)}</b>{' '}
-                </Box>
-              );
-            })}
-          </Box>
-        </Box>
-
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems={'center'}
-          pt="100px"
-          height="1000px"
-          paddingTop="100px"
-        >
-          <Box
-            display="flex"
-            maxWidth={'90%'}
-            width="590px"
-            justifyContent={'center'}
-            alignItems="center"
-            flexDirection={isMobile !== 'lg' ? 'column' : 'row'}
-          >
-            <Box
-              width="100%"
-              p="30px"
-              display="flex"
-              flexDirection={isMobile !== 'sm' ? 'row' : 'column'}
-              justifyContent={'space-between'}
-              mb="30px"
-            ></Box>
-            <Box
-              ml={isMobile === 'lg' ? '35px' : ''}
-              width={isMobile !== 'lg' ? 'auto' : '25%'}
-              height="100%"
-              display="flex"
-              flexDirection={isMobile !== 'lg' ? 'row' : 'column'}
-              alignItems="center"
-              justifyContent={'space-between'}
-              mb="30px"
-            >
-              <Button
-                className="bg_btn"
-                style={{
-                  borderRadius: '5px',
-                  marginRight: '10px',
-                  width: '90px'
-                }}
-                text="MINT"
-                onClick={() => {
-                  setMintModal(true);
-                }}
-              />
-            </Box>
-          </Box>
-          <div className="swap_box">
-            <div className="flex justify-center border border-white/25">
-              <Button
-                className={`bg_btn ${openTab === 1 ? 'active_bg' : ''}`}
-                style={{
-                  borderRadius: '5px',
-                  marginRight: '10px',
-                  width: '90px'
-                }}
-                text="Swap"
-                onClick={e => {
-                  e.preventDefault();
-                  setOpenTab(1);
-                }}
-              />
-              <Button
-                className={`bg_btn ${openTab === 2 ? 'active_bg' : ''}`}
-                style={{
-                  borderRadius: '5px',
-                  marginRight: '10px',
-                  width: '90px'
-                }}
-                text="Deposit"
-                onClick={e => {
-                  e.preventDefault();
-                  setOpenTab(2);
-                }}
-              />
-              <Button
-                className={`bg_btn ${openTab === 3 ? 'active_bg' : ''}`}
-                style={{
-                  borderRadius: '5px',
-                  marginRight: '10px',
-                  width: '90px'
-                }}
-                text="Withdraw"
-                onClick={e => {
-                  e.preventDefault();
-                  setOpenTab(3);
-                }}
-              />
-            </div>
-
-            <TabData />
-          </div>
-        </Box>
-        <Box
-          display="flex"
-          justifyContent={'space-around'}
-          flexDirection="column"
-          alignItems={'center'}
-          height="750px"
-          paddingTop="100px"
-        >
-          <Box
-            borderRadius={'8px'}
-            border="1px solid rgba(255, 255, 255, 0.13)"
-            display="flex"
-            flexDirection={isMobile !== 'sm' ? 'column' : 'row'}
-            mr="20px"
-            p="30px"
-            width="100%"
-          >
-            <Box mb="30px">Pool tokens in my wallet</Box>
-            <Box
-              display={'flex'}
-              justifyContent="space-between"
-              flexDirection="column"
-            >
-              <Box mt="10px">
-                <Box display={'flex'} justifyContent="space-between">
-                  ETH :&nbsp;{' '}
-                  <b>
-                    {Number(userBalances[0])
-                      ? Number(userBalances[0]).toFixed(4)
-                      : userBalances[0]}
-                  </b>{' '}
-                </Box>
-                <Box
-                  display={'flex'}
-                  justifyContent="space-between"
-                  color="rgba(255, 255, 255, 0.13);"
-                  fontSize="14px"
-                >
-                  ETH :&nbsp; <b>$0.0</b>{' '}
-                </Box>
-              </Box>
-              <Box mt="10px">
-                <Box display={'flex'} justifyContent="space-between">
-                  BTC :&nbsp;{' '}
-                  <b>
-                    {Number(userBalances[1])
-                      ? Number(userBalances[1]).toFixed(4)
-                      : userBalances[1]}
-                  </b>{' '}
-                </Box>
-                <Box
-                  display={'flex'}
-                  justifyContent="space-between"
-                  color="rgba(255, 255, 255, 0.13);"
-                  fontSize="14px"
-                >
-                  BTC :&nbsp; <b>$0.0</b>{' '}
-                </Box>
-              </Box>
-              <Box mt="10px">
-                <Box display={'flex'} justifyContent="space-between">
-                  USDC :&nbsp;{' '}
-                  <b>
-                    {Number(userBalances[2])
-                      ? Number(userBalances[2]).toFixed(4)
-                      : userBalances[2]}
-                  </b>{' '}
-                </Box>
-                <Box
-                  display={'flex'}
-                  justifyContent="space-between"
-                  color="rgba(255, 255, 255, 0.13);"
-                  fontSize="14px"
-                >
-                  USDC :&nbsp; <b>$0.0</b>{' '}
-                </Box>
-              </Box>
-              <Box mt="20px">
-                <Box display={'flex'} justifyContent="space-between">
-                  Total :&nbsp; <b>$0.0</b>{' '}
-                </Box>
-              </Box>
-            </Box>
-          </Box>
-
-          <Box
-            borderRadius={'8px'}
-            border="1px solid rgba(255, 255, 255, 0.13)"
-            display="flex"
-            flexDirection={isMobile !== 'sm' ? 'column' : 'row'}
-            mr="20px"
-            mt="10px"
-            p="30px"
-            width="100%"
-          >
-            <Box mb="30px">My pool balance</Box>
-            <Box
-              display={'flex'}
-              justifyContent="space-between"
-              flexDirection="column"
-            >
-              <Box mt="10px">
-                <Box display={'flex'} justifyContent="space-between">
-                  ETH :&nbsp;{' '}
-                  <b>
-                    {poolbalances[0] === '--'
-                      ? poolbalances[0]
-                      : parseFloat(poolbalances[0]).toFixed(4)}
-                  </b>{' '}
-                </Box>
-                <Box
-                  display={'flex'}
-                  justifyContent="space-between"
-                  color="rgba(255, 255, 255, 0.13);"
-                  fontSize="14px"
-                >
-                  ETH :&nbsp; <b>$0.0</b>{' '}
-                </Box>
-              </Box>
-              <Box mt="10px">
-                <Box display={'flex'} justifyContent="space-between">
-                  BTC :&nbsp;{' '}
-                  <b>
-                    {poolbalances[1] === '--'
-                      ? poolbalances[1]
-                      : parseFloat(poolbalances[1]).toFixed(4)}
-                  </b>{' '}
-                </Box>
-                <Box
-                  display={'flex'}
-                  justifyContent="space-between"
-                  color="rgba(255, 255, 255, 0.13);"
-                  fontSize="14px"
-                >
-                  BTC :&nbsp; <b>$0.0</b>{' '}
-                </Box>
-              </Box>
-              <Box mt="10px">
-                <Box display={'flex'} justifyContent="space-between">
-                  USDC :&nbsp;{' '}
-                  <b>
-                    {poolbalances[2] === '--'
-                      ? poolbalances[2]
-                      : parseFloat(poolbalances[2]).toFixed(4)}
-                  </b>{' '}
-                </Box>
-                <Box
-                  display={'flex'}
-                  justifyContent="space-between"
-                  color="rgba(255, 255, 255, 0.13);"
-                  fontSize="14px"
-                >
-                  USDC :&nbsp; <b>$0.0</b>{' '}
-                </Box>
-              </Box>
-              <Box mt="20px">
-                <Box display={'flex'} justifyContent="space-between">
-                  Total :&nbsp; <b>$0.0</b>{' '}
-                </Box>
-              </Box>
-            </Box>
-          </Box>
-        </Box>
-      </Box>
-
-      <MintDialogComponent
-        open={mintModal}
-        onClose={() => {
-          setMintModal(false);
-        }}
-        onEvent={onEvent}
+      <Header
+        onClickConnectWallet={connectWallet}
+        onClickCopyAddress={copyAddress}
+        onClickDisconnect={disconnect}
+        connected={isWalletConnected()}
+        address={address}
+        link={`${getExplorerBaseUrl()}/contract/${address}`}
       />
+      <div className="mx-6 mt-12 space-y-6 lg:space-y-0 lg:gap-4 lg:grid xl:grid-cols-4 lg:grid-cols-3 2xl:mx-48 xl:mx-8 lg:mx-2 md:mx-6">
+        <div className="md:col-span-1">
+          <BalanceReportContainer
+            className=""
+            poolbalances={poolbalances}
+            liquidityBalance={liquidityBalance}
+          />
+        </div>
+        <div className="lg:col-span-2 ">
+          <TabContainer
+            onEvent={onEvent}
+            userBalances={userBalances}
+            setSwapDetailsFrom={setSwapDetailsFrom}
+            fromDetails={fromDetails}
+            setSwapDetailsTo={setSwapDetailsTo}
+            toDetails={toDetails}
+            switchTransferType={switchTransferType}
+            rate={rate}
+            isTokenApproved={isTokenApproved}
+            isWalletConnected={isWalletConnected()}
+            isLoading={isLoading}
+            handleApprove={handleApprove}
+            handleSubmit={handleSubmit}
+            connectWallet={connectWallet}
+            tokenAllowances={tokenAllowances}
+          />
+        </div>
+        <div className="space-y-6 xl:col-span-1 xl:grid-cols-1 md:space-y-0 md:grid md:grid-cols-2 md:col-span-3 md:gap-5 h-fit">
+          <div>
+            <PoolTokenBalance className="" userBalances={userBalances} />
+          </div>
+          {isWalletConnected() && (
+            <div>
+              <MyPoolBalance className="" poolbalances={poolbalances} />
+            </div>
+          )}
+        </div>
+      </div>
+      <div>
+        <MintDialogComponent
+          open={mintModal}
+          onClose={() => {
+            setMintModal(false);
+          }}
+          onEvent={onEvent}
+        />
+      </div>
       <ToastContainer />
-    </Box>
+    </div>
   );
 };
 
 export default Home;
-
-const ConnectButton = styled('div')(
-  ({ theme }) =>
-    `
-    border-radius: 8px;
-    // padding: 10px 30px;
-    margin-left: 20px;
-    margin-top: 24px;
-    width: 210px;
-    height: 43px;
-    border: 1px solid rgba(255, 255, 255, 0.13);
-    cursor: pointer;
-    background: rgba(0,0,0,0.8);
-    position: relative;
-    display: flex;
-    transition: all 0.2s ease-out;
-    z-index: 10;
-    justify-content: center;
-    align-items: center;
-
-    &:hover {
-      transition: all 0.2s ease-out;
-      background: rgba(0,0,0,0.1);
-    }
-  
-    &::after {
-      content: '▾';
-      margin-left: 10px;
-    }
-`
-);
-
-const Dropdown = styled.div<{ visible?: boolean }>`
-  visibility: ${p => (p.visible ? 'visible' : 'hidden')};
-  opacity: ${p => (p.visible ? 1 : 0)};
-  height: ${p => (p.visible ? '150px' : '120px')};
-  width: 250px;
-  background: white;
-  border-radius: 6px;
-  position: absolute;
-  top: 45px;
-  right: 0;
-  display: flex;
-  flex-direction: column;
-  padding: 15px 25px;
-  transition: all 0.2s ease-in;
-`;
-
-const DropdownItem = styled.a`
-  display: flex;
-  align-items: center;
-  color: black;
-  height: 50px;
-  text-decoration: none;
-`;
